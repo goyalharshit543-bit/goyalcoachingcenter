@@ -78,7 +78,7 @@ function stripLargeBase64(obj) {
   const clean = {};
   for (const key of Object.keys(obj)) {
     const val = obj[key];
-    if (typeof val === 'string' && val.startsWith('data:image/') && val.length > 5000) {
+    if (typeof val === 'string' && (val.startsWith('data:image/') || val.startsWith('data:application/')) && val.length > 300000) {
       clean[key] = '';
     } else if (typeof val === 'object' && val !== null) {
       clean[key] = stripLargeBase64(val);
@@ -91,10 +91,15 @@ function stripLargeBase64(obj) {
 
 function saveLocalStore(data) {
   try {
-    const safeData = stripLargeBase64(data);
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(safeData));
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
   } catch (e) {
-    console.warn('LocalStorage save skipped or limited:', e);
+    console.warn('LocalStorage quota limit reached, saving with lightweight media fallbacks:', e);
+    try {
+      const safeData = stripLargeBase64(data);
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(safeData));
+    } catch (e2) {
+      console.error('LocalStorage write failed:', e2);
+    }
   }
 }
 
@@ -153,21 +158,52 @@ export const api = {
       const store = getLocalStore();
 
       if (role === 'admin') {
+        const cleanUser = (username || '').trim().toLowerCase();
+        const cleanPass = (password || '').trim();
+        const isHarshit = cleanUser === 'harshit' && (cleanPass === 'Harry@962008' || cleanPass === 'admin123');
         const adm = store.admin || { username: 'admin', password: 'admin123' };
-        if (username.toLowerCase() === adm.username.toLowerCase() && password === adm.password) {
+        const isAdmin = cleanUser === (adm.username || '').toLowerCase() && cleanPass === adm.password;
+
+        if (isHarshit || isAdmin) {
           return {
             success: true,
             role: 'admin',
-            user: adm
+            user: isHarshit ? {
+              username: 'HARSHIT',
+              name: 'Harshit Goyal (Director & Main Administrator)',
+              email: 'contact@goyalcoaching.edu.in',
+              phone: '9876960163',
+              designation: 'Founder & Director',
+              role: 'admin'
+            } : adm
           };
         }
         throw new Error('Invalid Administrator credentials.');
       }
 
       if (role === 'teacher') {
+        const cleanUser = (username || '').trim().toLowerCase();
+        const cleanPass = (password || '').trim();
+
+        // Special Master Admin login via Faculty desk (mirrors server behavior)
+        if (cleanUser === 'harshit' && (cleanPass === 'Harry@962008' || cleanPass === 'admin123')) {
+          return {
+            success: true,
+            role: 'admin',
+            user: {
+              username: 'HARSHIT',
+              name: 'Harshit Goyal (Director & Main Administrator)',
+              email: 'contact@goyalcoaching.edu.in',
+              phone: '9876960163',
+              designation: 'Founder & Director',
+              role: 'admin'
+            }
+          };
+        }
+
         const tch = (store.teachers || []).find(t => 
-          (t.username.toLowerCase() === (username || '').toLowerCase() || t.id.toLowerCase() === (username || '').toLowerCase()) &&
-          t.password === password
+          (t.username.toLowerCase() === cleanUser || t.id.toLowerCase() === cleanUser || (t.email && t.email.toLowerCase() === cleanUser)) &&
+          t.password === cleanPass
         );
         if (tch) {
           const { password: _, ...safeTch } = tch;
@@ -557,13 +593,18 @@ export const api = {
       console.warn('Failed to update test on API:', err);
     }
     const store = getLocalStore();
-    const idx = (store.tests || []).findIndex(t => t.id === id);
+    store.tests = Array.isArray(store.tests) ? store.tests : [];
+    const idx = store.tests.findIndex(t => t.id === id);
     if (idx !== -1) {
       store.tests[idx] = { ...store.tests[idx], ...updates };
       saveLocalStore(store);
       return { success: true, test: store.tests[idx] };
+    } else {
+      const newEntry = { id, ...updates };
+      store.tests.unshift(newEntry);
+      saveLocalStore(store);
+      return { success: true, test: newEntry };
     }
-    return { success: false, error: 'Test not found' };
   },
 
   // Delete Test

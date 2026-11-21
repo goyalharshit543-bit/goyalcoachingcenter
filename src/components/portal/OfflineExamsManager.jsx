@@ -121,14 +121,21 @@ export default function OfflineExamsManager({
 
   // Helper: check if a student belongs to target grade
   const matchesClass = (student, gradeStr) => {
+    if (!student) return false;
     if (!gradeStr || gradeStr === 'All' || gradeStr === 'All Classes') return true;
-    const sGrade = cleanGrade(student.grade || student.class);
     const tGrade = cleanGrade(gradeStr);
-    return sGrade === tGrade || sGrade.includes(tGrade) || tGrade.includes(sGrade);
+    if (!tGrade) return true;
+    const sGrade = cleanGrade(student.grade || student.class);
+    const sBatch = cleanGrade(student.batch);
+    const sStream = (student.stream || '').toLowerCase();
+    return sGrade === tGrade || sGrade.includes(tGrade) || sBatch.includes(tGrade) || sStream.includes(tGrade);
   };
 
+  const safeTests = Array.isArray(tests) ? tests : [];
+  const safeStudents = Array.isArray(allStudents) ? allStudents : [];
+
   // Filtered tests
-  const filteredTests = tests.filter((t) => {
+  const filteredTests = safeTests.filter((t) => {
     const q = searchQuery.toLowerCase().trim();
     const matchesSearch = !q || 
       (t.title && t.title.toLowerCase().includes(q)) || 
@@ -144,8 +151,8 @@ export default function OfflineExamsManager({
   });
 
   // Calculate totals
-  const totalExamsCount = tests.length;
-  const totalSheetsUploaded = tests.reduce((acc, t) => {
+  const totalExamsCount = safeTests.length;
+  const totalSheetsUploaded = safeTests.reduce((acc, t) => {
     const evaluated = (t.results || []).filter(r => r.documentUrl || (r.documents && r.documents.length > 0));
     return acc + evaluated.length;
   }, 0);
@@ -154,7 +161,7 @@ export default function OfflineExamsManager({
   const handleOpenGrading = (test) => {
     setActiveGradingExam(test);
     const initialMap = {};
-    const relevantStudents = (allStudents || []).filter(s => matchesClass(s, test.grade || test.batch));
+    const relevantStudents = safeStudents.filter(s => matchesClass(s, test.grade || test.batch));
 
     relevantStudents.forEach(s => {
       const existing = (test.results || []).find(r => 
@@ -224,6 +231,7 @@ export default function OfflineExamsManager({
       };
       reader.readAsDataURL(file);
     });
+    e.target.value = '';
   };
 
   // Handle PDF Upload
@@ -262,6 +270,7 @@ export default function OfflineExamsManager({
       }
     };
     reader.readAsDataURL(file);
+    e.target.value = '';
   };
 
   // Remove uploaded document
@@ -302,7 +311,7 @@ export default function OfflineExamsManager({
     if (!activeGradingExam) return;
     try {
       setIsSaving(true);
-      const relevantStudents = (allStudents || []).filter(s => matchesClass(s, activeGradingExam.grade || activeGradingExam.batch));
+      const relevantStudents = safeStudents.filter(s => matchesClass(s, activeGradingExam.grade || activeGradingExam.batch));
       const maxMarks = Number(activeGradingExam.maxMarks) || 50;
 
       const resultsList = [];
@@ -832,7 +841,7 @@ export default function OfflineExamsManager({
       {/* MODAL 2: ENTER MARKS & UPLOAD CHECKED SHEETS (PHOTO / PDF)               */}
       {/* ========================================================================= */}
       {activeGradingExam && (() => {
-        const relevantStudents = (students || []).filter(s => matchesClass(s, activeGradingExam.grade || activeGradingExam.batch));
+        const relevantStudents = safeStudents.filter(s => matchesClass(s, activeGradingExam.grade || activeGradingExam.batch));
         const maxMarks = Number(activeGradingExam.maxMarks) || 50;
 
         return (
@@ -1111,7 +1120,12 @@ export default function OfflineExamsManager({
 
             {/* Viewport */}
             <div className="flex-1 overflow-y-auto p-4 bg-slate-950 flex items-center justify-center">
-              {previewDocument.type === 'pdf' || (previewDocument.url && previewDocument.url.startsWith('data:application/pdf')) ? (
+              {!previewDocument.url ? (
+                <div className="text-center p-8 text-slate-400 text-xs">
+                  <FileText className="w-12 h-12 mx-auto mb-2 text-slate-600" />
+                  <div>No scanned document or answer sheet file attached yet for this record.</div>
+                </div>
+              ) : previewDocument.type === 'pdf' || (previewDocument.url && previewDocument.url.startsWith('data:application/pdf')) ? (
                 <iframe
                   src={previewDocument.url}
                   title="Answer Sheet PDF"

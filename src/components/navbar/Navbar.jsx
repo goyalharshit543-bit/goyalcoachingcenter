@@ -769,7 +769,7 @@ export default function Navbar({
                         closeAllDropdowns();
                         onOpenLoginModal('teacher');
                       }}
-                      className={`w-full text-left p-3 rounded-xl text-xs transition-all flex items-center gap-3 cursor-pointer group ${
+                      className={`w-full text-left p-3 rounded-xl text-xs transition-all flex items-center gap-3 cursor-pointer group mb-2 ${
                         isDarkMode ? 'bg-slate-800/80 hover:bg-slate-800' : 'bg-slate-50 hover:bg-slate-100 border border-slate-200'
                       }`}
                     >
@@ -778,6 +778,24 @@ export default function Navbar({
                       </div>
                       <div>
                         <div style={{ color: isDarkMode ? '#ffffff' : '#000000' }} className="font-black text-sm">Faculty Desk</div>
+                      </div>
+                    </button>
+
+                    {/* Main Admin Login */}
+                    <button
+                      onClick={() => {
+                        closeAllDropdowns();
+                        onOpenLoginModal('admin');
+                      }}
+                      className={`w-full text-left p-3 rounded-xl text-xs transition-all flex items-center gap-3 cursor-pointer group ${
+                        isDarkMode ? 'bg-slate-800/80 hover:bg-slate-800' : 'bg-slate-50 hover:bg-slate-100 border border-slate-200'
+                      }`}
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold shrink-0 shadow-sm">
+                        <Lock className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                      </div>
+                      <div>
+                        <div style={{ color: isDarkMode ? '#ffffff' : '#000000' }} className="font-black text-sm">Main Admin Portal</div>
                       </div>
                     </button>
                   </div>
@@ -1128,6 +1146,13 @@ export default function Navbar({
             >
               <span>Faculty Desk</span>
               <UserCheck className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => { closeAllDropdowns(); onOpenLoginModal('admin'); }}
+              className="w-full py-2.5 px-4 rounded-xl bg-amber-600/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-xs font-bold flex items-center justify-between"
+            >
+              <span>Main Admin Portal</span>
+              <Lock className="w-4 h-4" />
             </button>
           </div>
         </div>

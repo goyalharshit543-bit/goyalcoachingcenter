@@ -3402,7 +3402,12 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
 
             {/* Viewport for PDF or Image */}
             <div className="flex-1 overflow-y-auto p-4 bg-slate-950 flex items-center justify-center">
-              {previewStudentSheet.type === 'pdf' || (previewStudentSheet.url && previewStudentSheet.url.startsWith('data:application/pdf')) ? (
+              {!previewStudentSheet.url ? (
+                <div className="text-center p-8 text-slate-400 text-xs">
+                  <FileText className="w-12 h-12 mx-auto mb-2 text-slate-600" />
+                  <div>No scanned answer sheet file attached yet for this examination.</div>
+                </div>
+              ) : previewStudentSheet.type === 'pdf' || (previewStudentSheet.url && previewStudentSheet.url.startsWith('data:application/pdf')) ? (
                 <iframe
                   src={previewStudentSheet.url}
                   title="Answer Sheet PDF"

@@ -32,34 +32,46 @@ export const AVAILABLE_CLASSES = [
   { id: 'All', label: 'All Classes', code: 'all' }
 ];
 
+export function matchesStudent(student, targetId) {
+  if (!student || !targetId) return false;
+  const t = String(targetId).trim().toLowerCase();
+  const sId = (student.id || '').toString().trim().toLowerCase();
+  const sRoll = (student.rollNo || '').toString().trim().toLowerCase();
+  const sName = (student.name || '').toString().trim().toLowerCase();
+  return sId === t || sRoll === t || sName === t;
+}
+
 export function matchesStudentClass(student, targetClass) {
+  if (!student) return false;
   if (!targetClass || targetClass === 'All') return true;
   const grade = (student.grade || '').toLowerCase();
   const batch = (student.batch || '').toLowerCase();
+  const stream = (student.stream || '').toLowerCase();
+  const combined = `${grade} ${batch} ${stream}`.toLowerCase();
   const t = targetClass.toLowerCase();
 
-  if (t.includes('7')) return grade.includes('7') || batch.includes('7');
-  if (t.includes('8')) return grade.includes('8') || batch.includes('8');
-  if (t.includes('9')) return grade.includes('9') || batch.includes('9');
-  if (t.includes('10')) return grade.includes('10') || batch.includes('10');
+  if (t.includes('7')) return combined.includes('7');
+  if (t.includes('8')) return combined.includes('8');
+  if (t.includes('9')) return combined.includes('9');
+  if (t.includes('10')) return combined.includes('10');
   
   if (t.includes('11') && (t.includes('sci') || t.includes('science'))) {
-    return (grade.includes('11') || batch.includes('11')) && (grade.includes('sci') || batch.includes('sci'));
+    return combined.includes('11') && (combined.includes('sci') || combined.includes('science'));
   }
   if (t.includes('11') && (t.includes('comm') || t.includes('commerce'))) {
-    return (grade.includes('11') || batch.includes('11')) && (grade.includes('comm') || batch.includes('comm'));
+    return combined.includes('11') && (combined.includes('comm') || combined.includes('commerce'));
   }
-  if (t.includes('11')) return grade.includes('11') || batch.includes('11');
+  if (t.includes('11')) return combined.includes('11');
 
   if (t.includes('12') && (t.includes('sci') || t.includes('science'))) {
-    return (grade.includes('12') || batch.includes('12')) && (grade.includes('sci') || batch.includes('sci'));
+    return combined.includes('12') && (combined.includes('sci') || combined.includes('science'));
   }
   if (t.includes('12') && (t.includes('comm') || t.includes('commerce'))) {
-    return (grade.includes('12') || batch.includes('12')) && (grade.includes('comm') || batch.includes('comm'));
+    return combined.includes('12') && (combined.includes('comm') || combined.includes('commerce'));
   }
-  if (t.includes('12')) return grade.includes('12') || batch.includes('12');
+  if (t.includes('12')) return combined.includes('12');
 
-  return grade.includes(t) || batch.includes(t);
+  return combined.includes(t);
 }
 
 export default function ClassAttendanceManager({ 
@@ -69,6 +81,9 @@ export default function ClassAttendanceManager({
   isAdmin = false,
   currentUser = null 
 }) {
+  const safeStudents = Array.isArray(students) ? students : [];
+  const safeAttendanceLogs = Array.isArray(attendanceLogs) ? attendanceLogs : [];
+
   const [selectedClass, setSelectedClass] = useState('Class 7th');
   const [attendanceDate, setAttendanceDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [attendanceMap, setAttendanceMap] = useState({}); // { [studentId]: { status, remarks } }
@@ -78,11 +93,11 @@ export default function ClassAttendanceManager({
   const [adminOverrideLock, setAdminOverrideLock] = useState(false);
 
   // Filter students by selected class
-  const classStudents = students.filter(s => matchesStudentClass(s, selectedClass));
+  const classStudents = safeStudents.filter(s => matchesStudentClass(s, selectedClass));
 
   // Determine 20-Hour Edit Status for selected date
-  const logsForDate = attendanceLogs.filter(a => a.date === attendanceDate);
-  const classLogsForDate = logsForDate.filter(a => classStudents.some(s => s.id === a.studentId));
+  const logsForDate = safeAttendanceLogs.filter(a => a.date === attendanceDate);
+  const classLogsForDate = logsForDate.filter(a => classStudents.some(s => matchesStudent(s, a.studentId)));
   const hasExistingLogs = classLogsForDate.length > 0;
 
   const firstLog = classLogsForDate[0];
@@ -101,7 +116,7 @@ export default function ClassAttendanceManager({
   useEffect(() => {
     const newMap = {};
     classStudents.forEach(s => {
-      const existing = classLogsForDate.find(l => l.studentId === s.id);
+      const existing = classLogsForDate.find(l => matchesStudent(s, l.studentId));
       if (existing) {
         newMap[s.id] = {
           status: existing.status || 'Present',
@@ -116,7 +131,7 @@ export default function ClassAttendanceManager({
     });
     setAttendanceMap(newMap);
     setErrorMsg('');
-  }, [attendanceDate, selectedClass, students.length, attendanceLogs.length]);
+  }, [attendanceDate, selectedClass, safeStudents.length, safeAttendanceLogs.length]);
 
   // Bulk mark status shortcut
   const handleMarkAll = (status) => {
@@ -136,6 +151,10 @@ export default function ClassAttendanceManager({
   const handleSave = async () => {
     setErrorMsg('');
     setSaveSuccessMsg('');
+    if (classStudents.length === 0) {
+      setErrorMsg(`No students enrolled in ${selectedClass}. Please choose a class with enrolled students or enroll students first.`);
+      return;
+    }
     setSaving(true);
 
     try {
@@ -164,8 +183,9 @@ export default function ClassAttendanceManager({
   };
 
   // Helper: compute working days & percentage for a student
-  const getStudentStats = (studentId) => {
-    const sLogs = attendanceLogs.filter(a => a.studentId === studentId);
+  const getStudentStats = (student) => {
+    if (!student) return { workingDays: 0, attendedDays: 0, presentCount: 0, lateCount: 0, absentCount: 0, percentage: 0 };
+    const sLogs = safeAttendanceLogs.filter(a => matchesStudent(student, a.studentId));
     const workingDays = sLogs.length;
     const pCount = sLogs.filter(a => a.status === 'Present').length;
     const lCount = sLogs.filter(a => a.status === 'Late').length;
@@ -388,7 +408,7 @@ export default function ClassAttendanceManager({
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-800 dark:text-slate-200">
                 {classStudents.map((s) => {
-                  const stats = getStudentStats(s.id);
+                  const stats = getStudentStats(s);
                   const currentStatus = attendanceMap[s.id]?.status || 'Present';
 
                   return (

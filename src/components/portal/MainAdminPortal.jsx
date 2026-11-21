@@ -62,6 +62,7 @@ import OfflineExamsManager from './OfflineExamsManager';
 export default function MainAdminPortal({ adminUser, onLogout, onBackToHome, isDarkMode = false }) {
   const [teachers, setTeachers] = useState([]);
   const [students, setStudents] = useState([]);
+  const [attendanceLogs, setAttendanceLogs] = useState([]);
   const [notices, setNotices] = useState([]);
   const [directors, setDirectors] = useState([]);
   const [newsEvents, setNewsEvents] = useState([]);
@@ -148,6 +149,7 @@ export default function MainAdminPortal({ adminUser, onLogout, onBackToHome, isD
       if (data) {
         setTeachers(data.teachers || []);
         setStudents(data.students || []);
+        setAttendanceLogs(data.attendanceLogs || []);
         setNotices(data.notices || []);
         setDirectors(data.directors || []);
         setNewsEvents(data.newsEvents || []);
@@ -953,7 +955,7 @@ export default function MainAdminPortal({ adminUser, onLogout, onBackToHome, isD
       {activeTab === 'attendance' && (
         <ClassAttendanceManager
           students={students}
-          attendanceLogs={adminData?.attendanceLogs || []}
+          attendanceLogs={attendanceLogs}
           onDataSaved={loadAllAdminData}
           isAdmin={true}
           currentUser={adminUser}
