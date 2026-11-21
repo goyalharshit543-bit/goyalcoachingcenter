@@ -1,0 +1,29 @@
+==========================================================
+GOYAL COACHING CENTER - OFFICIAL ENROLLED STUDENT DOSSIER
+==========================================================
+Roll Number (Login ID) : 703
+Student Full Name      : Raghav Verma
+Portal Login Password  : raghav123
+Enrollment Date        : 2026-11-20
+Enrolled Grade         : Class 7
+Academic Stream        : Junior Foundation
+Assigned Batch         : Class 7 Junior Prodigy
+
+PARENT & CONTACT DETAILS:
+----------------------------------------------------------
+Parent / Guardian Name : Suresh Verma
+Parent Phone Number    : 9876543212
+Alternate Phone        : N/A
+
+FEE ACCOUNT STATUS:
+----------------------------------------------------------
+Total Fee Assigned     : Rs. 25000
+Amount Deposited       : Rs. 25000
+Balance Due            : Rs. 0
+Account Clearance      : Fully Paid
+Receipt Reference      : REC-7013
+
+INSTITUTIONAL NOTES:
+----------------------------------------------------------
+Teacher Remarks        : Newly admitted student. Good curiosity in science.
+==========================================================

@@ -1,0 +1,36 @@
+[
+  {
+    "studentNo": "9876960163",
+    "declaration": true,
+    "fatherName": "Anil Sharma",
+    "fatherNo": "9876543211",
+    "school": "Delhi Public School",
+    "cityState": "Patiala, Punjab",
+    "address": "House No. 124, Model Town",
+    "name": "Siddharth Sharma",
+    "dob": "2010-08-14",
+    "gender": "Male",
+    "presentClass": "10th",
+    "email": "siddharth@example.com",
+    "id": "GTSE-291730",
+    "timestamp": "20 Nov 2026, 3:54 pm",
+    "normalizedClass": "Class_10th"
+  },
+  {
+    "name": "Harshit Goyal",
+    "dob": "2026-11-20",
+    "gender": "Male",
+    "fatherName": "subhash ",
+    "presentClass": "10th",
+    "school": "svm",
+    "address": "ccc",
+    "cityState": "c",
+    "studentNo": "9876960163",
+    "fatherNo": "",
+    "email": "subhashchand65125@gmail.com",
+    "declaration": true,
+    "id": "GTSE-315274",
+    "timestamp": "20 Nov 2026, 3:55 pm",
+    "normalizedClass": "Class_10th"
+  }
+]

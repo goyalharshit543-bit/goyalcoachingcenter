@@ -1,0 +1,27 @@
+==========================================================
+GOYAL COACHING CENTER - GTSE SCHOLARSHIP REGISTRATION
+==========================================================
+Registration ID : GTSE-315274
+Submission Date : 20 Nov 2026, 3:55 pm
+Target Class    : 10th
+
+STUDENT DETAILS:
+----------------------------------------------------------
+Student Name    : Harshit Goyal
+Date of Birth   : 2026-11-20
+Gender          : Male
+School Name     : svm
+Student Mobile  : 9876960163
+Email Address   : subhashchand65125@gmail.com
+
+PARENT / GUARDIAN DETAILS:
+----------------------------------------------------------
+Father's Name   : subhash 
+Father's Mobile : N/A
+
+RESIDENTIAL ADDRESS:
+----------------------------------------------------------
+Address         : ccc
+City / State    : c
+Declaration     : Accepted & Verified
+==========================================================

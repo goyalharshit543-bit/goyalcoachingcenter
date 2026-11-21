@@ -1,0 +1,27 @@
+==========================================================
+GOYAL COACHING CENTER - GTSE SCHOLARSHIP REGISTRATION
+==========================================================
+Registration ID : GTSE-291730
+Submission Date : 20 Nov 2026, 3:54 pm
+Target Class    : 10th
+
+STUDENT DETAILS:
+----------------------------------------------------------
+Student Name    : Siddharth Sharma
+Date of Birth   : 2010-08-14
+Gender          : Male
+School Name     : Delhi Public School
+Student Mobile  : 9876960163
+Email Address   : siddharth@example.com
+
+PARENT / GUARDIAN DETAILS:
+----------------------------------------------------------
+Father's Name   : Anil Sharma
+Father's Mobile : 9876543211
+
+RESIDENTIAL ADDRESS:
+----------------------------------------------------------
+Address         : House No. 124, Model Town
+City / State    : Patiala, Punjab
+Declaration     : Accepted & Verified
+==========================================================

@@ -1,0 +1,29 @@
+==========================================================
+GOYAL COACHING CENTER - OFFICIAL ENROLLED STUDENT DOSSIER
+==========================================================
+Roll Number (Login ID) : CGC505
+Student Full Name      : subham
+Portal Login Password  : subham123
+Enrollment Date        : 2026-11-20
+Enrolled Grade         : Class 10
+Academic Stream        : Science & Mathematics
+Assigned Batch         : Class 10 Board Champions
+
+PARENT & CONTACT DETAILS:
+----------------------------------------------------------
+Parent / Guardian Name : subhash
+Parent Phone Number    : 963258
+Alternate Phone        : N/A
+
+FEE ACCOUNT STATUS:
+----------------------------------------------------------
+Total Fee Assigned     : Rs. 38000
+Amount Deposited       : Rs. 38000
+Balance Due            : Rs. 0
+Account Clearance      : Fully Paid
+Receipt Reference      : REC-0868
+
+INSTITUTIONAL NOTES:
+----------------------------------------------------------
+Teacher Remarks        : Newly admitted student. No assessments or attendance marked yet.
+==========================================================

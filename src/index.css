@@ -1,0 +1,597 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    margin: 0;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #030712;
+    color: #f3f4f6;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.02em;
+  }
+}
+
+html.light body {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+html.light .glass-panel {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
+  color: #0f172a;
+}
+
+html.light .glass-panel-glow {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(59, 130, 246, 0.28);
+  box-shadow: 0 10px 30px -8px rgba(59, 130, 246, 0.12);
+  color: #0f172a;
+}
+
+html.light .glass-card-gold {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  box-shadow: 0 10px 30px -8px rgba(245, 158, 11, 0.12);
+  color: #0f172a;
+}
+
+/* 3D Perspective & Transform Classes */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-2000 {
+  perspective: 2000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Custom Floating & Glowing Keyframes */
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pulseSubtle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Continuous Marquee Ticker for Blue Top Ribbon */
+@keyframes marqueeScroll {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee-scroll {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 26s linear infinite;
+}
+
+.animate-marquee-scroll:hover {
+  animation-play-state: paused;
+}
+
+.animate-float-gentle {
+  animation: floatGentle 5s ease-in-out infinite;
+}
+
+.animate-pulse-subtle {
+  animation: pulseSubtle 3s ease-in-out infinite;
+}
+
+/* ========================================================
+   FLY ANIMATION FOR EXPLORE OUR COURSES (3 BOXES ONLY)
+   ======================================================== */
+@keyframes courseFlyIn {
+  0% {
+    opacity: 0;
+    transform: translateY(70px) scale(0.92);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(-8px) scale(1.015);
+  }
+  85% {
+    transform: translateY(3px) scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+  }
+}
+
+@keyframes courseFlyLevitate {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-course-fly {
+  animation: courseFlyIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-course-levitate-1 {
+  animation: courseFlyLevitate 4.5s ease-in-out infinite;
+}
+
+.animate-course-levitate-2 {
+  animation: courseFlyLevitate 5s ease-in-out infinite 0.8s;
+}
+
+.animate-course-levitate-3 {
+  animation: courseFlyLevitate 5.5s ease-in-out infinite 1.6s;
+}
+
+/* ========================================================
+   FLY EFFECT FOR 'GET FREE COUNSELING' BUTTON
+   ======================================================== */
+@keyframes buttonFlyIn {
+  0% {
+    opacity: 0;
+    transform: translateY(65px) scale(0.88);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(-14px) scale(1.05);
+  }
+  85% {
+    transform: translateY(4px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+  }
+}
+
+@keyframes buttonFlyLevitate {
+  0%, 100% {
+    transform: translateY(0px);
+    box-shadow: 0 14px 28px -4px rgba(245, 158, 11, 0.45), 0 0 18px rgba(251, 191, 36, 0.3);
+  }
+  50% {
+    transform: translateY(-12px);
+    box-shadow: 0 26px 42px -6px rgba(245, 158, 11, 0.65), 0 0 32px rgba(251, 191, 36, 0.5);
+  }
+}
+
+@keyframes phoneVibrate {
+  0%, 100% { transform: rotate(0deg); }
+  10%, 30% { transform: rotate(-14deg); }
+  20%, 40% { transform: rotate(14deg); }
+  50% { transform: rotate(0deg); }
+}
+
+.animate-btn-fly-in {
+  animation: buttonFlyIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-btn-levitate {
+  animation: buttonFlyLevitate 3.2s ease-in-out infinite;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease;
+  will-change: transform, box-shadow;
+}
+
+.animate-phone-ring {
+  animation: phoneVibrate 2.5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* ========================================================
+   FLOATING & FLY EFFECT FOR OUR AWESOME DIRECTORS CARDS
+   ======================================================== */
+@keyframes directorFlyIn {
+  0% {
+    opacity: 0;
+    transform: translateY(70px) scale(0.92);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1.02);
+  }
+  85% {
+    transform: translateY(3px) scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+  }
+}
+
+@keyframes directorCardFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-director-fly {
+  animation: directorFlyIn 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-director-float-0 {
+  animation: directorCardFloat 5s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-director-float-1 {
+  animation: directorCardFloat 5.8s ease-in-out infinite 0.9s;
+  will-change: transform;
+}
+
+.animate-director-float-2 {
+  animation: directorCardFloat 6.4s ease-in-out infinite 1.8s;
+  will-change: transform;
+}
+
+/* Zoom In & Zoom Out Entrance Animations */
+@keyframes zoomInEntrance {
+  0% {
+    opacity: 0;
+    transform: scale(0.84);
+    filter: blur(5px);
+  }
+  65% {
+    opacity: 0.95;
+    transform: scale(1.02);
+    filter: blur(0px);
+  }
+  85% {
+    transform: scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes zoomInFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.88) translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0px);
+  }
+}
+
+.animate-zoom-in {
+  animation: zoomInEntrance 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity, filter;
+}
+
+.animate-zoom-in-content {
+  animation: zoomInFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+  will-change: transform, opacity;
+}
+
+.animate-zoom-in-btn {
+  animation: zoomInFadeIn 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
+  will-change: transform, opacity;
+}
+
+.animate-zoom-in-cards {
+  animation: zoomInFadeIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
+  will-change: transform, opacity;
+}
+
+@keyframes zoomOutEntrance {
+  0% {
+    opacity: 0;
+    transform: scale(1.22);
+    filter: blur(6px);
+  }
+  60% {
+    opacity: 0.95;
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes zoomOutFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(1.15) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0px);
+  }
+}
+
+.animate-zoom-out {
+  animation: zoomOutEntrance 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity, filter;
+}
+
+.animate-zoom-out-content {
+  animation: zoomOutFadeIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+  will-change: transform, opacity;
+}
+
+.animate-zoom-out-btn {
+  animation: zoomOutFadeIn 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+  will-change: transform, opacity;
+}
+
+/* Slide In Opposite Choreography for Why Choose This Course */
+@keyframes slideFromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-120px) scale(0.94);
+    filter: blur(5px);
+  }
+  70% {
+    opacity: 0.95;
+    transform: translateX(10px) scale(1.01);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0px) scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes slideFromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(120px) scale(0.94);
+    filter: blur(5px);
+  }
+  70% {
+    opacity: 0.95;
+    transform: translateX(-10px) scale(1.01);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0px) scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes pointCascadeIn {
+  0% {
+    opacity: 0;
+    transform: translateX(35px) scale(0.92);
+  }
+  65% {
+    opacity: 1;
+    transform: translateX(-4px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0px) scale(1);
+  }
+}
+
+.animate-slide-from-left {
+  animation: slideFromLeft 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity, filter;
+}
+
+.animate-slide-from-right {
+  animation: slideFromRight 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity, filter;
+}
+
+.animate-point-cascade {
+  animation: pointCascadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity;
+}
+
+/* Image Rotation & Floating Sway Animations */
+@keyframes imageRotateSway1 {
+  0%, 100% {
+    transform: rotate(0deg) translateY(0px);
+  }
+  25% {
+    transform: rotate(3.5deg) translateY(-10px);
+  }
+  50% {
+    transform: rotate(0deg) translateY(-2px);
+  }
+  75% {
+    transform: rotate(-3.5deg) translateY(8px);
+  }
+}
+
+@keyframes imageRotateSway2 {
+  0%, 100% {
+    transform: rotate(0deg) translateY(0px);
+  }
+  25% {
+    transform: rotate(-3.5deg) translateY(-10px);
+  }
+  50% {
+    transform: rotate(0deg) translateY(-2px);
+  }
+  75% {
+    transform: rotate(3.5deg) translateY(8px);
+  }
+}
+
+@keyframes slideRotateFromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-120px) rotate(-10deg) scale(0.9);
+    filter: blur(6px);
+  }
+  70% {
+    opacity: 0.95;
+    transform: translateX(12px) rotate(2.5deg) scale(1.02);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0px) rotate(0deg) scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes slideRotateFromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(120px) rotate(10deg) scale(0.9);
+    filter: blur(6px);
+  }
+  70% {
+    opacity: 0.95;
+    transform: translateX(-12px) rotate(-2.5deg) scale(1.02);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0px) rotate(0deg) scale(1);
+    filter: blur(0px);
+  }
+}
+
+.animate-image-rotate-1 {
+  animation: imageRotateSway1 6s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-image-rotate-2 {
+  animation: imageRotateSway2 6.5s ease-in-out infinite 0.7s;
+  will-change: transform;
+}
+
+.animate-slide-rotate-left {
+  animation: slideRotateFromLeft 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity, filter;
+}
+
+.animate-slide-rotate-right {
+  animation: slideRotateFromRight 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity, filter;
+}
+
+/* Glassmorphism Styles */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-glow {
+  background: rgba(17, 24, 39, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(59, 130, 246, 0.28);
+  box-shadow: 0 12px 35px -10px rgba(59, 130, 246, 0.18);
+}
+
+.glass-card-gold {
+  background: rgba(26, 22, 14, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(245, 158, 11, 0.28);
+  box-shadow: 0 10px 30px -10px rgba(245, 158, 11, 0.15);
+}
+
+.glass-card-emerald {
+  background: rgba(6, 28, 20, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.15);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #030712;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Print Styles for Student Report Card */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .glass-panel, .glass-panel-glow, .glass-card-gold {
+    background: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+  }
+}

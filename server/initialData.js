@@ -1,0 +1,1059 @@
+export const initialData = {
+  instituteInfo: {
+    name: "Goyal Coaching Centre",
+    tagline: "Build a Better Future",
+    subtitle: "Specialists in Class 8th–10th (Science & Maths) and Class 11th–12th (Commerce)",
+    logo: "/goyal-logo.png",
+    founded: "2010",
+    director: "Goyal Sir (Director & Chief Administrator)",
+    phone: "+91 98769 60163",
+    email: "admin@goyalcoaching.edu.in",
+    address: "SCO 42-45, Educational Complex, Sector 14, Main Road",
+    city: "New Delhi",
+    pinCode: "110001",
+    timings: "Monday - Saturday: 3:00 PM - 8:30 PM | Sunday: 8:30 AM - 1:30 PM (Weekly Test Series)",
+    branches: [
+      { name: "Main Campus (Head Office)", address: "SCO 42-45, Sector 14, Main Road, New Delhi", phone: "+91 98769 60163" },
+      { name: "North Branch (Model Town)", address: "Plot 18, Ring Road, Model Town Part 2, Delhi", phone: "+91 98111 22233" },
+      { name: "East Hub (Preet Vihar)", address: "Metro Pillar 104, Main Vikas Marg, Preet Vihar, Delhi", phone: "+91 98222 33344" }
+    ],
+    stats: {
+      studentsTrained: "6,800+",
+      perfectCentums: "420+ (100/100 in Maths & Science)",
+      boardMeritHolders: "99.2% (CBSE Class 10 & 12)",
+      srccDuSelections: "185+ (Commerce Toppers)",
+      successRate: "98.4%",
+      batchSizeLimit: "30-35 Students Max"
+    }
+  },
+
+  // Impact Stats Counter (15 Courses, 7286 Students, 25 Teachers)
+  impactStats: {
+    courses: 15,
+    students: 7286,
+    teachers: 25
+  },
+
+  // Centers & Learning Branches (Managed dynamically by Admin)
+  centers: [
+    {
+      id: "center-bhikhi",
+      name: "Goyal Coaching Centre - Bhikhi Center",
+      city: "Bhikhi",
+      district: "Mansa",
+      state: "Punjab",
+      pinCode: "151504",
+      address: "Goyal Coaching Centre, Near Bus Stand / Main Market, Bhikhi, Mansa, Punjab 151504",
+      phone: "+91 98769 60163",
+      email: "bhikhi@goyalcoaching.edu.in",
+      timings: "Monday – Saturday: 3:00 PM – 8:30 PM | Sunday: 8:30 AM – 1:30 PM",
+      courses: "Class 8th–10th (Sci & Maths) • Class 11th–12th (Commerce) • GTSE Exam Center",
+      googleMapsUrl: "https://maps.app.goo.gl/g8yZ71a2HLVsZrV67",
+      embedMapUrl: "https://maps.google.com/maps?q=30.068777,75.5325527&hl=en&z=16&output=embed",
+      isMain: true,
+      status: "Active",
+      badge: "Flagship Center"
+    }
+  ],
+
+  // Big Group Photo of Students & Results Celebration (Configured via Admin Panel)
+  resultsPhoto: {
+    imageUrl: "",
+    title: "Our Board Exam Champions & Result Achievers",
+    subtitle: "Class 10th & 12th Board Toppers Celebrating 100/100 Perfect Scores & Top College Selections",
+    year: "CBSE Board Results Celebration 2026",
+    badge: "🏆 Results Felicitation & Hall of Fame",
+    description: "Proud moments at Goyal Coaching Centre: Our students celebrating exceptional results with faculty mentors, qualified CAs, and Goyal Sir.",
+    photos: []
+  },
+
+  // Main Administrator Account (Super Admin)
+  admin: {
+    username: "HARSHIT",
+    password: "Harry@962008",
+    name: "Harshit Goyal (Director & Main Administrator)",
+    email: "contact@goyalcoaching.edu.in",
+    phone: "9876960163",
+    role: "admin",
+    designation: "Founder & Director"
+  },
+
+  // Teachers / Faculty IAM Accounts
+  teachers: [],
+
+  // Students Database with passwords for isolated personal logins
+  students: [],
+  attendanceLogs: [],
+  tests: [
+    {
+      id: "TST-101",
+      title: "Class 10 CBSE Board Pattern Mock Exam #1 - Mathematics (Real Numbers & Trigonometry)",
+      subject: "Mathematics",
+      grade: "Class 10",
+      batch: "Class 10th",
+      date: "2026-11-15",
+      maxMarks: 50,
+      passingMarks: 20,
+      highestMarks: 49,
+      avgMarks: 42.5,
+      type: "Offline Classroom Test",
+      createdBy: "Er. Alok Goyal",
+      createdAt: "2026-11-15T12:00:00.000Z",
+      results: [
+        {
+          studentId: "1",
+          studentName: "harry",
+          rollNo: "1",
+          grade: "Class 10",
+          marksObtained: 47,
+          maxMarks: 50,
+          percentage: 94,
+          rank: 1,
+          feedback: "Outstanding derivation of trigonometric identities and step-by-step proofs. Handwriting is neat and clear.",
+          remarks: "Outstanding derivation of trigonometric identities and step-by-step proofs. Handwriting is neat and clear.",
+          documentType: "image",
+          documentName: "harry_checked_maths_test_page1.jpg",
+          documentUrl: "https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?auto=format&fit=crop&w=1200&q=80",
+          documents: [
+            {
+              name: "Checked Answer Sheet - Section A & B",
+              url: "https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?auto=format&fit=crop&w=1200&q=80",
+              type: "image"
+            },
+            {
+              name: "Checked Answer Sheet - Proofs & Trigonometry",
+              url: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80",
+              type: "image"
+            }
+          ],
+          evaluatedAt: "2026-11-15T18:00:00.000Z",
+          evaluatedBy: "Er. Alok Goyal"
+        },
+        {
+          studentId: "CGC505",
+          studentName: "subham",
+          rollNo: "CGC505",
+          grade: "Class 10",
+          marksObtained: 44,
+          maxMarks: 50,
+          percentage: 88,
+          rank: 2,
+          feedback: "Great analytical work in polynomial factorization. Practice word problems on heights & distances.",
+          remarks: "Great analytical work in polynomial factorization. Practice word problems on heights & distances.",
+          documentType: "image",
+          documentName: "subham_checked_maths_sheet.jpg",
+          documentUrl: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80",
+          documents: [
+            {
+              name: "Checked Mathematics Answer Booklet",
+              url: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80",
+              type: "image"
+            }
+          ],
+          evaluatedAt: "2026-11-15T18:30:00.000Z",
+          evaluatedBy: "Er. Alok Goyal"
+        }
+      ]
+    },
+    {
+      id: "TST-102",
+      title: "Class 10 Science Sunday Classroom Unit Test - Light: Reflection & Refraction",
+      subject: "Science",
+      grade: "Class 10",
+      batch: "Class 10th",
+      date: "2026-11-08",
+      maxMarks: 40,
+      passingMarks: 16,
+      highestMarks: 38,
+      avgMarks: 33.0,
+      type: "Offline Classroom Test",
+      createdBy: "Er. Alok Goyal",
+      createdAt: "2026-11-08T12:00:00.000Z",
+      results: [
+        {
+          studentId: "1",
+          studentName: "harry",
+          rollNo: "1",
+          grade: "Class 10",
+          marksObtained: 36,
+          maxMarks: 40,
+          percentage: 90,
+          rank: 2,
+          feedback: "Accurate mirror formula solutions. Put directional arrows on ray diagrams to secure full marks in board exam.",
+          remarks: "Accurate mirror formula solutions. Put directional arrows on ray diagrams to secure full marks in board exam.",
+          documentType: "image",
+          documentName: "harry_science_checked_booklet.jpg",
+          documentUrl: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80",
+          documents: [
+            {
+              name: "Checked Physics Ray Optics Answer Sheet",
+              url: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80",
+              type: "image"
+            }
+          ],
+          evaluatedAt: "2026-11-08T17:00:00.000Z",
+          evaluatedBy: "Er. Alok Goyal"
+        }
+      ]
+    },
+    {
+      id: "TST-701",
+      title: "Class 7 Mathematics Sunday Center Test - Fractions, Decimals & Integers",
+      subject: "Mathematics",
+      grade: "Class 7",
+      batch: "Class 7th",
+      date: "2026-11-16",
+      maxMarks: 50,
+      passingMarks: 20,
+      highestMarks: 48,
+      avgMarks: 41.6,
+      type: "Offline Classroom Test",
+      createdBy: "Er. Alok Goyal",
+      createdAt: "2026-11-16T12:00:00.000Z",
+      results: [
+        {
+          studentId: "STU-701",
+          studentName: "Aarav Sharma",
+          rollNo: "701",
+          grade: "Class 7",
+          marksObtained: 48,
+          maxMarks: 50,
+          percentage: 96,
+          rank: 1,
+          feedback: "Brilliant score Aarav! All integer signs and BODMAS calculations are flawless.",
+          remarks: "Brilliant score Aarav! All integer signs and BODMAS calculations are flawless.",
+          documentType: "image",
+          documentName: "aarav_class7_maths_sheet.jpg",
+          documentUrl: "https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?auto=format&fit=crop&w=1200&q=80",
+          documents: [
+            {
+              name: "Checked Classroom Test Sheet",
+              url: "https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?auto=format&fit=crop&w=1200&q=80",
+              type: "image"
+            }
+          ],
+          evaluatedAt: "2026-11-16T17:00:00.000Z",
+          evaluatedBy: "Er. Alok Goyal"
+        },
+        {
+          studentId: "STU-702",
+          studentName: "Ananya Gupta",
+          rollNo: "702",
+          grade: "Class 7",
+          marksObtained: 45,
+          maxMarks: 50,
+          percentage: 90,
+          rank: 2,
+          feedback: "Great performance! Recheck decimal division steps.",
+          remarks: "Great performance! Recheck decimal division steps.",
+          documentType: "image",
+          documentName: "ananya_class7_maths_sheet.jpg",
+          documentUrl: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80",
+          evaluatedAt: "2026-11-16T17:15:00.000Z",
+          evaluatedBy: "Er. Alok Goyal"
+        },
+        {
+          studentId: "STU-703",
+          studentName: "Raghav Verma",
+          rollNo: "703",
+          grade: "Class 7",
+          marksObtained: 40,
+          maxMarks: 50,
+          percentage: 80,
+          rank: 3,
+          feedback: "Good work. Practice integer word problems.",
+          remarks: "Good work. Practice integer word problems.",
+          evaluatedAt: "2026-11-16T17:30:00.000Z",
+          evaluatedBy: "Er. Alok Goyal"
+        },
+        {
+          studentId: "STU-704",
+          studentName: "Mehak Goyal",
+          rollNo: "704",
+          grade: "Class 7",
+          marksObtained: 38,
+          maxMarks: 50,
+          percentage: 76,
+          rank: 4,
+          feedback: "Keep practicing fractions addition with LCM.",
+          remarks: "Keep practicing fractions addition with LCM.",
+          evaluatedAt: "2026-11-16T17:45:00.000Z",
+          evaluatedBy: "Er. Alok Goyal"
+        },
+        {
+          studentId: "STU-705",
+          studentName: "Sneha Patel",
+          rollNo: "705",
+          grade: "Class 7",
+          marksObtained: 37,
+          maxMarks: 50,
+          percentage: 74,
+          rank: 5,
+          feedback: "Regular revision of rules will improve accuracy.",
+          remarks: "Regular revision of rules will improve accuracy.",
+          evaluatedAt: "2026-11-16T18:00:00.000Z",
+          evaluatedBy: "Er. Alok Goyal"
+        }
+      ]
+    }
+  ],
+  notices: [
+    {
+      id: "NTC-01",
+      title: "Mandatory Parent-Teacher Meeting (PTM) for Class 10 & 12 Board Batches",
+      date: "2026-11-16",
+      category: "Compulsory Notice",
+      priority: "Urgent",
+      badge: "Mandatory PTM",
+      content: "All parents of Class 10 (Science & Maths) and Class 12 (Commerce) are cordially requested to attend the PTM this Sunday from 9:30 AM to 1:00 PM. Pre-Board mock test answer sheets, handwriting improvement notes, and time-management strategies for the upcoming CBSE Board Examinations will be discussed."
+    },
+    {
+      id: "NTC-02",
+      title: "Special Sunday Board Answer-Sheet Presentation Workshop",
+      date: "2026-11-12",
+      category: "Academic",
+      priority: "High",
+      badge: "Board Strategy",
+      content: "Special masterclass on CBSE official marking schemes: How to avoid step-mark deductions in Class 10 Mathematics & Class 12 Accountancy balance sheets. Model topper answer booklets will be distributed to every student."
+    },
+    {
+      id: "NTC-03",
+      title: "Winter Pre-Board 3-Hour Simulated Test Series Schedule Released",
+      date: "2026-11-08",
+      category: "Examination",
+      priority: "Compulsory",
+      badge: "Exam Schedule",
+      content: "The date sheet for 3-hour Full Syllabus CBSE Simulated Board Tests (December 2026) is now published. 100% attendance is strictly compulsory for all registered students of Class 10 & Class 12."
+    },
+    {
+      id: "NTC-04",
+      title: "Goyal Talent Search Examination (GTSE Scholarship Exam) - Science, Maths & Commerce",
+      date: "2026-11-01",
+      category: "Scholarship",
+      priority: "Normal",
+      badge: "Scholarship Test",
+      content: "Registration open for GTSE Scholarship Exam for students currently in Class 7, 8, 9, 10, and 11. Up to 100% tuition fee waivers available for top scorers in Science & Mathematics (8th-10th) and Commerce (11th-12th)."
+    }
+  ],
+  courses: [
+    {
+      id: "course-class10",
+      title: "Class 10th Board Champions (Science & Maths)",
+      target: "Class 10 CBSE / ICSE Students",
+      duration: "Full Academic Session (Target: 95%+ in Boards)",
+      description: "Dedicated to achieving 100/100 in Class 10 Mathematics and Science. Rigorous NCERT line-by-line coverage, exemplar problem solving, daily home DPPs, and 20+ full-length 3-hour pre-board simulations.",
+      features: [
+        "100/100 Target in Mathematics & Science",
+        "Step-by-step CBSE subjective answer writing drills",
+        "Line-by-line NCERT + Exemplar + Previous 10 Yrs Papers",
+        "Weekly Sunday Unit Tests & real-time Parent Portal reporting"
+      ],
+      fee: "₹38,000 / year",
+      color: "from-blue-500 to-indigo-600",
+      tag: "Board Toppers Batch"
+    },
+    {
+      id: "course-class12commerce",
+      title: "Class 12th Commerce Super League (Full Package)",
+      target: "Class 12 Commerce Students",
+      duration: "Full Academic Year + CUET Preparation",
+      description: "The gold standard for Commerce students aiming for 98%+ in CBSE Board exams and top North Campus Delhi University colleges (SRCC, Hindu, Hansraj). Taught by Chartered Accountants and Senior Economists.",
+      features: [
+        "Complete Accountancy, Economics, Business Studies & Applied Maths",
+        "Taught by Qualified CAs & Senior Economics Faculty",
+        "Special adjustments in Partnership, Company Accounts & Cash Flow",
+        "CUET Domain + General Test preparation included"
+      ],
+      fee: "₹48,000 / year",
+      color: "from-amber-500 to-yellow-600",
+      tag: "SRCC & Board Focus"
+    },
+    {
+      id: "course-class9",
+      title: "Class 9th Foundation Stars (Science & Maths)",
+      target: "Class 9 CBSE Students",
+      duration: "Full Academic Year",
+      description: "Build unshakeable concepts in Mathematics (Polynomials, Geometry, Number Systems) and Science (Physics Motion/Forces, Chemistry Matter, Biology Cells) to guarantee school rank 1 and smooth transition to Class 10 boards.",
+      features: [
+        "Concept-first teaching with visual laboratory models",
+        "Eliminates fear of Physics numericals and Math geometry",
+        "Weekly chapter-wise objective + subjective tests",
+        "Biometric daily attendance & instant parent WhatsApp updates"
+      ],
+      fee: "₹35,000 / year",
+      color: "from-emerald-500 to-teal-600",
+      tag: "Concept Mastery"
+    },
+    {
+      id: "course-class11commerce",
+      title: "Class 11th Commerce Pioneers",
+      target: "Class 11 Commerce Students",
+      duration: "Full Academic Year",
+      description: "Master the foundational pillars of Commerce: Double Entry Bookkeeping, Journal Entries, Financial Statements, Microeconomics, and Business Principles. Prevents the common Class 11 percentage dip.",
+      features: [
+        "Comprehensive Accountancy (Journal to Balance Sheet)",
+        "Microeconomics consumer & producer equilibrium mastery",
+        "Applied Mathematics / Core Mathematics support",
+        "Base building for CA Foundation & Class 12 Boards"
+      ],
+      fee: "₹44,000 / year",
+      color: "from-purple-500 to-pink-600",
+      tag: "Foundation for Class 12"
+    },
+    {
+      id: "course-class8",
+      title: "Class 8th Junior Prodigy (Science & Maths)",
+      target: "Class 8 CBSE / ICSE Students",
+      duration: "Full Academic Year",
+      description: "Instill deep love for Mathematics and Science from middle school. Develops fast calculation skills, logical problem solving, and prepares students for future Olympiads and high school excellence.",
+      features: [
+        "Interactive Mental Math & Formula Drills",
+        "Science practical concepts made fun and visual",
+        "Small batches of maximum 25 students",
+        "Regular feedback sessions with parents"
+      ],
+      fee: "₹30,000 / year",
+      color: "from-cyan-500 to-blue-600",
+      tag: "Middle School Prodigy"
+    }
+  ],
+  toppers: [
+    {
+      name: "Meera Kapoor",
+      exam: "CBSE Class 12th Commerce Board 2026",
+      rank: "99.4% Aggregate (100 in Accounts & Eco)",
+      college: "Admitted to SRCC (Shri Ram College of Commerce), Delhi University",
+      photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+      quote: "Goyal Coaching Center's CA faculty simplified complex company accounts and partnership adjustments so thoroughly that the CBSE board exam felt just like our Sunday coaching mock tests!"
+    },
+    {
+      name: "Rohan Singhal",
+      exam: "CBSE Class 10th Board Exam 2026",
+      rank: "99.2% Overall (100/100 in Maths & 99 in Science)",
+      college: "School Topper • Delhi State Merit List",
+      photo: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80",
+      quote: "Goyal Sir's unique step-by-step method for math proofs and daily doubt counters turned my average scores into a perfect 100 in Class 10 boards."
+    },
+    {
+      name: "Akshat Goyal",
+      exam: "CBSE Class 12th Commerce 2026 & CUET",
+      rank: "98.8% Aggregate • CUET 100 Percentile",
+      college: "Admitted to Hindu College, Delhi University (B.Com Hons)",
+      photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
+      quote: "The Sunday test series, real-time parent portal updates, and continuous feedback from teachers kept me disciplined and on track throughout Class 12."
+    }
+  ],
+  shiningStars: [
+    {
+      id: "star-1",
+      name: "PRACHI",
+      score: "670/720",
+      exam: "NEET 2024",
+      secondaryScore: "",
+      secondaryExam: "",
+      college: "GMC PATIALA",
+      photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80",
+      year: "2024"
+    },
+    {
+      id: "star-2",
+      name: "BHARTI GARG",
+      score: "AIR 958",
+      exam: "JEE ADVANCED 2024",
+      secondaryScore: "99.98%ile",
+      secondaryExam: "JEE MAIN 2024",
+      college: "IIT DELHI",
+      photo: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80",
+      year: "2024"
+    },
+    {
+      id: "star-3",
+      name: "MEHUL SINGH",
+      score: "99.03%ile",
+      exam: "JEE MAIN 2026",
+      secondaryScore: "",
+      secondaryExam: "",
+      college: "IIT ROORKEE",
+      photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
+      year: "2026"
+    },
+    {
+      id: "star-4",
+      name: "KASHISH",
+      score: "99.04%ile",
+      exam: "JEE MAIN 2026",
+      secondaryScore: "",
+      secondaryExam: "",
+      college: "PEC CHANDIGARH",
+      photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+      year: "2026"
+    },
+    {
+      id: "star-5",
+      name: "AKSHUN SINGLA",
+      score: "AIR 9642",
+      exam: "JEE ADVANCED 2026",
+      secondaryScore: "99.06%ile",
+      secondaryExam: "JEE MAIN 2026",
+      college: "IIT ROORKEE",
+      photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
+      year: "2026"
+    },
+    {
+      id: "star-6",
+      name: "MEERA KAPOOR",
+      score: "100/100",
+      exam: "ACCOUNTS & ECO",
+      secondaryScore: "99.4%",
+      secondaryExam: "CBSE 12TH COMMERCE",
+      college: "SRCC DELHI",
+      photo: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80",
+      year: "2026"
+    },
+    {
+      id: "star-7",
+      name: "ROHAN SINGHAL",
+      score: "100/100",
+      exam: "CBSE 10TH MATHS",
+      secondaryScore: "99.2%",
+      secondaryExam: "DELHI STATE TOPPER",
+      college: "DELHI MERIT HOLDER",
+      photo: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80",
+      year: "2026"
+    }
+  ],
+  features: [
+    {
+      id: "feat-1",
+      title: "Extra Support to Weaker Students",
+      subtitle: "Special Doubt Counters & Foundation Hand-holding",
+      iconKey: "users",
+      iconUrl: "/features/feat-1.png",
+      badge: "Student Care"
+    },
+    {
+      id: "feat-2",
+      title: "CCTV Campus",
+      subtitle: "24/7 High-Definition Surveillance & Student Safety",
+      iconKey: "cctv",
+      iconUrl: "/features/feat-2.png",
+      badge: "Campus Safety"
+    },
+    {
+      id: "feat-3",
+      title: "Pre-Planned Coursework & Planner",
+      subtitle: "Daily NCERT Syllabus Roadmap & Timely Completion",
+      iconKey: "calendar",
+      iconUrl: "/features/feat-3.png",
+      badge: "Planned Study"
+    },
+    {
+      id: "feat-4",
+      title: "Biometric Attendance",
+      subtitle: "Automated Daily SMS & Parent Dashboard Alerts",
+      iconKey: "fingerprint",
+      iconUrl: "/features/feat-4.png",
+      badge: "Parent Tracking"
+    },
+    {
+      id: "feat-5",
+      title: "Revision Classes & Self Study Zone",
+      subtitle: "Distraction-Free AC Library & Faculty Supervision",
+      iconKey: "library",
+      iconUrl: "/features/feat-5.png",
+      badge: "Study Zone"
+    },
+    {
+      id: "feat-6",
+      title: "Online Testing Lab",
+      subtitle: "Computer-Based Test Engine for JEE / NEET / CUET",
+      iconKey: "laptop",
+      iconUrl: "/features/feat-6.png",
+      badge: "Digital Testing"
+    },
+    {
+      id: "feat-7",
+      title: "Motivational & Counselling Sessions",
+      subtitle: "Stress Management, Exam Mindset & Career Guidance",
+      iconKey: "sparkles",
+      iconUrl: "/features/feat-7.png",
+      badge: "Mental Wellness"
+    },
+    {
+      id: "feat-8",
+      title: "Performance Analysis & Report",
+      subtitle: "In-Depth Topic Analytics & Real-Time Weak Area Maps",
+      iconKey: "chart",
+      iconUrl: "/features/feat-8.png",
+      badge: "Detailed Reports"
+    },
+    {
+      id: "feat-9",
+      title: "Lecture Recording Lab",
+      subtitle: "High-Quality Video Backups for Revision & Missed Classes",
+      iconKey: "video",
+      iconUrl: "/features/feat-9.png",
+      badge: "HD Backups"
+    },
+    {
+      id: "feat-10",
+      title: "Objective + Subjective",
+      subtitle: "Dual Pattern Tests with CBSE Step-Marking Review",
+      iconKey: "filecheck",
+      iconUrl: "/features/feat-10.png",
+      badge: "Dual Pattern"
+    },
+    {
+      id: "feat-11",
+      title: "Smart AC Classrooms",
+      subtitle: "Ergonomic Seating, Digital Projection & Soundproof Comfort",
+      iconKey: "airvent",
+      iconUrl: "/features/feat-11.png",
+      badge: "Modern Campus"
+    }
+  ],
+  exploreCourses: [
+    {
+      id: "course-foundation",
+      title: "Foundation (Class 7-10)",
+      description: "Build a strong academic base with our structured curriculum for students in classes 7 to 10.",
+      iconKey: "book",
+      points: [
+        "Mathematics",
+        "Science"
+      ],
+      classes: [
+        "Class 7",
+        "Class 8",
+        "Class 9",
+        "Class 10"
+      ]
+    },
+    {
+      id: "course-commerce",
+      title: "Commerce (Class 11-12)",
+      description: "Comprehensive board exam preparation covering all core Commerce subjects for Class 11 and 12.",
+      iconKey: "briefcase",
+      points: [
+        "Accountancy",
+        "Economics",
+        "Business Studies",
+        "Mathematics / Applied Maths"
+      ],
+      classes: [
+        "Class 11",
+        "Class 12"
+      ]
+    },
+    {
+      id: "course-accounts-eco",
+      title: "Accounts & Economics Special",
+      description: "Focused conceptual clarity, numerical practice, and board exam mastery in core subjects:",
+      iconKey: "calculator",
+      points: [
+        "Financial & Corporate Accounts",
+        "Micro & Macro Economics",
+        "Indian Economic Development"
+      ],
+      classes: [
+        "Class 11",
+        "Class 12"
+      ]
+    }
+  ],
+
+  // Student Academic Doubts Counter & Ticket Desk
+  doubts: [
+    {
+      id: "DBT-501",
+      studentName: "Aarav Gupta",
+      rollNo: "GCC-102",
+      grade: "Class 10",
+      subject: "Mathematics",
+      topic: "Quadratic Equations - Nature of Roots & Word Problems",
+      question: "In exercise 4.4 word problem 3, how to correctly frame the speed equation for the express train vs passenger train?",
+      status: "Resolved",
+      priority: "High",
+      assignedTeacher: "Goyal Sir",
+      date: "2026-11-19",
+      reply: "Assume speed of passenger train = x km/h. Speed of express train = (x + 11) km/h. Distance = 132 km. Equation: 132/x - 132/(x+11) = 1. Fully solved on doubt board."
+    },
+    {
+      id: "DBT-502",
+      studentName: "Priya Goyal",
+      rollNo: "GCC-101",
+      grade: "Class 12",
+      subject: "Accountancy",
+      topic: "Forfeiture & Re-issue of Shares (Sec 52 Premium Rules)",
+      question: "When shares issued at a premium are forfeited, is Securities Premium Account debited if premium was already received?",
+      status: "Resolved",
+      priority: "Normal",
+      assignedTeacher: "CA Deepak Goyal",
+      date: "2026-11-19",
+      reply: "No. Under Section 52(2) of the Companies Act, once Securities Premium is received, it cannot be debited/reversed on subsequent forfeiture."
+    },
+    {
+      id: "DBT-503",
+      studentName: "Ananya Sharma",
+      rollNo: "GCC-103",
+      grade: "Class 10",
+      subject: "Science (Physics)",
+      topic: "Light - Refraction through Triangular Glass Prism",
+      question: "Need clarification on angle of deviation (D = i + e - A) formula and the ray tracing conditions for minimum deviation.",
+      status: "Pending",
+      priority: "Urgent",
+      assignedTeacher: "Dr. Anita Jain",
+      date: "2026-11-20",
+      reply: ""
+    },
+    {
+      id: "DBT-504",
+      studentName: "Rohan Varma",
+      rollNo: "GCC-104",
+      grade: "Class 11",
+      subject: "Economics",
+      topic: "Consumer's Equilibrium - Indifference Curve Analysis",
+      question: "Why is the Marginal Rate of Substitution (MRSxy = Px/Py) strictly diminishing along a convex indifference curve?",
+      status: "Pending",
+      priority: "Normal",
+      assignedTeacher: "CA Deepak Goyal",
+      date: "2026-11-20",
+      reply: ""
+    },
+    {
+      id: "DBT-505",
+      studentName: "Aman Kumar",
+      rollNo: "GCC-105",
+      grade: "Class 9",
+      subject: "Science (Chemistry)",
+      topic: "Atoms and Molecules - Mole Concept & Avogadro Constant",
+      question: "How to calculate the number of aluminium ions present in 0.051 g of aluminium oxide (Al2O3)?",
+      status: "In Progress",
+      priority: "High",
+      assignedTeacher: "Dr. Anita Jain",
+      date: "2026-11-20",
+      reply: "Assigned to today's 5:30 PM Doubt Counter desk."
+    },
+    {
+      id: "DBT-506",
+      studentName: "Simran Kaur",
+      rollNo: "GCC-106",
+      grade: "Class 12",
+      subject: "Business Studies",
+      topic: "Principles of Management - Taylor vs Fayol Techniques",
+      question: "What is the key difference between Functional Foremanship (Taylor) and Unity of Command (Fayol)?",
+      status: "Resolved",
+      priority: "Normal",
+      assignedTeacher: "Goyal Sir",
+      date: "2026-11-18",
+      reply: "Functional foremanship violates Unity of Command because each worker gets orders from 8 specialists. Remember Fayol advocates 1 boss."
+    }
+  ],
+  assignments: [
+    {
+      id: "ASG-101",
+      title: "Class 10 Mathematics: Quadratic Equations & AP Sheet",
+      subject: "Mathematics",
+      grade: "Class 10",
+      batch: "Class 10 Board Champions",
+      dueDate: "2026-11-25",
+      totalMarks: 25,
+      description: "Solve all 5 questions on clean ruled sheets. Show step-by-step discriminant calculations and roots. Click clear photos and upload your answer sheet before Friday 5:00 PM.",
+      photos: [
+        "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=800&q=80"
+      ],
+      createdAt: "2026-11-18T10:00:00.000Z",
+      createdBy: "Er. Alok Goyal",
+      submissions: [
+        {
+          id: "SUB-101-1",
+          assignmentId: "ASG-101",
+          studentId: "1",
+          studentName: "harry",
+          rollNo: "1",
+          grade: "Class 10",
+          submittedAt: "2026-11-19T14:20:00.000Z",
+          answerPhotos: [
+            "https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=800&q=80"
+          ],
+          notes: "Attached 2 pages of solved quadratic equation problems with verification.",
+          status: "Reviewed",
+          marksObtained: 24,
+          teacherRemarks: "Outstanding presentation! Neat diagrams and clear step marking."
+        }
+      ]
+    },
+    {
+      id: "ASG-102",
+      title: "Class 10 Science: Light Reflection & Spherical Mirrors DPP-04",
+      subject: "Science",
+      grade: "Class 10",
+      batch: "Class 10 Board Champions",
+      dueDate: "2026-11-28",
+      totalMarks: 20,
+      description: "Draw ray diagrams for concave and convex mirrors for all 6 object positions using sharp pencil and scale. Calculate focal lengths with standard mirror formula.",
+      photos: [
+        "https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80"
+      ],
+      createdAt: "2026-11-19T11:00:00.000Z",
+      createdBy: "Er. Alok Goyal",
+      submissions: []
+    },
+    {
+      id: "ASG-103",
+      title: "Class 7 Science: Heat and Temperature Daily Practice Sheet",
+      subject: "Science",
+      grade: "Class 7",
+      batch: "Class 7 Foundation Batch",
+      dueDate: "2026-11-26",
+      totalMarks: 15,
+      description: "Answer questions 1 through 8 from Chapter 4 Heat. Differentiate between clinical and laboratory thermometers with sketches.",
+      photos: [
+        "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80"
+      ],
+      createdAt: "2026-11-20T09:30:00.000Z",
+      createdBy: "Er. Alok Goyal",
+      submissions: []
+    }
+  ],
+  lectures: [
+    {
+      id: "LEC-101",
+      title: "Class 10 Physics: Light Reflection & Spherical Mirrors Full Masterclass",
+      subject: "Science (Physics)",
+      grade: "Class 10",
+      batch: "Class 10 Board Champions",
+      chapter: "Chapter 10: Light - Reflection and Refraction",
+      duration: "1 hr 45 min",
+      faculty: "Er. Alok Goyal",
+      description: "Complete conceptual derivation of mirror formula, Cartesian sign conventions, ray diagrams for all 6 object positions, and solved CBSE board questions.",
+      videoType: "file",
+      videoFileName: "sample_light_reflection.mp4",
+      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      fileSize: "1.2 GB",
+      thumbnailUrl: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80",
+      uploadedBy: "Er. Alok Goyal",
+      createdAt: "2026-11-20T10:00:00.000Z",
+      views: 38
+    }
+  ],
+  onlineTests: [
+    {
+      id: "MCQ-101",
+      title: "Class 10 Science Olympiad (NSO Level 1) Full Mock Test",
+      subject: "Science",
+      grade: "Class 10",
+      batch: "Class 10 Board Champions",
+      durationMinutes: 20,
+      status: "active",
+      startTime: "2026-11-20T00:00:00.000Z",
+      endTime: "2026-11-25T23:59:59.000Z",
+      positiveMarks: 4,
+      negativeMarks: 1,
+      totalMarks: 16,
+      instructions: "Each correct answer carries +4 marks. Incorrect answers carry -1 mark deduction. Live countdown timer will auto-submit answers upon expiration.",
+      createdBy: "Er. Alok Goyal",
+      createdAt: "2026-11-20T08:00:00.000Z",
+      questions: [
+        {
+          id: "Q1",
+          text: "An object is placed 12 cm in front of a concave mirror of focal length 8 cm. What is the position and magnification of the image formed?",
+          image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=600&q=80",
+          options: [
+            { id: "A", text: "v = -16 cm, m = +1.5" },
+            { id: "B", text: "v = -24 cm, m = -2" },
+            { id: "C", text: "v = +24 cm, m = +2" },
+            { id: "D", text: "v = -12 cm, m = -1" }
+          ],
+          correctOption: "B",
+          explanation: "Using mirror formula 1/f = 1/v + 1/u: 1/(-8) = 1/v + 1/(-12) => 1/v = -1/8 + 1/12 = -1/24. Thus v = -24 cm. Magnification m = -v/u = -(-24)/(-12) = -2 (Real and inverted)."
+        },
+        {
+          id: "Q2",
+          text: "Which of the following processes represents an exothermic displacement reaction?",
+          image: "",
+          options: [
+            { id: "A", text: "Electrolysis of acidified water" },
+            { id: "B", text: "Reaction of quicklime with water: CaO + H2O → Ca(OH)2" },
+            { id: "C", text: "Thermite process: Fe2O3 + 2Al → Al2O3 + 2Fe + Heat" },
+            { id: "D", text: "Heating of ferrous sulphate crystals" }
+          ],
+          correctOption: "C",
+          explanation: "In the Thermite reaction, Aluminium displaces Iron from Fe2O3. It is both a displacement reaction and highly exothermic (molten iron is formed)."
+        },
+        {
+          id: "Q3",
+          text: "Three resistors of 2 Ω, 3 Ω, and 6 Ω are connected in parallel across a 12V battery. What is the total current drawn from the battery?",
+          image: "",
+          options: [
+            { id: "A", text: "12 A" },
+            { id: "B", text: "1 A" },
+            { id: "C", text: "6 A" },
+            { id: "D", text: "2.4 A" }
+          ],
+          correctOption: "A",
+          explanation: "Equivalent resistance 1/Rp = 1/2 + 1/3 + 1/6 = 6/6 = 1 Ω. Total current I = V / Rp = 12V / 1Ω = 12 A."
+        },
+        {
+          id: "Q4",
+          text: "In human males, the testes lie outside the abdominal cavity in scrotum because it helps in:",
+          image: "",
+          options: [
+            { id: "A", text: "Easy release of sperms" },
+            { id: "B", text: "Maintaining temperature 2 to 2.5°C lower than normal body temperature" },
+            { id: "C", text: "Escaping urinary bladder pressure" },
+            { id: "D", text: "Storing more testosterone hormone" }
+          ],
+          correctOption: "B",
+          explanation: "Spermatogenesis requires a temperature of 2-2.5°C lower than the core body temperature of 37°C, which is provided by the scrotum outside the abdominal cavity."
+        }
+      ],
+      attempts: []
+    },
+    {
+      id: "MCQ-102",
+      title: "Class 10 Mathematics Olympiad (IMO) Stage 2 Mock Test",
+      subject: "Mathematics",
+      grade: "Class 10",
+      batch: "Class 10 Board Champions",
+      durationMinutes: 45,
+      status: "upcoming",
+      startTime: "2026-11-22T10:00:00.000Z",
+      endTime: "2026-11-23T20:00:00.000Z",
+      positiveMarks: 4,
+      negativeMarks: 1,
+      totalMarks: 20,
+      instructions: "Scheduled live Olympiad test. Questions will automatically unlock on Sunday 10:00 AM.",
+      createdBy: "Er. Alok Goyal",
+      createdAt: "2026-11-20T09:00:00.000Z",
+      questions: [
+        {
+          id: "Q1",
+          text: "If the roots of the quadratic equation px^2 + qx + r = 0 are in the ratio 2:3, then which of the following relations holds true?",
+          image: "",
+          options: [
+            { id: "A", text: "6q^2 = 25pr" },
+            { id: "B", text: "25q^2 = 6pr" },
+            { id: "C", text: "5q^2 = 6pr" },
+            { id: "D", text: "pr = 6q^2" }
+          ],
+          correctOption: "A",
+          explanation: "Let roots be 2k and 3k. Sum = 5k = -q/p => k = -q/(5p). Product = 6k^2 = r/p => 6(-q/(5p))^2 = r/p => 6q^2 / (25p^2) = r/p => 6q^2 = 25pr."
+        }
+      ],
+      attempts: []
+    },
+    {
+      id: "MCQ-103",
+      title: "Class 10 Foundation Physics Diagnostic Test (Electricity & Magnetism)",
+      subject: "Physics",
+      grade: "Class 10",
+      batch: "Class 10 Board Champions",
+      durationMinutes: 15,
+      status: "closed",
+      startTime: "2026-11-15T10:00:00.000Z",
+      endTime: "2026-11-18T20:00:00.000Z",
+      positiveMarks: 4,
+      negativeMarks: 0,
+      totalMarks: 8,
+      instructions: "The live window has concluded. Available in Practice Mode for self-learning and Olympiad preparation.",
+      createdBy: "Er. Alok Goyal",
+      createdAt: "2026-11-15T08:00:00.000Z",
+      questions: [
+        {
+          id: "Q1",
+          text: "A commercial unit of electrical energy is 1 Kilowatt-hour (kWh). Express 1 kWh in Joules:",
+          image: "",
+          options: [
+            { id: "A", text: "3.6 × 10^5 Joules" },
+            { id: "B", text: "3.6 × 10^6 Joules" },
+            { id: "C", text: "3600 Joules" },
+            { id: "D", text: "1.6 × 10^-19 Joules" }
+          ],
+          correctOption: "B",
+          explanation: "1 kWh = 1000 W × 3600 s = 3.6 × 10^6 Joules."
+        },
+        {
+          id: "Q2",
+          text: "According to Fleming's Left-Hand Rule, the forefinger represents the direction of:",
+          image: "",
+          options: [
+            { id: "A", text: "Motion / Force on conductor" },
+            { id: "B", text: "Induced electric current" },
+            { id: "C", text: "Magnetic Field (North to South)" },
+            { id: "D", text: "Electric potential difference" }
+          ],
+          correctOption: "C",
+          explanation: "In Fleming's Left-Hand Rule: Thumb = Motion/Force, Forefinger = Magnetic Field, Center finger = Current (F-B-I)."
+        }
+      ],
+      attempts: []
+    },
+    {
+      id: "MCQ-104",
+      title: "Class 10 Chemistry Olympiad: Chemical Reactions & Equations Rapid Fire",
+      subject: "Chemistry",
+      grade: "Class 10",
+      batch: "Class 10 Board Champions",
+      durationMinutes: 15,
+      status: "active",
+      startTime: "2026-11-19T08:00:00.000Z",
+      endTime: "2026-11-25T23:59:59.000Z",
+      positiveMarks: 4,
+      negativeMarks: 1,
+      totalMarks: 8,
+      instructions: "Completed Olympiad mock quiz.",
+      createdBy: "Er. Alok Goyal",
+      createdAt: "2026-11-19T08:00:00.000Z",
+      questions: [
+        {
+          id: "Q1",
+          text: "Which of the following gases is flushed into bags of potato chips to prevent rancidity?",
+          image: "",
+          options: [
+            { id: "A", text: "Oxygen" },
+            { id: "B", text: "Nitrogen" },
+            { id: "C", text: "Carbon Dioxide" },
+            { id: "D", text: "Hydrogen" }
+          ],
+          correctOption: "B",
+          explanation: "Nitrogen is an inert gas that creates an unreactive atmosphere, preventing oxidation of oils and fats (rancidity)."
+        },
+        {
+          id: "Q2",
+          text: "When lead nitrate powder is heated in a dry boiling tube, brown fumes of which gas are evolved?",
+          image: "",
+          options: [
+            { id: "A", text: "Nitric Oxide (NO)" },
+            { id: "B", text: "Nitrogen Dioxide (NO2)" },
+            { id: "C", text: "Nitrous Oxide (N2O)" },
+            { id: "D", text: "Nitrogen Pentoxide (N2O5)" }
+          ],
+          correctOption: "B",
+          explanation: "2Pb(NO3)2(s) → 2PbO(s) + 4NO2(g) (brown fumes) + O2(g)."
+        }
+      ],
+      attempts: [
+        {
+          id: "ATT-104-1",
+          testId: "MCQ-104",
+          studentId: "1",
+          studentName: "harry",
+          rollNo: "1",
+          grade: "Class 10",
+          score: 8,
+          maxScore: 8,
+          correctCount: 2,
+          incorrectCount: 0,
+          unattemptedCount: 0,
+          totalQuestions: 2,
+          accuracy: 100,
+          answers: { "Q1": "B", "Q2": "B" },
+          timeTakenSeconds: 145,
+          submittedAt: "2026-11-19T11:20:00.000Z",
+          isPractice: false
+        }
+      ]
+    }
+  ]
+};
