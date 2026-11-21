@@ -1,0 +1,8 @@
+# robots.txt for Goyal Coaching Center
+User-agent: *
+Allow: /
+Disallow: /api/vault
+Disallow: /records/
+
+# Sitemap location
+Sitemap: https://goyalcoachingcenter.web.app/sitemap.xml
