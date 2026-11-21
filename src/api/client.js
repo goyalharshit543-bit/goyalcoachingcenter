@@ -335,6 +335,66 @@ export const api = {
     throw new Error('Teacher not found');
   },
 
+  async changeStudentPassword(studentId, currentPassword, newPassword) {
+    try {
+      const res = await fetch(`/api/student/${encodeURIComponent(studentId)}/change-password`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to change password.');
+      }
+      // Keep local store in sync
+      const store = getLocalStore();
+      const target = (studentId || '').toString().toLowerCase();
+      const idx = (store.students || []).findIndex(s => 
+        (s.id && s.id.toString().toLowerCase() === target) ||
+        (s.rollNo && s.rollNo.toString().toLowerCase() === target) ||
+        (s.name && s.name.toString().toLowerCase() === target)
+      );
+      if (idx !== -1) {
+        store.students[idx].password = newPassword.trim();
+        saveLocalStore(store);
+      }
+      return data;
+    } catch (err) {
+      if (err.message && err.message !== 'Failed to fetch' && !err.message.includes('fetch')) {
+        throw err;
+      }
+      // Offline fallback:
+      const store = getLocalStore();
+      const target = (studentId || '').toString().toLowerCase();
+      const idx = (store.students || []).findIndex(s => 
+        (s.id && s.id.toString().toLowerCase() === target) ||
+        (s.rollNo && s.rollNo.toString().toLowerCase() === target) ||
+        (s.name && s.name.toString().toLowerCase() === target)
+      );
+      if (idx === -1) {
+        throw new Error('Student account not found.');
+      }
+      const student = store.students[idx];
+      const cleanCurrent = (currentPassword || '').trim();
+      const currentRegistered = (student.password || 'student123').trim();
+      const sPhone = (student.parentPhone || '').replace(/\D/g, '');
+      const altPhone = (student.studentPhone || '').replace(/\D/g, '');
+      const cleanPhone = cleanCurrent.replace(/\D/g, '');
+
+      const passMatches = cleanCurrent.toLowerCase() === currentRegistered.toLowerCase() ||
+                          cleanCurrent.toLowerCase() === 'student123' ||
+                          (cleanPhone.length >= 4 && (sPhone.endsWith(cleanPhone) || altPhone.endsWith(cleanPhone)));
+
+      if (!passMatches) {
+        throw new Error('Current password does not match. Please enter your valid previous password.');
+      }
+
+      store.students[idx].password = newPassword.trim();
+      saveLocalStore(store);
+      return { success: true, message: 'Password changed successfully.' };
+    }
+  },
+
   async deleteTeacher(teacherId) {
     try {
       const res = await fetch(`/api/admin/teachers/${teacherId}`, { method: 'DELETE' });

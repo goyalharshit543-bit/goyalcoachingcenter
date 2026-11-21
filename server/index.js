@@ -576,6 +576,57 @@ app.get('/api/student/:id/session', (req, res) => {
   });
 });
 
+// ==========================================
+// STUDENT SELF-SERVICE PASSWORD CHANGE ENDPOINT
+// ==========================================
+app.put('/api/student/:id/change-password', (req, res) => {
+  const targetId = (req.params.id || '').trim().toLowerCase();
+  const { currentPassword, newPassword } = req.body;
+
+  if (!newPassword || newPassword.trim().length < 4) {
+    return res.status(400).json({ error: 'New password must be at least 4 characters long.' });
+  }
+
+  const cleanCurrent = (currentPassword || '').trim();
+  const cleanNew = newPassword.trim();
+
+  const idx = (db.students || []).findIndex(s => 
+    (s.id && s.id.toString().toLowerCase() === targetId) ||
+    (s.rollNo && s.rollNo.toString().toLowerCase() === targetId) ||
+    (s.name && s.name.toString().toLowerCase() === targetId)
+  );
+
+  if (idx === -1) {
+    return res.status(404).json({ error: 'Student account not found.' });
+  }
+
+  const student = db.students[idx];
+
+  // Verify previous password:
+  // Must match either current registered password, default 'student123', or registered phone number
+  const currentRegisteredPass = (student.password || 'student123').trim();
+  const sPhone = (student.parentPhone || '').replace(/\D/g, '');
+  const altPhone = (student.studentPhone || '').replace(/\D/g, '');
+  const cleanPhone = cleanCurrent.replace(/\D/g, '');
+
+  const passMatches = cleanCurrent.toLowerCase() === currentRegisteredPass.toLowerCase() ||
+                      cleanCurrent.toLowerCase() === 'student123' ||
+                      (cleanPhone.length >= 4 && (sPhone.endsWith(cleanPhone) || altPhone.endsWith(cleanPhone)));
+
+  if (!passMatches) {
+    return res.status(401).json({ error: 'Current password does not match. Please enter your valid previous password.' });
+  }
+
+  // Update password
+  db.students[idx].password = cleanNew;
+  saveData(db);
+
+  return res.json({
+    success: true,
+    message: `Password changed successfully for ${student.name || 'Student'}. You can now log in with your new password.`
+  });
+});
+
 // Legacy Parent Login compatibility
 app.post('/api/parent-login', (req, res) => {
   const { rollNo, phone, password } = req.body;
@@ -653,6 +704,57 @@ app.post('/api/parent-login', (req, res) => {
     lectures: db.lectures || [],
     onlineTests: db.onlineTests || [],
     instituteInfo: db.instituteInfo
+  });
+});
+
+// ==========================================
+// STUDENT SELF-SERVICE PASSWORD CHANGE ENDPOINT
+// ==========================================
+app.put('/api/student/:id/change-password', (req, res) => {
+  const targetId = (req.params.id || '').trim().toLowerCase();
+  const { currentPassword, newPassword } = req.body;
+
+  if (!newPassword || newPassword.trim().length < 4) {
+    return res.status(400).json({ error: 'New password must be at least 4 characters long.' });
+  }
+
+  const cleanCurrent = (currentPassword || '').trim();
+  const cleanNew = newPassword.trim();
+
+  const idx = (db.students || []).findIndex(s => 
+    (s.id && s.id.toString().toLowerCase() === targetId) ||
+    (s.rollNo && s.rollNo.toString().toLowerCase() === targetId) ||
+    (s.name && s.name.toString().toLowerCase() === targetId)
+  );
+
+  if (idx === -1) {
+    return res.status(404).json({ error: 'Student account not found.' });
+  }
+
+  const student = db.students[idx];
+
+  // Verify previous password:
+  // Must match either current registered password, default 'student123', or registered phone number
+  const currentRegisteredPass = (student.password || 'student123').trim();
+  const sPhone = (student.parentPhone || '').replace(/\D/g, '');
+  const altPhone = (student.studentPhone || '').replace(/\D/g, '');
+  const cleanPhone = cleanCurrent.replace(/\D/g, '');
+
+  const passMatches = cleanCurrent.toLowerCase() === currentRegisteredPass.toLowerCase() ||
+                      cleanCurrent.toLowerCase() === 'student123' ||
+                      (cleanPhone.length >= 4 && (sPhone.endsWith(cleanPhone) || altPhone.endsWith(cleanPhone)));
+
+  if (!passMatches) {
+    return res.status(401).json({ error: 'Current password does not match. Please enter your valid previous password.' });
+  }
+
+  // Update password
+  db.students[idx].password = cleanNew;
+  saveData(db);
+
+  return res.json({
+    success: true,
+    message: `Password changed successfully for ${student.name || 'Student'}. You can now log in with your new password.`
   });
 });
 

@@ -43,6 +43,9 @@ import {
   Trophy,
   Camera,
   Eye,
+  EyeOff,
+  KeyRound,
+  Loader2,
   UserCheck
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -80,6 +83,52 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
   const [feedbackText, setFeedbackText] = useState('');
   const [feedbackSuccess, setFeedbackSuccess] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Student Password Change State
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [currentPasswordInput, setCurrentPasswordInput] = useState('');
+  const [newPasswordInput, setNewPasswordInput] = useState('');
+  const [confirmPasswordInput, setConfirmPasswordInput] = useState('');
+  const [showCurrentPass, setShowCurrentPass] = useState(false);
+  const [showNewPass, setShowNewPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
+  const [changePassLoading, setChangePassLoading] = useState(false);
+  const [changePassError, setChangePassError] = useState('');
+  const [changePassSuccess, setChangePassSuccess] = useState('');
+
+  const handlePasswordChangeSubmit = async (e) => {
+    e.preventDefault();
+    setChangePassError('');
+    setChangePassSuccess('');
+
+    if (!currentPasswordInput) {
+      setChangePassError('Please enter your previous/current password.');
+      return;
+    }
+    if (!newPasswordInput || newPasswordInput.trim().length < 4) {
+      setChangePassError('New password must be at least 4 characters long.');
+      return;
+    }
+    if (newPasswordInput !== confirmPasswordInput) {
+      setChangePassError('New password and confirm password do not match.');
+      return;
+    }
+
+    setChangePassLoading(true);
+    const sId = session?.student?.id || session?.student?.rollNo;
+    try {
+      const res = await api.changeStudentPassword(sId, currentPasswordInput, newPasswordInput);
+      setChangePassSuccess(res.message || 'Password changed successfully!');
+      setCurrentPasswordInput('');
+      setNewPasswordInput('');
+      setConfirmPasswordInput('');
+      confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+    } catch (err) {
+      setChangePassError(err.message || 'Failed to update password. Please check your current password.');
+    } finally {
+      setChangePassLoading(false);
+    }
+  };
 
   // Real-Time Live Session Synchronizer
   const refreshStudentData = async (showSpin = true) => {
@@ -637,12 +686,18 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
     { id: 'reports', label: 'Reports', icon: BarChart2 },
     { id: 'bookmarked', label: 'Bookmarked Qs.', icon: Bookmark },
     { id: 'feedback', label: 'Feedback', icon: AlertCircle },
+    { id: 'change-password', label: 'Change Password', icon: KeyRound, isAction: true },
     { id: 'logout', label: 'Logout', icon: LogOut, isAction: true },
   ];
 
   const handleMenuClick = (item) => {
     if (item.id === 'logout') {
       handleUserLogout();
+    } else if (item.id === 'change-password') {
+      setChangePassError('');
+      setChangePassSuccess('');
+      setIsChangePasswordOpen(true);
+      setIsMobileMenuOpen(false);
     } else {
       setActiveTab(item.id);
       setIsMobileMenuOpen(false);
@@ -772,6 +827,20 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
                 <span className="hidden sm:inline">Sync Live</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setChangePassError('');
+                  setChangePassSuccess('');
+                  setIsChangePasswordOpen(true);
+                }}
+                className="px-2.5 py-1.5 rounded-lg bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 hover:text-white text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 border border-amber-400/30 shadow-xs"
+                title="Change your login password"
+              >
+                <KeyRound className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Change Password</span>
               </button>
 
               <button
@@ -3466,6 +3535,186 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
               <span className="text-[11px] text-slate-400 font-mono">
                 Student Portal • Read-Only Verified
               </span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================= */}
+      {/* CHANGE PASSWORD MODAL (SELF-SERVICE WITH PREVIOUS PASS VERIFY) */}
+      {/* ============================================================= */}
+      {isChangePasswordOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="p-5 bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-amber-300 shadow-inner">
+                  <KeyRound className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black tracking-tight font-outfit">
+                    Change Password
+                  </h3>
+                  <p className="text-[11px] text-blue-100 font-medium">
+                    {studentDisplayName} • Roll No: {student?.rollNo || student?.id || 'GCC'}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setIsChangePasswordOpen(false);
+                  setChangePassError('');
+                  setChangePassSuccess('');
+                }}
+                className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
+                title="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-5 sm:p-6 space-y-4 text-xs">
+              <p className="text-slate-600 text-xs leading-relaxed bg-blue-50/80 p-3 rounded-xl border border-blue-100">
+                🔒 To protect your account, enter your <strong>previous/current password</strong> before setting a new one.
+              </p>
+
+              {/* Error Message */}
+              {changePassError && (
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span>{changePassError}</span>
+                </div>
+              )}
+
+              {/* Success Message */}
+              {changePassSuccess && (
+                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600" />
+                  <div>
+                    <div className="font-bold">{changePassSuccess}</div>
+                    <div className="text-[11px] text-emerald-700 mt-0.5">Please remember your new password for your next login.</div>
+                  </div>
+                </div>
+              )}
+
+              <form onSubmit={handlePasswordChangeSubmit} className="space-y-3.5">
+                {/* 1. Previous Password */}
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">
+                    Previous / Current Password <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showCurrentPass ? 'text' : 'password'}
+                      required
+                      placeholder="Enter your previous password"
+                      value={currentPasswordInput}
+                      onChange={(e) => setCurrentPasswordInput(e.target.value)}
+                      className="w-full pl-3 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPass(!showCurrentPass)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700 cursor-pointer"
+                      title={showCurrentPass ? "Hide" : "Show"}
+                    >
+                      {showCurrentPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">
+                    Use your current password (or registered mobile / default 'student123').
+                  </span>
+                </div>
+
+                {/* 2. New Password */}
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">
+                    New Password <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showNewPass ? 'text' : 'password'}
+                      required
+                      minLength={4}
+                      placeholder="Enter new password (min. 4 characters)"
+                      value={newPasswordInput}
+                      onChange={(e) => setNewPasswordInput(e.target.value)}
+                      className="w-full pl-3 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPass(!showNewPass)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700 cursor-pointer"
+                      title={showNewPass ? "Hide" : "Show"}
+                    >
+                      {showNewPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* 3. Confirm New Password */}
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">
+                    Confirm New Password <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmPass ? 'text' : 'password'}
+                      required
+                      minLength={4}
+                      placeholder="Re-enter new password"
+                      value={confirmPasswordInput}
+                      onChange={(e) => setConfirmPasswordInput(e.target.value)}
+                      className="w-full pl-3 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPass(!showConfirmPass)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700 cursor-pointer"
+                      title={showConfirmPass ? "Hide" : "Show"}
+                    >
+                      {showConfirmPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Buttons */}
+                <div className="pt-2 flex items-center justify-end gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsChangePasswordOpen(false);
+                      setChangePassError('');
+                      setChangePassSuccess('');
+                    }}
+                    className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold text-xs transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="submit"
+                    disabled={changePassLoading}
+                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs transition-all shadow-md shadow-blue-500/25 flex items-center gap-1.5 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {changePassLoading ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Updating...</span>
+                      </>
+                    ) : (
+                      <>
+                        <KeyRound className="w-3.5 h-3.5" />
+                        <span>Save Password</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
