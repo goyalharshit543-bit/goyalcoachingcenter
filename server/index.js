@@ -147,6 +147,19 @@ function loadData() {
       if (!parsed.students || !Array.isArray(parsed.students) || parsed.students.length === 0) {
         parsed.students = initialData.students || [];
         saveData(parsed);
+      } else if (Array.isArray(initialData.students)) {
+        let addedStudent = false;
+        initialData.students.forEach(initStudent => {
+          const exists = parsed.students.some(s => 
+            (s.rollNo && s.rollNo.toUpperCase() === (initStudent.rollNo || '').toUpperCase()) ||
+            (s.id && s.id.toUpperCase() === (initStudent.id || '').toUpperCase())
+          );
+          if (!exists) {
+            parsed.students.push(initStudent);
+            addedStudent = true;
+          }
+        });
+        if (addedStudent) saveData(parsed);
       }
       if (!parsed.attendanceLogs || !Array.isArray(parsed.attendanceLogs) || parsed.attendanceLogs.length === 0) {
         parsed.attendanceLogs = initialData.attendanceLogs || [];
@@ -155,6 +168,16 @@ function loadData() {
       if (!parsed.tests || !Array.isArray(parsed.tests) || parsed.tests.length === 0) {
         parsed.tests = initialData.tests || [];
         saveData(parsed);
+      } else if (Array.isArray(initialData.tests)) {
+        let addedTest = false;
+        initialData.tests.forEach(initTest => {
+          const exists = parsed.tests.some(t => t.id === initTest.id);
+          if (!exists) {
+            parsed.tests.push(initTest);
+            addedTest = true;
+          }
+        });
+        if (addedTest) saveData(parsed);
       }
       if (parsed.teachers && Array.isArray(parsed.teachers)) {
         let changed = false;

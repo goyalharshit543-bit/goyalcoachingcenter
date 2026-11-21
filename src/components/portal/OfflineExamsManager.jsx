@@ -631,20 +631,24 @@ export default function OfflineExamsManager({
                           <span
                             key={idx}
                             onClick={() => {
-                              if (r.documentUrl || (r.documents && r.documents.length > 0)) {
+                              const hasDocs = r.documentUrl || (Array.isArray(r.documents) && r.documents.length > 0);
+                              if (hasDocs) {
+                                const docs = Array.isArray(r.documents) && r.documents.length > 0 
+                                  ? r.documents 
+                                  : (r.documentUrl ? [{ name: r.documentName || 'Checked Answer Sheet', url: r.documentUrl, type: r.documentType || 'image' }] : []);
                                 setPreviewDocument({
                                   title: test.title,
                                   studentName: r.studentName,
                                   marks: `${r.marksObtained} / ${test.maxMarks}`,
                                   remarks: r.remarks,
-                                  url: r.documentUrl || r.documents[0].url,
-                                  type: r.documentType || 'image',
-                                  documents: r.documents || []
+                                  url: docs[0]?.url || r.documentUrl || '',
+                                  type: docs[0]?.type || r.documentType || 'image',
+                                  documents: docs
                                 });
                               }
                             }}
                             className={`px-2 py-1 rounded-lg text-[11px] font-bold border flex items-center gap-1.5 cursor-pointer transition-colors ${
-                              r.documentUrl
+                              (r.documentUrl || (Array.isArray(r.documents) && r.documents.length > 0))
                                 ? 'bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800 hover:bg-purple-100'
                                 : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
                             }`}

@@ -2259,6 +2259,9 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
                       avgMarks: t.avgMarks,
                       highestMarks: t.highestMarks,
                       passingMarks: t.passingMarks || Math.round((t.maxMarks || 50) * 0.4),
+                      questionPaperUrl: t.questionPaperUrl || null,
+                      questionPaperName: t.questionPaperName || null,
+                      questionPaperType: t.questionPaperType || null,
                       isEvaluated: true,
                       ...r
                     });
@@ -2274,12 +2277,18 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
                       avgMarks: t.avgMarks,
                       highestMarks: t.highestMarks,
                       passingMarks: t.passingMarks || Math.round((t.maxMarks || 50) * 0.4),
+                      questionPaperUrl: t.questionPaperUrl || null,
+                      questionPaperName: t.questionPaperName || null,
+                      questionPaperType: t.questionPaperType || null,
                       isEvaluated: false
                     });
                   }
                 } else if (t.marksObtained !== undefined) {
                   // Case B: Flattened result object from session
                   studentOfflineRecords.push({
+                    questionPaperUrl: t.questionPaperUrl || null,
+                    questionPaperName: t.questionPaperName || null,
+                    questionPaperType: t.questionPaperType || null,
                     isEvaluated: true,
                     ...t
                   });
@@ -2291,6 +2300,9 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
                     grade: t.grade || t.batch,
                     date: t.date,
                     maxMarks: t.maxMarks || 50,
+                    questionPaperUrl: t.questionPaperUrl || null,
+                    questionPaperName: t.questionPaperName || null,
+                    questionPaperType: t.questionPaperType || null,
                     isEvaluated: false
                   });
                 }
