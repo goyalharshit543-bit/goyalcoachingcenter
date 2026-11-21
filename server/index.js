@@ -144,6 +144,18 @@ function loadData() {
         parsed.onlineTests = initialData.onlineTests || [];
         saveData(parsed);
       }
+      if (!parsed.students || !Array.isArray(parsed.students) || parsed.students.length === 0) {
+        parsed.students = initialData.students || [];
+        saveData(parsed);
+      }
+      if (!parsed.attendanceLogs || !Array.isArray(parsed.attendanceLogs) || parsed.attendanceLogs.length === 0) {
+        parsed.attendanceLogs = initialData.attendanceLogs || [];
+        saveData(parsed);
+      }
+      if (!parsed.tests || !Array.isArray(parsed.tests) || parsed.tests.length === 0) {
+        parsed.tests = initialData.tests || [];
+        saveData(parsed);
+      }
       if (parsed.teachers && Array.isArray(parsed.teachers)) {
         let changed = false;
         parsed.teachers.forEach(t => {
