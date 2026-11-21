@@ -39,10 +39,12 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Prevent browser/proxy caching for all API responses so edits reflect immediately
 app.use((req, res, next) => {
-  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-  res.set('Pragma', 'no-cache');
-  res.set('Expires', '0');
-  res.set('Surrogate-Control', 'no-store');
+  if (req.path.startsWith('/api')) {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('Surrogate-Control', 'no-store');
+  }
   next();
 });
 
@@ -2668,6 +2670,18 @@ app.delete('/api/admin/centers/:id', (req, res) => {
 // Serve static frontend in production
 const DIST_PATH = path.join(__dirname, '..', 'dist');
 if (fs.existsSync(DIST_PATH)) {
+  app.get('/sitemap.xml', (req, res) => {
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.sendFile(path.join(DIST_PATH, 'sitemap.xml'));
+  });
+
+  app.get('/robots.txt', (req, res) => {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.sendFile(path.join(DIST_PATH, 'robots.txt'));
+  });
+
   app.use(express.static(DIST_PATH));
   app.use((req, res, next) => {
     if (req.path.startsWith('/api')) return next();
