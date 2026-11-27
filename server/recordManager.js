@@ -865,7 +865,7 @@ export function migrateExistingRecords(db) {
     }
 
     // 3. Enrolled Students (clean rebuild without duplicate rows)
-    if (Array.isArray(db.students) && db.students.length > 0) {
+    if (Array.isArray(db.students)) {
       rebuildEnrolledStudentsExcel(db.students);
     }
   } catch (err) {

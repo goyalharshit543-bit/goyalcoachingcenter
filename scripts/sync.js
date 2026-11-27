@@ -1,7 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { migrateExistingRecords, initRecordsDirectories } from '../server/recordManager.js';
+import XLSX from 'xlsx';
+import { 
+  migrateExistingRecords, 
+  initRecordsDirectories, 
+  removeEnrolledStudent, 
+  rebuildEnrolledStudentsExcel 
+} from '../server/recordManager.js';
 import { exportClassHierarchies } from './exportClassHierarchies.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -10,6 +16,43 @@ const PROJECT_ROOT = path.resolve(__dirname, '..');
 const LOCAL_DATA_FILE = path.join(PROJECT_ROOT, 'server', 'data.json');
 
 const DEFAULT_GLOBAL_URL = 'https://goyalcoachingcenter-production.up.railway.app';
+
+/**
+ * Checks if the user manually deleted a student row from the Master Excel Register.
+ */
+function checkManualExcelDeletions(localStudents, previouslySyncedRolls) {
+  const deletedFromExcel = new Set();
+  const masterExcelPath = path.join(PROJECT_ROOT, 'records', 'Enrolled_Students', 'All_Enrolled_Students_Master_Register.xlsx');
+  if (fs.existsSync(masterExcelPath)) {
+    try {
+      const wb = XLSX.readFile(masterExcelPath);
+      const sheetName = wb.SheetNames[0];
+      const sheet = wb.Sheets[sheetName];
+      if (sheet) {
+        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+        if (Array.isArray(rows) && rows.length > 0) {
+          let rollColIdx = 0;
+          const headers = rows[0] || [];
+          headers.forEach((h, idx) => {
+            if (typeof h === 'string' && (h.includes('Roll') || h.includes('ID'))) {
+              rollColIdx = idx;
+            }
+          });
+          const existingRollsInExcel = new Set(
+            rows.slice(1).map(r => String(r[rollColIdx] || '').trim().toUpperCase()).filter(Boolean)
+          );
+          (localStudents || []).forEach(s => {
+            const rollKey = String(s.rollNo || s.id || '').trim().toUpperCase();
+            if (rollKey && previouslySyncedRolls.has(rollKey) && !existingRollsInExcel.has(rollKey)) {
+              deletedFromExcel.add(rollKey);
+            }
+          });
+        }
+      }
+    } catch {}
+  }
+  return deletedFromExcel;
+}
 
 /**
  * Intelligent bidirectional merger for coaching institute records
@@ -24,24 +67,92 @@ function mergeDatasets(localDb, remoteDb) {
       .map(r => String(r || '').trim().toUpperCase())
       .filter(Boolean)
   );
-  merged.deletedStudentRolls = Array.from(deletedSet);
 
-  // 1. Merge Students
-  const studentMap = new Map();
-
-  // Load all local students (excluding deleted ones)
-  (localDb.students || []).forEach(s => {
-    const key = (s.rollNo || s.id || '').toString().trim().toUpperCase();
-    if (key && !deletedSet.has(key)) studentMap.set(key, { ...s });
+  // Map of active remote students on the website
+  const remoteStudentMap = new Map();
+  const remoteRollSet = new Set();
+  (remoteDb.students || []).forEach(r => {
+    const rollKey = (r.rollNo || '').toString().trim().toUpperCase();
+    const idKey = (r.id || '').toString().trim().toUpperCase();
+    if (rollKey) { remoteStudentMap.set(rollKey, r); remoteRollSet.add(rollKey); }
+    if (idKey) { remoteStudentMap.set(idKey, r); remoteRollSet.add(idKey); }
   });
 
-  // Merge remote students (ONLY if not marked deleted locally)
-  (remoteDb.students || []).forEach(r => {
-    const key = (r.rollNo || r.id || '').toString().trim().toUpperCase();
-    if (!key || deletedSet.has(key)) return;
+  // Track rolls previously synced between laptop and website
+  const previouslySyncedRolls = new Set(
+    (localDb.syncedStudentRolls || localDb._remoteSyncedRolls || [])
+      .map(r => String(r || '').trim().toUpperCase())
+      .filter(Boolean)
+  );
 
-    if (studentMap.has(key)) {
-      const local = studentMap.get(key);
+  // If localDb.syncedStudentRolls wasn't initialized yet, seed it from active students
+  if (previouslySyncedRolls.size === 0 && Array.isArray(localDb.students)) {
+    localDb.students.forEach(s => {
+      const k = String(s.rollNo || s.id || '').trim().toUpperCase();
+      if (k) previouslySyncedRolls.add(k);
+    });
+  }
+
+  // Detect students deleted from the website:
+  // If a student was previously on the website (or in synced rolls) and is NOW missing from remoteDb.students:
+  // THEN THE USER HAS DELETED THIS STUDENT FROM THE WEBSITE!
+  const newlyDeletedRolls = new Set();
+  if (Array.isArray(remoteDb.students)) {
+    (localDb.students || []).forEach(s => {
+      const rollKey = (s.rollNo || '').toString().trim().toUpperCase();
+      const idKey = (s.id || '').toString().trim().toUpperCase();
+      const key = rollKey || idKey;
+      if (!key) return;
+
+      const wasOnWebsite = (rollKey && previouslySyncedRolls.has(rollKey)) || (idKey && previouslySyncedRolls.has(idKey));
+      const isNowOnWebsite = (rollKey && remoteRollSet.has(rollKey)) || (idKey && remoteRollSet.has(idKey));
+
+      if (wasOnWebsite && !isNowOnWebsite) {
+        console.log(`🗑️  [WEBSITE DELETION DETECTED] Student "${s.name || ''}" (${key}) was deleted from the website.`);
+        if (rollKey) { deletedSet.add(rollKey); newlyDeletedRolls.add(rollKey); }
+        if (idKey) { deletedSet.add(idKey); newlyDeletedRolls.add(idKey); }
+      }
+    });
+  }
+
+  // Also check if user manually deleted a student row from Excel master register on laptop:
+  const manualExcelDeletions = checkManualExcelDeletions(localDb.students, previouslySyncedRolls);
+  manualExcelDeletions.forEach(delKey => {
+    console.log(`🗑️  [EXCEL DELETION DETECTED] Student (${delKey}) was manually removed from Excel register.`);
+    deletedSet.add(delKey);
+    newlyDeletedRolls.add(delKey);
+  });
+
+  merged.deletedStudentRolls = Array.from(deletedSet);
+
+  // Immediately purge newly deleted student records, files, dossiers, and profiles
+  newlyDeletedRolls.forEach(delKey => {
+    try {
+      removeEnrolledStudent(delKey);
+    } catch {}
+  });
+
+  // 1. Merge Students:
+  // Remote website students are authoritative for the roster!
+  const studentMap = new Map();
+  const localStudentMap = new Map();
+  (localDb.students || []).forEach(s => {
+    const rollKey = (s.rollNo || '').toString().trim().toUpperCase();
+    const idKey = (s.id || '').toString().trim().toUpperCase();
+    if (rollKey) localStudentMap.set(rollKey, s);
+    if (idKey) localStudentMap.set(idKey, s);
+  });
+
+  // A. Add active remote students from the website (excluding any deleted ones)
+  (remoteDb.students || []).forEach(r => {
+    const rollKey = (r.rollNo || '').toString().trim().toUpperCase();
+    const idKey = (r.id || '').toString().trim().toUpperCase();
+    if ((rollKey && deletedSet.has(rollKey)) || (idKey && deletedSet.has(idKey))) return;
+    const key = rollKey || idKey;
+    if (!key) return;
+
+    const local = localStudentMap.get(rollKey) || localStudentMap.get(idKey);
+    if (local) {
       // Local changes take precedence for teacher/admin fields (remarks, fees, marks, attendance)
       // Remote student password update takes precedence if student changed it online
       const password = (r.password && r.password !== 'student123' && r.password !== local.password)
@@ -79,7 +190,29 @@ function mergeDatasets(localDb, remoteDb) {
     }
   });
 
+  // B. Include any student created locally offline that was NEVER synced to website yet
+  (localDb.students || []).forEach(s => {
+    const rollKey = (s.rollNo || '').toString().trim().toUpperCase();
+    const idKey = (s.id || '').toString().trim().toUpperCase();
+    if ((rollKey && deletedSet.has(rollKey)) || (idKey && deletedSet.has(idKey))) return;
+    const key = rollKey || idKey;
+    if (!key) return;
+
+    if (!studentMap.has(key)) {
+      const wasEverSynced = (rollKey && previouslySyncedRolls.has(rollKey)) || (idKey && previouslySyncedRolls.has(idKey));
+      if (!wasEverSynced) {
+        // True new local offline student (not an old student that was deleted on the website)
+        studentMap.set(key, { ...s });
+      }
+    }
+  });
+
   merged.students = Array.from(studentMap.values());
+
+  // Store confirmed active synced student rolls
+  merged.syncedStudentRolls = merged.students
+    .map(s => String(s.rollNo || s.id || '').trim().toUpperCase())
+    .filter(Boolean);
 
   // 2. Merge Enquiries: Union without duplicates
   const enquiryMap = new Map();
@@ -93,13 +226,19 @@ function mergeDatasets(localDb, remoteDb) {
   (remoteDb.gtseRegistrations || []).forEach(g => gtseMap.set(g.id || `${g.studentNo}_${g.timestamp}`, g));
   merged.gtseRegistrations = Array.from(gtseMap.values());
 
-  // 4. Merge Attendance Logs: Union by date + studentId
+  // 4. Merge Attendance Logs: Union by date + studentId (excluding deleted students)
   const attMap = new Map();
-  (remoteDb.attendanceLogs || []).forEach(a => attMap.set(`${a.date}_${String(a.studentId).toUpperCase()}`, a));
-  (localDb.attendanceLogs || []).forEach(a => attMap.set(`${a.date}_${String(a.studentId).toUpperCase()}`, a));
+  (remoteDb.attendanceLogs || []).forEach(a => {
+    const sid = String(a.studentId || '').trim().toUpperCase();
+    if (!deletedSet.has(sid)) attMap.set(`${a.date}_${sid}`, a);
+  });
+  (localDb.attendanceLogs || []).forEach(a => {
+    const sid = String(a.studentId || '').trim().toUpperCase();
+    if (!deletedSet.has(sid)) attMap.set(`${a.date}_${sid}`, a);
+  });
   merged.attendanceLogs = Array.from(attMap.values());
 
-  // 5. Merge Tests & Marks
+  // 5. Merge Tests & Marks (excluding deleted students)
   const testMap = new Map();
   (remoteDb.tests || []).forEach(t => testMap.set(t.id || `${t.title}_${t.date}`, t));
   (localDb.tests || []).forEach(t => {
@@ -107,11 +246,28 @@ function mergeDatasets(localDb, remoteDb) {
     if (testMap.has(key)) {
       const prev = testMap.get(key);
       const resMap = new Map();
-      (prev.results || []).forEach(r => resMap.set(String(r.rollNo || r.studentId).toUpperCase(), r));
-      (t.results || []).forEach(r => resMap.set(String(r.rollNo || r.studentId).toUpperCase(), r));
+      (prev.results || []).forEach(r => {
+        const rRoll = String(r.rollNo || '').trim().toUpperCase();
+        const rId = String(r.studentId || '').trim().toUpperCase();
+        if (!deletedSet.has(rRoll) && !deletedSet.has(rId)) {
+          resMap.set(rRoll || rId, r);
+        }
+      });
+      (t.results || []).forEach(r => {
+        const rRoll = String(r.rollNo || '').trim().toUpperCase();
+        const rId = String(r.studentId || '').trim().toUpperCase();
+        if (!deletedSet.has(rRoll) && !deletedSet.has(rId)) {
+          resMap.set(rRoll || rId, r);
+        }
+      });
       testMap.set(key, { ...prev, ...t, results: Array.from(resMap.values()) });
     } else {
-      testMap.set(key, t);
+      const filteredResults = (t.results || []).filter(r => {
+        const rRoll = String(r.rollNo || '').trim().toUpperCase();
+        const rId = String(r.studentId || '').trim().toUpperCase();
+        return !deletedSet.has(rRoll) && !deletedSet.has(rId);
+      });
+      testMap.set(key, { ...t, results: filteredResults });
     }
   });
   merged.tests = Array.from(testMap.values());
@@ -169,6 +325,17 @@ async function pushToCloudServer(targetUrl, mergedData, remoteDb) {
     if (syncRes.ok) {
       const syncJson = await syncRes.json();
       console.log(`✓ [SUCCESS] Cloud website updated via bulk /api/sync!`);
+      // Purge any deleted students from cloud server explicitly to guarantee deletion
+      if (Array.isArray(mergedData.deletedStudentRolls) && mergedData.deletedStudentRolls.length > 0) {
+        for (const delRoll of mergedData.deletedStudentRolls) {
+          try {
+            await fetch(`${cleanUrl}/api/students/${encodeURIComponent(delRoll)}`, {
+              method: 'DELETE',
+              headers: adminHeaders
+            });
+          } catch {}
+        }
+      }
       return { success: true, method: 'bulk', details: syncJson };
     }
   } catch (syncErr) {
@@ -304,8 +471,9 @@ export async function syncData(customUrl = null) {
     // 4. Push all changes back to the cloud Railway server so website has everything
     await pushToCloudServer(targetUrl, mergedData, remoteDb);
 
-    // 5. Update Excel registers in records/
+    // 5. Update Excel registers in records/ and server/records/
     initRecordsDirectories();
+    rebuildEnrolledStudentsExcel(mergedData.students);
     migrateExistingRecords(mergedData);
 
     // 6. Generate hierarchical Class folders & dossiers in Class_Organized_Records/
@@ -332,6 +500,7 @@ export async function syncData(customUrl = null) {
     console.log(`Operating in offline mode. Exporting local records to Excel...`);
     try {
       initRecordsDirectories();
+      rebuildEnrolledStudentsExcel(localDb.students || []);
       migrateExistingRecords(localDb);
       exportClassHierarchies();
       console.log(`Local records refreshed successfully.`);

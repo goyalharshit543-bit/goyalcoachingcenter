@@ -83,17 +83,28 @@ export function exportClassHierarchies() {
         if (fs.existsSync(classFolder)) {
           // Update roster to be cleanly empty so deleted students don't linger
           const rosterExcelPath = path.join(classFolder, `00_${className.replace(/\s+/g, '_')}_Master_Roster.xlsx`);
-          if (fs.existsSync(rosterExcelPath)) {
-            const emptyWb = XLSX.utils.book_new();
-            const emptyWs = XLSX.utils.aoa_to_sheet([
-              ['S.No', 'Roll No / Login ID', 'Student Full Name', 'Class & Stream', 'Batch Name', 'Parent Name', 'Parent Contact', 'Fee Status', 'Remarks']
-            ]);
-            XLSX.utils.book_append_sheet(emptyWb, emptyWs, `${className} Roster`);
-            safeWriteExcel(emptyWb, rosterExcelPath);
+          const emptyWb = XLSX.utils.book_new();
+          const emptyWs = XLSX.utils.aoa_to_sheet([
+            ['S.No', 'Roll No / Login ID', 'Student Full Name', 'Class & Stream', 'Batch Name', 'Parent Name', 'Parent Contact', 'Fee Status', 'Remarks']
+          ]);
+          XLSX.utils.book_append_sheet(emptyWb, emptyWs, `${className} Roster`);
+          safeWriteExcel(emptyWb, rosterExcelPath);
+
+          const altRosterPath = path.join(classFolder, `00_${className.replace(/\s+/g, '_')}_Master_Roster_Latest.xlsx`);
+          if (fs.existsSync(altRosterPath)) {
+            try { fs.unlinkSync(altRosterPath); } catch {}
+          }
+          const attExcelPath = path.join(classFolder, `00_${className.replace(/\s+/g, '_')}_Attendance_Register.xlsx`);
+          if (fs.existsSync(attExcelPath)) {
+            try { fs.unlinkSync(attExcelPath); } catch {}
           }
           const studentsFolder = path.join(classFolder, 'Individual_Student_Profiles');
           if (fs.existsSync(studentsFolder)) {
             try { fs.rmSync(studentsFolder, { recursive: true, force: true }); } catch {}
+          }
+          const subjectsFolder = path.join(classFolder, 'Subjects');
+          if (fs.existsSync(subjectsFolder)) {
+            try { fs.rmSync(subjectsFolder, { recursive: true, force: true }); } catch {}
           }
         }
         continue;
@@ -238,14 +249,20 @@ export function exportClassHierarchies() {
         try {
           const existingDirs = fs.readdirSync(studentsFolder);
           const activeRolls = new Set(classStudents.map(s => String(s.rollNo || s.id).trim().toUpperCase()));
+          const activeDirNames = new Set(classStudents.map(s => {
+            const studentCleanName = (s.name || 'Student').replace(/[^a-zA-Z0-9_\-\s]/g, '').trim().replace(/\s+/g, '_');
+            return `Roll_${s.rollNo || 'NA'}_${studentCleanName}`.toUpperCase();
+          }));
+
           for (const dir of existingDirs) {
             const match = dir.match(/^Roll_([^_]+)_/i);
-            if (match) {
-              const r = match[1].trim().toUpperCase();
-              if (!activeRolls.has(r)) {
-                console.log(`[DATA ORGANIZER] Purging deleted student dossier: ${dir}`);
-                fs.rmSync(path.join(studentsFolder, dir), { recursive: true, force: true });
-              }
+            const r = match ? match[1].trim().toUpperCase() : null;
+            const isMatchActive = r ? activeRolls.has(r) : false;
+            const isDirActive = activeDirNames.has(dir.toUpperCase());
+
+            if (!isMatchActive && !isDirActive) {
+              console.log(`[DATA ORGANIZER] Purging deleted student dossier: ${dir}`);
+              try { fs.rmSync(path.join(studentsFolder, dir), { recursive: true, force: true }); } catch {}
             }
           }
         } catch (err) {

@@ -2,31 +2,31 @@
 GOYAL COACHING CENTER - COMPLETE STUDENT RECORD CARD
 =====================================================================
 STUDENT INFORMATION:
-- Student Name        : Krishnav
-- Roll Number (ID)    : GCC-1
-- Enrolled Class      : Class 9th
+- Student Name        : Harshit
+- Roll Number (ID)    : CGC-1001
+- Enrolled Class      : Class 8th
 - Academic Stream     : Science & Mathematics
-- Batch Assignment    : Class 5
+- Batch Assignment    : Class 10 Board Champions
 - Enrollment Date     : 2026-11-27
-- Login Password      : 25122015
+- Login Password      : student123
 
 GUARDIAN & CONTACT DETAILS:
 - Father/Mother Name  : Gitti Goyal
-- Parent Phone Number : 9417915518
-- Student Phone Number: 9417915518
+- Parent Phone Number : 52
+- Student Phone Number: 52
 
 FINANCIAL & FEE STATUS:
-- Total Course Fee    : Rs. 0
-- Amount Paid to Date : Rs. 0
+- Total Course Fee    : Rs. 38000
+- Amount Paid to Date : Rs. 38000
 - Current Outstanding : Rs. 0
 - Fee Status Badge    : Fully Paid
-- Last Receipt Number : REC-1024
+- Last Receipt Number : REC-0817
 
 ACADEMIC & ATTENDANCE PERFORMANCE:
 - Overall Score %     : 0%
-- Total Attendance %  : 100%
-- Total Classes       : 1 Attended out of 1 Working Days
-- Faculty Remarks     : Star performer in Class 9 Math & Science.
+- Total Attendance %  : 0%
+- Total Classes       : 0 Attended out of 0 Working Days
+- Faculty Remarks     : Newly admitted student. No assessments or attendance marked yet.
 
 DETAILED TEST & EXAMINATION RESULTS:
   - No offline examinations recorded yet.

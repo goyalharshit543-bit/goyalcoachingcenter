@@ -13,6 +13,7 @@ echo [3/3] Uploading laptop edits to website and regenerating Class_Organized_Re
 echo.
 
 node scripts/sync.js
+node scripts/clean_and_export.js
 
 echo.
 echo ===============================================================================

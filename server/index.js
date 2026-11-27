@@ -335,23 +335,55 @@ app.post('/api/sync', requireAdmin, (req, res) => {
     if (deletedSet.size > 0) {
       const originalCount = (db.students || []).length;
       db.students = (db.students || []).filter(s => {
-        const key = (s.rollNo || s.id || '').toString().trim().toUpperCase();
-        return !deletedSet.has(key);
+        const rollKey = (s.rollNo || '').toString().trim().toUpperCase();
+        const idKey = (s.id || '').toString().trim().toUpperCase();
+        return !deletedSet.has(rollKey) && !deletedSet.has(idKey);
       });
       if (db.students.length !== originalCount) updated = true;
+
+      // Also purge attendance logs of deleted students
+      if (Array.isArray(db.attendanceLogs)) {
+        const origAttLen = db.attendanceLogs.length;
+        db.attendanceLogs = db.attendanceLogs.filter(a => {
+          const sid = String(a.studentId || '').trim().toUpperCase();
+          return !deletedSet.has(sid);
+        });
+        if (db.attendanceLogs.length !== origAttLen) updated = true;
+      }
+
+      // Also purge test results of deleted students
+      if (Array.isArray(db.tests)) {
+        db.tests.forEach(t => {
+          if (Array.isArray(t.results)) {
+            const origResLen = t.results.length;
+            t.results = t.results.filter(r => {
+              const rRoll = String(r.rollNo || '').trim().toUpperCase();
+              const rId = String(r.studentId || '').trim().toUpperCase();
+              return !deletedSet.has(rRoll) && !deletedSet.has(rId);
+            });
+            if (t.results.length !== origResLen) updated = true;
+          }
+        });
+      }
     }
 
     // 1. Merge Students
-    if (Array.isArray(incoming.students) && incoming.students.length > 0) {
+    if (Array.isArray(incoming.students)) {
       const studentMap = new Map();
       (db.students || []).forEach(s => {
-        const key = (s.rollNo || s.id || '').toString().trim().toUpperCase();
-        if (key && !deletedSet.has(key)) studentMap.set(key, s);
+        const rollKey = (s.rollNo || '').toString().trim().toUpperCase();
+        const idKey = (s.id || '').toString().trim().toUpperCase();
+        if ((rollKey && deletedSet.has(rollKey)) || (idKey && deletedSet.has(idKey))) return;
+        const key = rollKey || idKey;
+        if (key) studentMap.set(key, s);
       });
 
       incoming.students.forEach(inc => {
-        const key = (inc.rollNo || inc.id || '').toString().trim().toUpperCase();
-        if (!key || deletedSet.has(key)) return;
+        const rollKey = (inc.rollNo || '').toString().trim().toUpperCase();
+        const idKey = (inc.id || '').toString().trim().toUpperCase();
+        if ((rollKey && deletedSet.has(rollKey)) || (idKey && deletedSet.has(idKey))) return;
+        const key = rollKey || idKey;
+        if (!key) return;
 
         if (studentMap.has(key)) {
           const prev = studentMap.get(key);
