@@ -215,11 +215,14 @@ function mergeDatasets(localDb, remoteDb) {
     .map(s => String(s.rollNo || s.id || '').trim().toUpperCase())
     .filter(Boolean);
 
-  // 2. Merge Enquiries: Union without duplicates
+  // 2. Merge Enquiries: Union without duplicates, excluding demo entries
   const enquiryMap = new Map();
   (localDb.enquiries || []).forEach(e => enquiryMap.set(e.id || `${e.mobile || e.phone}_${e.timestamp}`, e));
   (remoteDb.enquiries || []).forEach(e => enquiryMap.set(e.id || `${e.mobile || e.phone}_${e.timestamp}`, e));
-  merged.enquiries = Array.from(enquiryMap.values());
+  merged.enquiries = Array.from(enquiryMap.values()).filter(e => {
+    const isDemo = e.id === 'ENQ-1957' || (String(e.name || '').trim().toLowerCase() === 'harshit' && (e.phone === '985' || e.mobile === '985'));
+    return !isDemo;
+  });
 
   // 3. Merge GTSE Registrations: Union without duplicates
   const gtseMap = new Map();
@@ -280,12 +283,14 @@ function mergeDatasets(localDb, remoteDb) {
   merged.notices = Array.from(noticeMap.values());
 
   // 7. Merge other items (Assignments, Lectures, Online Tests, Doubts)
-  ['assignments', 'lectures', 'onlineTests', 'doubts'].forEach(field => {
+  ['assignments', 'lectures', 'onlineTests'].forEach(field => {
     const itemMap = new Map();
     (remoteDb[field] || []).forEach(i => itemMap.set(i.id || i.title || JSON.stringify(i), i));
     (localDb[field] || []).forEach(i => itemMap.set(i.id || i.title || JSON.stringify(i), i));
     merged[field] = Array.from(itemMap.values());
   });
+  // Doubts: Local takes precedence, filter out demo DBT-50* doubts
+  merged.doubts = (localDb.doubts || []).filter(d => !d.id?.startsWith('DBT-50'));
 
   // 8. CMS Items: Local configurations take precedence
   ['centers', 'directors', 'features', 'shiningStars', 'exploreCourses'].forEach(field => {

@@ -1,37 +1,5 @@
 [
   {
-    "name": "Test",
-    "rollNo": "GCC261101067",
-    "grade": "Class 10",
-    "stream": "Science & Mathematics",
-    "batch": "Class 10 Board Champions",
-    "parentName": "dd",
-    "parentPhone": "5868658",
-    "totalFees": 38000,
-    "paidFees": 38000,
-    "id": "GCC261101067",
-    "fees": {
-      "total": 38000,
-      "paid": 38000,
-      "due": 0,
-      "status": "Fully Paid",
-      "lastReceipt": "REC-9400"
-    },
-    "batchRank": null,
-    "totalBatchStudents": 5,
-    "overallPercentage": 83.5,
-    "attendancePercentage": 0,
-    "totalClassesAttended": 0,
-    "totalClassesHeld": 0,
-    "teacherRemarks": "Diligent student. Good concept clarity and active classroom participation.",
-    "photo": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=400&q=80",
-    "enrollmentDate": "2026-11-27",
-    "workingDays": 0,
-    "attendedDays": 0,
-    "totalTestsEvaluated": 4,
-    "password": "student123"
-  },
-  {
     "name": "Palak",
     "rollNo": "GCC-1002",
     "grade": "Class 10",

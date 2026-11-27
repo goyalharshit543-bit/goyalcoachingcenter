@@ -500,12 +500,6 @@ export default function MainAdminPortal({ adminUser, onLogout, onBackToHome, isD
             <Download className="w-3.5 h-3.5" /> Backup DB
           </button>
           <button
-            onClick={handleResetData}
-            className="px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-blue-500 flex items-center gap-1.5 cursor-pointer transition-colors"
-          >
-            <RotateCcw className="w-3.5 h-3.5" /> Reset Demo
-          </button>
-          <button
             onClick={onBackToHome}
             className="px-4 py-2 text-xs font-semibold rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-md shadow-blue-600/30 cursor-pointer transition-all hover:scale-105 active:scale-95"
           >

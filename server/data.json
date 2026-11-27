@@ -88,38 +88,6 @@
   ],
   "students": [
     {
-      "name": "Test",
-      "rollNo": "GCC261101067",
-      "grade": "Class 10",
-      "stream": "Science & Mathematics",
-      "batch": "Class 10 Board Champions",
-      "parentName": "dd",
-      "parentPhone": "5868658",
-      "totalFees": 38000,
-      "paidFees": 38000,
-      "id": "GCC261101067",
-      "fees": {
-        "total": 38000,
-        "paid": 38000,
-        "due": 0,
-        "status": "Fully Paid",
-        "lastReceipt": "REC-9400"
-      },
-      "batchRank": null,
-      "totalBatchStudents": 5,
-      "overallPercentage": 83.5,
-      "attendancePercentage": 0,
-      "totalClassesAttended": 0,
-      "totalClassesHeld": 0,
-      "teacherRemarks": "Diligent student. Good concept clarity and active classroom participation.",
-      "photo": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=400&q=80",
-      "enrollmentDate": "2026-11-27",
-      "workingDays": 0,
-      "attendedDays": 0,
-      "totalTestsEvaluated": 4,
-      "password": "student123"
-    },
-    {
       "name": "Naman",
       "rollNo": "GCC-902",
       "grade": "Class 9",
@@ -329,18 +297,6 @@
           "status": "Distinction",
           "remarks": "Great conceptual clarity and neat method presentation. Minor calculation slip in Q4.",
           "evaluatedAt": "2026-11-16T10:00:00.000Z"
-        },
-        {
-          "studentId": "GCC261101067",
-          "rollNo": "GCC261101067",
-          "studentName": "Test",
-          "marksObtained": 42,
-          "maxMarks": 50,
-          "percentage": 84,
-          "rank": 3,
-          "status": "Passed",
-          "remarks": "Very good score. Practice more assertion-reason questions.",
-          "evaluatedAt": "2026-11-16T10:00:00.000Z"
         }
       ],
       "questionPaperUrl": "https://images.unsplash.com/photo-1596495578065-6e0763fa1178?auto=format&fit=crop&w=1200&q=80",
@@ -384,18 +340,6 @@
           "rank": 2,
           "status": "Distinction",
           "remarks": "Neat diagram work and accurate lens formula calculations.",
-          "evaluatedAt": "2026-11-09T14:30:00.000Z"
-        },
-        {
-          "studentId": "GCC261101067",
-          "rollNo": "GCC261101067",
-          "studentName": "Test",
-          "marksObtained": 35,
-          "maxMarks": 40,
-          "percentage": 87.5,
-          "rank": 3,
-          "status": "Distinction",
-          "remarks": "Strong understanding of mirror magnification and refraction index.",
           "evaluatedAt": "2026-11-09T14:30:00.000Z"
         }
       ],
@@ -462,18 +406,6 @@
           "rank": 2,
           "status": "Distinction",
           "remarks": "High accuracy in quadratic formulas and circle tangents.",
-          "evaluatedAt": "2026-11-21T11:00:00.000Z"
-        },
-        {
-          "studentId": "GCC261101067",
-          "rollNo": "GCC261101067",
-          "studentName": "Test",
-          "marksObtained": 68,
-          "maxMarks": 80,
-          "percentage": 85,
-          "rank": 3,
-          "status": "Distinction",
-          "remarks": "Good presentation. Keep practicing 5-mark theorem deductions.",
           "evaluatedAt": "2026-11-21T11:00:00.000Z"
         }
       ]
@@ -969,16 +901,6 @@
   ],
   "enquiries": [
     {
-      "name": "haRSHIT",
-      "email": "subhashchand65125@gmail.com",
-      "phone": "985",
-      "mobile": "985",
-      "message": "wfdjhkvuoief",
-      "source": "Website Contact Page",
-      "id": "ENQ-1957",
-      "timestamp": "2026-11-20T12:49:11.957Z"
-    },
-    {
       "name": "Aman Kumar",
       "mobile": "9876960163",
       "message": "Need details for Class 9th Foundation batch timings",
@@ -997,92 +919,7 @@
       "timestamp": "2026-11-20T12:06:29.160Z"
     }
   ],
-  "doubts": [
-    {
-      "id": "DBT-501",
-      "studentName": "Aarav Gupta",
-      "rollNo": "GCC-102",
-      "grade": "Class 10",
-      "subject": "Mathematics",
-      "topic": "Quadratic Equations - Nature of Roots & Word Problems",
-      "question": "In exercise 4.4 word problem 3, how to correctly frame the speed equation for the express train vs passenger train?",
-      "status": "Resolved",
-      "priority": "High",
-      "assignedTeacher": "Goyal Sir",
-      "date": "2026-11-19",
-      "reply": "Assume speed of passenger train = x km/h. Speed of express train = (x + 11) km/h. Distance = 132 km. Equation: 132/x - 132/(x+11) = 1. Fully solved on doubt board."
-    },
-    {
-      "id": "DBT-502",
-      "studentName": "Priya Goyal",
-      "rollNo": "GCC-101",
-      "grade": "Class 12",
-      "subject": "Accountancy",
-      "topic": "Forfeiture & Re-issue of Shares (Sec 52 Premium Rules)",
-      "question": "When shares issued at a premium are forfeited, is Securities Premium Account debited if premium was already received?",
-      "status": "Resolved",
-      "priority": "Normal",
-      "assignedTeacher": "CA Deepak Goyal",
-      "date": "2026-11-19",
-      "reply": "No. Under Section 52(2) of the Companies Act, once Securities Premium is received, it cannot be debited/reversed on subsequent forfeiture."
-    },
-    {
-      "id": "DBT-503",
-      "studentName": "Ananya Sharma",
-      "rollNo": "GCC-103",
-      "grade": "Class 10",
-      "subject": "Science (Physics)",
-      "topic": "Light - Refraction through Triangular Glass Prism",
-      "question": "Need clarification on angle of deviation (D = i + e - A) formula and the ray tracing conditions for minimum deviation.",
-      "status": "Pending",
-      "priority": "Urgent",
-      "assignedTeacher": "Dr. Anita Jain",
-      "date": "2026-11-20",
-      "reply": ""
-    },
-    {
-      "id": "DBT-504",
-      "studentName": "Rohan Varma",
-      "rollNo": "GCC-104",
-      "grade": "Class 11",
-      "subject": "Economics",
-      "topic": "Consumer's Equilibrium - Indifference Curve Analysis",
-      "question": "Why is the Marginal Rate of Substitution (MRSxy = Px/Py) strictly diminishing along a convex indifference curve?",
-      "status": "Pending",
-      "priority": "Normal",
-      "assignedTeacher": "CA Deepak Goyal",
-      "date": "2026-11-20",
-      "reply": ""
-    },
-    {
-      "id": "DBT-505",
-      "studentName": "Aman Kumar",
-      "rollNo": "GCC-105",
-      "grade": "Class 9",
-      "subject": "Science (Chemistry)",
-      "topic": "Atoms and Molecules - Mole Concept & Avogadro Constant",
-      "question": "How to calculate the number of aluminium ions present in 0.051 g of aluminium oxide (Al2O3)?",
-      "status": "In Progress",
-      "priority": "High",
-      "assignedTeacher": "Dr. Anita Jain",
-      "date": "2026-11-20",
-      "reply": "Assigned to today's 5:30 PM Doubt Counter desk."
-    },
-    {
-      "id": "DBT-506",
-      "studentName": "Simran Kaur",
-      "rollNo": "GCC-106",
-      "grade": "Class 12",
-      "subject": "Business Studies",
-      "topic": "Principles of Management - Taylor vs Fayol Techniques",
-      "question": "What is the key difference between Functional Foremanship (Taylor) and Unity of Command (Fayol)?",
-      "status": "Resolved",
-      "priority": "Normal",
-      "assignedTeacher": "Goyal Sir",
-      "date": "2026-11-18",
-      "reply": "Functional foremanship violates Unity of Command because each worker gets orders from 8 specialists. Remember Fayol advocates 1 boss."
-    }
-  ],
+  "doubts": [],
   "assignments": [
     {
       "id": "ASG-101",
@@ -1655,138 +1492,6 @@
               "explanation": "Lateral inversion means:  Left appears right.  Right appears left.  The image is also virtual, erect and equal in size to the object."
             }
           ]
-        },
-        {
-          "id": "ATT-1003",
-          "testId": "MCQ-7729",
-          "studentId": "GCC261101067",
-          "studentName": "Test",
-          "rollNo": "GCC261101067",
-          "grade": "Class 10",
-          "score": 31,
-          "maxScore": 40,
-          "correctCount": 8,
-          "incorrectCount": 2,
-          "unattemptedCount": 0,
-          "totalQuestions": 10,
-          "accuracy": 80,
-          "timeTakenSeconds": 1640,
-          "submittedAt": "2026-11-23T18:00:00.000Z",
-          "isPractice": false,
-          "answers": {
-            "Q1": "C",
-            "Q2": "A",
-            "Q3": "C",
-            "Q4": "B",
-            "Q5": "B",
-            "Q6": "B",
-            "Q7": "B",
-            "Q8": "B",
-            "Q9": "C",
-            "Q10": "C"
-          },
-          "detailedBreakdown": [
-            {
-              "questionId": "Q1",
-              "text": "A ray of light falls normally on a plane mirror. The angle of reflection is:",
-              "image": "",
-              "chosenOption": "C",
-              "correctOption": "C",
-              "isCorrect": true,
-              "isUnattempted": false,
-              "explanation": "When a ray falls normally, it travels along the normal.  Therefore, the angle of incidence is 0°.  According to the law of reflection:  ∠ i = ∠ r ∠i=∠r"
-            },
-            {
-              "questionId": "Q2",
-              "text": "An object is placed 12 cm in front of a plane mirror. The distance between the object and its image is:",
-              "image": "",
-              "chosenOption": "A",
-              "correctOption": "A",
-              "isCorrect": true,
-              "isUnattempted": false,
-              "explanation": "In a plane mirror:  Image distance = Object distance.  Object distance = 12 cm.  Image distance = 12 cm.  Therefore,  12 + 12 = 24  cm 12+12=24 cm"
-            },
-            {
-              "questionId": "Q3",
-              "text": ". Which phenomenon proves that light travels in a straight line?",
-              "image": "",
-              "chosenOption": "C",
-              "correctOption": "C",
-              "isCorrect": true,
-              "isUnattempted": false,
-              "explanation": "When an opaque object blocks light, a shadow is formed behind it.  This happens because light travels in straight lines in a uniform medium.  This property is called rectilinear propagation of light."
-            },
-            {
-              "questionId": "Q4",
-              "text": "A concave mirror is used by dentists because it can produce:",
-              "image": "",
-              "chosenOption": "B",
-              "correctOption": "B",
-              "isCorrect": true,
-              "isUnattempted": false,
-              "explanation": ""
-            },
-            {
-              "questionId": "Q5",
-              "text": "If the angle between the incident ray and the reflected ray is 80°, the angle of incidence is:",
-              "image": "",
-              "chosenOption": "B",
-              "correctOption": "B",
-              "isCorrect": true,
-              "isUnattempted": false,
-              "explanation": "According to the law of reflection:  i = r i=r The angle between the incident and reflected rays is:  i + r = 80 ∘ i+r=80  ∘   2 i = 80 ∘ 2i=80  ∘   i = 40 ∘ i=40  ∘   ​"
-            },
-            {
-              "questionId": "Q6",
-              "text": "Which mirror always forms a virtual, erect and diminished image?",
-              "image": "",
-              "chosenOption": "B",
-              "correctOption": "A",
-              "isCorrect": false,
-              "isUnattempted": false,
-              "explanation": "A convex mirror always forms an image that is:  Virtual  Erect  Diminished  It is commonly used as a rear-view mirror in vehicles because it provides a wider field of view."
-            },
-            {
-              "questionId": "Q7",
-              "text": "The focal length of a spherical mirror is:",
-              "image": "",
-              "chosenOption": "B",
-              "correctOption": "B",
-              "isCorrect": true,
-              "isUnattempted": false,
-              "explanation": "The relationship between focal length and radius of curvature is:  f = R 2 f=  2 R ​   ​   Where:  f f = focal length  R R = radius of curvature  For example, if R = 20 cm:  f = 20 2 = 10  cm f=  2 20 ​  =10 cm"
-            },
-            {
-              "questionId": "Q8",
-              "text": "A ray of light passing through the centre of curvature of a spherical mirror:",
-              "image": "",
-              "chosenOption": "B",
-              "correctOption": "B",
-              "isCorrect": true,
-              "isUnattempted": false,
-              "explanation": "A ray passing through the centre of curvature strikes the mirror normally because it travels along the normal.  Therefore, it is reflected back along the same path."
-            },
-            {
-              "questionId": "Q9",
-              "text": "Which of the following can produce a real image?",
-              "image": "",
-              "chosenOption": "C",
-              "correctOption": "C",
-              "isCorrect": true,
-              "isUnattempted": false,
-              "explanation": "Explanation:  Plane mirror: Always forms a virtual image.  Convex mirror: Always forms a virtual image.  Concave mirror: Can form both real and virtual images depending on the object's position.  Therefore, the correct answer is concave mirror."
-            },
-            {
-              "questionId": "Q10",
-              "text": "The image formed by a plane mirror is:",
-              "image": "",
-              "chosenOption": "C",
-              "correctOption": "A",
-              "isCorrect": false,
-              "isUnattempted": false,
-              "explanation": "Lateral inversion means:  Left appears right.  Right appears left.  The image is also virtual, erect and equal in size to the object."
-            }
-          ]
         }
       ]
     },
@@ -2102,10 +1807,10 @@
     "GCC-1",
     "1",
     "CGC505",
-    "CGC-AUTO-99"
+    "CGC-AUTO-99",
+    "GCC261101067"
   ],
   "syncedStudentRolls": [
-    "GCC261101067",
     "GCC-902",
     "GCC-1002",
     "GCC-1001",
