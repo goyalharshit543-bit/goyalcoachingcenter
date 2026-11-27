@@ -450,13 +450,6 @@ export default function AdminPortal({ onBackToHome, teacherUser = null, onLogout
             <Download className="w-3.5 h-3.5" /> Backup DB
           </button>
           <button
-            onClick={handleResetData}
-            className="px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1.5 cursor-pointer"
-            title="Restore sample demo data"
-          >
-            <RotateCcw className="w-3.5 h-3.5" /> Reset Demo
-          </button>
-          <button
             onClick={onBackToHome}
             className="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all cursor-pointer"
           >
