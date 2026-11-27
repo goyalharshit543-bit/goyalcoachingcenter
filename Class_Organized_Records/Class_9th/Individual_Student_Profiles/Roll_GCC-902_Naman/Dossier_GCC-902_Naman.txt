@@ -2,34 +2,35 @@
 GOYAL COACHING CENTER - COMPLETE STUDENT RECORD CARD
 =====================================================================
 STUDENT INFORMATION:
-- Student Name        : Harshit
-- Roll Number (ID)    : CGC-1001
-- Enrolled Class      : Class 8th
+- Student Name        : Naman
+- Roll Number (ID)    : GCC-902
+- Enrolled Class      : Class 9th
 - Academic Stream     : Science & Mathematics
 - Batch Assignment    : Class 10 Board Champions
 - Enrollment Date     : 2026-11-27
 - Login Password      : student123
 
 GUARDIAN & CONTACT DETAILS:
-- Father/Mother Name  : Gitti Goyal
-- Parent Phone Number : 52
-- Student Phone Number: 52
+- Father/Mother Name  : Rocky
+- Parent Phone Number : 9872534466
+- Student Phone Number: 9872534466
 
 FINANCIAL & FEE STATUS:
 - Total Course Fee    : Rs. 38000
 - Amount Paid to Date : Rs. 38000
 - Current Outstanding : Rs. 0
 - Fee Status Badge    : Fully Paid
-- Last Receipt Number : REC-0817
+- Last Receipt Number : REC-3661
 
 ACADEMIC & ATTENDANCE PERFORMANCE:
-- Overall Score %     : 0%
+- Overall Score %     : 84.5%
 - Total Attendance %  : 0%
-- Total Classes       : 0 Attended out of 0 Working Days
-- Faculty Remarks     : Newly admitted student. No assessments or attendance marked yet.
+- Total Classes       : 0 Attended out of 1 Working Days
+- Faculty Remarks     : Diligent student. Good concept clarity and active classroom participation.
 
 DETAILED TEST & EXAMINATION RESULTS:
-  - No offline examinations recorded yet.
+  1. [2026-11-17] Class 9 Mathematics & Science Sunday Mock - Polynomials & Laws of Motion (Mathematics & Science): Scored 42 / 50 (84%)
+  2. [2026-11-10] Class 9 Science Unit Test - Atoms & Molecules and Structure of Atom (Science): Scored 34 / 40 (85%)
 =====================================================================
 Exported Automatically by Goyal Coaching Center Organizer
 =====================================================================

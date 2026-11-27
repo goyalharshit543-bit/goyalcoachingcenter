@@ -1,0 +1,36 @@
+=====================================================================
+GOYAL COACHING CENTER - COMPLETE STUDENT RECORD CARD
+=====================================================================
+STUDENT INFORMATION:
+- Student Name        : Gursangam
+- Roll Number (ID)    : GCC-901
+- Enrolled Class      : Class 9th
+- Academic Stream     : Science & Mathematics
+- Batch Assignment    : Class 10 Board Champions
+- Enrollment Date     : 2026-11-27
+- Login Password      : student123
+
+GUARDIAN & CONTACT DETAILS:
+- Father/Mother Name  : Harpreet
+- Parent Phone Number : 9463616680
+- Student Phone Number: 9463616680
+
+FINANCIAL & FEE STATUS:
+- Total Course Fee    : Rs. 38000
+- Amount Paid to Date : Rs. 38000
+- Current Outstanding : Rs. 0
+- Fee Status Badge    : Fully Paid
+- Last Receipt Number : REC-5589
+
+ACADEMIC & ATTENDANCE PERFORMANCE:
+- Overall Score %     : 94.5%
+- Total Attendance %  : 100%
+- Total Classes       : 1 Attended out of 1 Working Days
+- Faculty Remarks     : Distinction student. Superb analytical problem solving and consistent high ranks.
+
+DETAILED TEST & EXAMINATION RESULTS:
+  1. [2026-11-17] Class 9 Mathematics & Science Sunday Mock - Polynomials & Laws of Motion (Mathematics & Science): Scored 47 / 50 (94%)
+  2. [2026-11-10] Class 9 Science Unit Test - Atoms & Molecules and Structure of Atom (Science): Scored 38 / 40 (95%)
+=====================================================================
+Exported Automatically by Goyal Coaching Center Organizer
+=====================================================================

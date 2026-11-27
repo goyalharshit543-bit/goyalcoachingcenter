@@ -209,6 +209,7 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
   const [reviewingAttempt, setReviewingAttempt] = useState(null);
   const [liveOfflineTests, setLiveOfflineTests] = useState([]);
   const [previewStudentSheet, setPreviewStudentSheet] = useState(null);
+  const [reportFilterTab, setReportFilterTab] = useState('all'); // 'all' | 'offline' | 'olympiad'
   const examTimerRef = useRef(null);
   const autoSubmitRef = useRef(null);
 
@@ -2633,46 +2634,451 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
             {/* ============================================================= */}
             {/* 9. REPORTS VIEW                                               */}
             {/* ============================================================= */}
-            {activeTab === 'reports' && (
-              <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-                  <div>
-                    <h2 className="text-base font-bold text-slate-800 flex items-center gap-2">
-                      <BarChart2 className="w-5 h-5 text-[#1976d2]" />
-                      <span>Official Academic Report Card</span>
-                    </h2>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Student: <strong className="text-slate-800">{studentDisplayName}</strong> • Roll No: {student?.rollNo} • Batch: {student?.grade || 'Class Enrolled'}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => window.print()}
-                    className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 cursor-pointer self-start sm:self-auto"
-                  >
-                    <Printer className="w-3.5 h-3.5" /> Print / Save PDF
-                  </button>
-                </div>
+            {/* ============================================================= */}
+            {/* 9. COMPREHENSIVE REPORTS, OFFLINE TESTS & OLYMPIAD RESULTS    */}
+            {/* ============================================================= */}
+            {activeTab === 'reports' && (() => {
+              const currentStudent = session?.student || {};
+              const sourceOfflineTests = liveOfflineTests.length > 0 ? liveOfflineTests : (session?.tests || []);
+              const clean = (val) => String(val || '').trim().toLowerCase();
+              const sId = clean(currentStudent.id);
+              const sRoll = clean(currentStudent.rollNo);
+              const sName = clean(currentStudent.name);
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-center">
-                    <div className="text-xs text-slate-500">Attendance Percentage</div>
-                    <div className="text-2xl font-bold text-[#1976d2] mt-1">
-                      {totalClasses > 0 ? `${attendanceRate}%` : 'New Admission'}
+              // 1. Gather all evaluated offline tests
+              const studentOfflineRecords = [];
+              sourceOfflineTests.forEach(t => {
+                if (Array.isArray(t.results)) {
+                  const r = t.results.find(res => {
+                    const rSid = clean(res.studentId);
+                    const rRoll = clean(res.rollNo);
+                    const rName = clean(res.studentName || res.name);
+                    return (
+                      (rSid && (rSid === sId || rSid === sRoll)) ||
+                      (rRoll && (rRoll === sRoll || rRoll === sId)) ||
+                      (rName && sName && (rName === sName || rName.includes(sName) || sName.includes(rName)))
+                    );
+                  });
+
+                  if (r) {
+                    const maxMarks = Number(t.maxMarks || r.maxMarks) || 50;
+                    const marksObtained = Number(r.marksObtained);
+                    const pct = r.percentage !== undefined ? Number(r.percentage) : Number(((marksObtained / maxMarks) * 100).toFixed(1));
+                    studentOfflineRecords.push({
+                      testId: t.id,
+                      title: t.title,
+                      subject: t.subject || 'All Subjects',
+                      grade: t.grade || t.batch || currentStudent.grade,
+                      date: t.date,
+                      type: t.type || 'Offline Classroom Test',
+                      maxMarks,
+                      marksObtained,
+                      percentage: pct,
+                      rank: r.rank || '-',
+                      status: r.status || (pct >= 85 ? 'Distinction' : (pct >= 40 ? 'Passed' : 'Needs Practice')),
+                      remarks: r.remarks || 'Standard evaluation recorded.',
+                      highestMarks: t.highestMarks,
+                      avgMarks: t.avgMarks,
+                      questionPaperUrl: t.questionPaperUrl,
+                      questionPaperName: t.questionPaperName,
+                      questionPaperType: t.questionPaperType,
+                      documentUrl: r.documentUrl || (r.documents && r.documents[0]?.url) || null,
+                      documents: r.documents || []
+                    });
+                  }
+                }
+              });
+              studentOfflineRecords.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
+              // 2. Gather all Olympiad online test attempts
+              const studentOlympiadAttempts = [];
+              (liveOnlineTests || []).forEach(test => {
+                (test.attempts || []).forEach(att => {
+                  const aId = clean(att.studentId);
+                  const aRoll = clean(att.rollNo);
+                  const aName = clean(att.studentName);
+                  if (
+                    (aId && (aId === sId || aId === sRoll)) ||
+                    (aRoll && (aRoll === sRoll || aRoll === sId)) ||
+                    (aName && sName && (aName === sName || aName.includes(sName) || sName.includes(aName)))
+                  ) {
+                    studentOlympiadAttempts.push({
+                      testId: test.id,
+                      testTitle: test.title,
+                      subject: test.subject || 'Olympiad Challenge',
+                      grade: test.grade,
+                      durationMinutes: test.durationMinutes || 60,
+                      positiveMarks: test.positiveMarks || 4,
+                      negativeMarks: test.negativeMarks || 1,
+                      totalMarks: test.totalMarks || 40,
+                      questions: test.questions || [],
+                      submittedAt: att.submittedAt,
+                      score: att.score,
+                      maxScore: att.maxScore || test.totalMarks || 40,
+                      accuracy: att.accuracy,
+                      correctCount: att.correctCount,
+                      incorrectCount: att.incorrectCount,
+                      unattemptedCount: att.unattemptedCount,
+                      totalQuestions: att.totalQuestions || test.questions?.length || 10,
+                      timeTakenSeconds: att.timeTakenSeconds || 0,
+                      detailedBreakdown: att.detailedBreakdown || [],
+                      rawAttempt: att,
+                      rawTest: test
+                    });
+                  }
+                });
+              });
+              studentOlympiadAttempts.sort((a, b) => new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0));
+
+              // 3. Overall Performance Metrics
+              const totalTestsCount = studentOfflineRecords.length + studentOlympiadAttempts.length;
+              const overallScorePct = currentStudent.overallPercentage !== undefined && Number(currentStudent.overallPercentage) > 0
+                ? Number(currentStudent.overallPercentage)
+                : (studentOfflineRecords.length > 0
+                  ? Number((studentOfflineRecords.reduce((acc, r) => acc + r.percentage, 0) / studentOfflineRecords.length).toFixed(1))
+                  : 0);
+
+              let bestScoreDisplay = 'N/A';
+              if (studentOfflineRecords.length > 0) {
+                const maxPctOffline = Math.max(...studentOfflineRecords.map(r => r.percentage));
+                bestScoreDisplay = `${maxPctOffline}%`;
+              } else if (studentOlympiadAttempts.length > 0) {
+                const maxPctOlympiad = Math.max(...studentOlympiadAttempts.map(a => Math.round((a.score / a.maxScore) * 100)));
+                bestScoreDisplay = `${maxPctOlympiad}%`;
+              }
+
+              const isDistinction = overallScorePct >= 85;
+
+              return (
+                <div className="space-y-6">
+                  {/* Top Official Academic Transcript Header */}
+                  <div className="p-6 rounded-2xl bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-800 text-white shadow-xl border border-blue-500/30">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/20">
+                      <div>
+                        <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-bold uppercase tracking-wider mb-2">
+                          <Award className="w-3.5 h-3.5 text-amber-300" /> Official Academic Transcript & Report Card
+                        </div>
+                        <h2 className="text-xl sm:text-2xl font-black tracking-tight">
+                          Goyal Coaching Centre — Student Performance Report
+                        </h2>
+                        <p className="text-xs text-blue-100 mt-1">
+                          Student: <strong className="text-white text-sm">{studentDisplayName}</strong> • Roll No: <span className="font-mono bg-white/20 px-2 py-0.5 rounded text-white">{currentStudent?.rollNo}</span> • Batch: <strong className="text-white">{currentStudent?.grade || 'Class 10'}</strong> ({currentStudent?.stream || 'Science & Maths'})
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+                        <button
+                          onClick={() => {
+                            loadLiveOfflineTests();
+                            loadLiveOnlineTests();
+                          }}
+                          className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer backdrop-blur-sm border border-white/20 transition-colors"
+                          title="Refresh Latest Test Marks"
+                        >
+                          <RefreshCw className="w-3.5 h-3.5" /> Refresh
+                        </button>
+                        <button
+                          onClick={() => window.print()}
+                          className="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-amber-400/25 transition-all hover:scale-105 active:scale-95"
+                        >
+                          <Printer className="w-3.5 h-3.5" /> Print / Save PDF
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Aggregate KPI Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mt-5">
+                      <div className="p-3.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10">
+                        <div className="text-[10px] uppercase font-bold text-blue-200">Overall Academic Score</div>
+                        <div className="text-2xl font-black text-amber-300 mt-1">
+                          {overallScorePct > 0 ? `${overallScorePct}%` : 'New Admission'}
+                        </div>
+                        <div className="text-[10px] text-blue-100 mt-0.5">
+                          {isDistinction ? '🏆 Distinction Track' : 'Passed & Regular'}
+                        </div>
+                      </div>
+
+                      <div className="p-3.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10">
+                        <div className="text-[10px] uppercase font-bold text-blue-200">Total Tests Evaluated</div>
+                        <div className="text-2xl font-black text-white mt-1">
+                          {totalTestsCount} Tests
+                        </div>
+                        <div className="text-[10px] text-blue-100 mt-0.5">
+                          {studentOfflineRecords.length} Offline • {studentOlympiadAttempts.length} Olympiad
+                        </div>
+                      </div>
+
+                      <div className="p-3.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10">
+                        <div className="text-[10px] uppercase font-bold text-blue-200">Best Test Score</div>
+                        <div className="text-2xl font-black text-emerald-300 mt-1">
+                          {bestScoreDisplay}
+                        </div>
+                        <div className="text-[10px] text-blue-100 mt-0.5">Top Mark Recorded</div>
+                      </div>
+
+                      <div className="p-3.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10">
+                        <div className="text-[10px] uppercase font-bold text-blue-200">Center Attendance</div>
+                        <div className="text-2xl font-black text-white mt-1">
+                          {totalClasses > 0 ? `${attendanceRate}%` : '100%'}
+                        </div>
+                        <div className="text-[10px] text-blue-100 mt-0.5">
+                          {totalClasses > 0 ? `${attendedClasses}/${totalClasses} Sessions Attended` : 'Good Standing'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Mentor Remarks Strip */}
+                    <div className="mt-4 p-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 flex items-center gap-2.5 text-xs text-blue-100">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>
+                        <strong className="text-white">Director & Faculty Remarks:</strong> {currentStudent?.teacherRemarks || 'Consistent performance, outstanding conceptual clarity, and dedicated classroom participation.'}
+                      </span>
                     </div>
                   </div>
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-center">
-                    <div className="text-xs text-slate-500">Total Tests Evaluated</div>
-                    <div className="text-2xl font-bold text-slate-800 mt-1">{tests?.length || 0}</div>
+
+                  {/* Sub-Filter Tabs inside Report Section */}
+                  <div className="flex flex-wrap items-center gap-2 bg-white rounded-xl p-2 border border-slate-200 shadow-xs">
+                    <button
+                      type="button"
+                      onClick={() => setReportFilterTab('all')}
+                      className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                        reportFilterTab === 'all'
+                          ? 'bg-[#1976d2] text-white shadow-sm'
+                          : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                      }`}
+                    >
+                      <BarChart2 className="w-3.5 h-3.5" />
+                      <span>All Reports & Results</span>
+                      <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-white/20 text-white font-mono ml-1">
+                        {totalTestsCount}
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setReportFilterTab('offline')}
+                      className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                        reportFilterTab === 'offline'
+                          ? 'bg-[#1976d2] text-white shadow-sm'
+                          : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                      }`}
+                    >
+                      <Zap className="w-3.5 h-3.5 text-amber-500" />
+                      <span>Offline Sunday & Classroom Tests</span>
+                      <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 text-slate-700 font-mono ml-1">
+                        {studentOfflineRecords.length}
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setReportFilterTab('olympiad')}
+                      className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                        reportFilterTab === 'olympiad'
+                          ? 'bg-[#1976d2] text-white shadow-sm'
+                          : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                      }`}
+                    >
+                      <HelpCircle className="w-3.5 h-3.5 text-cyan-600" />
+                      <span>Olympiad & Timed MCQ Results</span>
+                      <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 text-slate-700 font-mono ml-1">
+                        {studentOlympiadAttempts.length}
+                      </span>
+                    </button>
                   </div>
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-center">
-                    <div className="text-xs text-slate-500">Mentor Remarks</div>
-                    <div className="text-xs font-bold text-emerald-700 mt-2">
-                      Active Student • Good Focus & Regularity
+
+                  {/* ================= SECTION A: OFFLINE CLASSROOM & SUNDAY TESTS ================= */}
+                  {(reportFilterTab === 'all' || reportFilterTab === 'offline') && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                          <Zap className="w-4 h-4 text-amber-500" />
+                          <span>Offline Sunday Mock Tests & Checked Answer Sheets ({studentOfflineRecords.length})</span>
+                        </h3>
+                        <span className="text-xs text-slate-500">Board Exam Pattern Simulated Papers</span>
+                      </div>
+
+                      {studentOfflineRecords.length === 0 ? (
+                        <div className="p-8 rounded-xl bg-white border border-dashed border-slate-300 text-center text-xs text-slate-400">
+                          No offline classroom tests evaluated yet for this student.
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 gap-3.5">
+                          {studentOfflineRecords.map((t, idx) => (
+                            <div 
+                              key={idx}
+                              className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-sm hover:border-blue-400 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                            >
+                              <div className="flex-1 min-w-0">
+                                <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-[#1976d2] border border-blue-200">
+                                    {t.subject}
+                                  </span>
+                                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
+                                    {t.type}
+                                  </span>
+                                  <span className="text-xs font-mono text-slate-400 flex items-center gap-1">
+                                    <Calendar className="w-3.5 h-3.5" /> {t.date}
+                                  </span>
+                                </div>
+
+                                <h4 className="font-bold text-slate-900 text-base">
+                                  {t.title}
+                                </h4>
+
+                                <div className="mt-2 text-xs text-slate-600 flex flex-wrap items-center gap-3">
+                                  <span>Batch Rank: <strong className="text-slate-800">#{t.rank}</strong></span>
+                                  <span>•</span>
+                                  <span>Class Highest: <strong className="text-emerald-700">{t.highestMarks || '-'}</strong></span>
+                                  <span>•</span>
+                                  <span>Class Average: <strong className="text-slate-700">{t.avgMarks || '-'}</strong></span>
+                                </div>
+
+                                {t.remarks && (
+                                  <div className="mt-2.5 p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 flex items-start gap-2">
+                                    <FileCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                                    <span><strong>Faculty Feedback:</strong> {t.remarks}</span>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Marks & Action Area */}
+                              <div className="flex md:flex-col items-center md:items-end justify-between gap-3 shrink-0 pt-3 md:pt-0 border-t md:border-t-0 border-slate-100">
+                                <div className="text-left md:text-right">
+                                  <div className="text-[10px] uppercase font-bold text-slate-400">Score Scored</div>
+                                  <div className="flex items-baseline gap-1 md:justify-end">
+                                    <span className="text-2xl font-black text-[#1976d2]">{t.marksObtained}</span>
+                                    <span className="text-xs font-bold text-slate-400">/ {t.maxMarks}</span>
+                                  </div>
+                                  <div className="mt-0.5">
+                                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black ${
+                                      t.percentage >= 85
+                                        ? 'bg-emerald-100 text-emerald-800'
+                                        : 'bg-blue-100 text-blue-800'
+                                    }`}>
+                                      {t.percentage}% • {t.status}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-2">
+                                  {t.questionPaperUrl && (
+                                    <button
+                                      onClick={() => window.open(t.questionPaperUrl, '_blank')}
+                                      className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                                      title="View / Download Exam Paper"
+                                    >
+                                      <FileText className="w-3.5 h-3.5" /> Question Paper
+                                    </button>
+                                  )}
+
+                                  {t.documentUrl && (
+                                    <button
+                                      onClick={() => setPreviewStudentSheet({
+                                        title: t.title,
+                                        studentName: studentDisplayName,
+                                        marks: `${t.marksObtained}/${t.maxMarks}`,
+                                        url: t.documentUrl,
+                                        documents: t.documents,
+                                        remarks: t.remarks
+                                      })}
+                                      className="px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                                      title="View Checked Answer Sheet"
+                                    >
+                                      <Eye className="w-3.5 h-3.5" /> Checked Sheet
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  )}
+
+                  {/* ================= SECTION B: OLYMPIAD & BOARD ONLINE TESTS ================= */}
+                  {(reportFilterTab === 'all' || reportFilterTab === 'olympiad') && (
+                    <div className="space-y-3 pt-2">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                          <HelpCircle className="w-4 h-4 text-cyan-600" />
+                          <span>Olympiad & Timed MCQ Test Results ({studentOlympiadAttempts.length})</span>
+                        </h3>
+                        <span className="text-xs text-slate-500">National Science Olympiad, IMO & NTSE Arena</span>
+                      </div>
+
+                      {studentOlympiadAttempts.length === 0 ? (
+                        <div className="p-8 rounded-xl bg-white border border-dashed border-slate-300 text-center text-xs text-slate-400">
+                          No Olympiad MCQ tests attempted yet. Visit the "My Tests" tab to take active Olympiad tests.
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 gap-3.5">
+                          {studentOlympiadAttempts.map((att, idx) => (
+                            <div 
+                              key={idx}
+                              className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-sm hover:border-cyan-400 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                            >
+                              <div className="flex-1 min-w-0">
+                                <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-50 text-cyan-800 border border-cyan-200">
+                                    {att.subject}
+                                  </span>
+                                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
+                                    Timed Olympiad Exam
+                                  </span>
+                                  <span className="text-xs font-mono text-slate-400 flex items-center gap-1">
+                                    <Clock className="w-3.5 h-3.5" /> {att.submittedAt ? new Date(att.submittedAt).toLocaleDateString() : 'Recent'}
+                                  </span>
+                                </div>
+
+                                <h4 className="font-bold text-slate-900 text-base">
+                                  {att.testTitle}
+                                </h4>
+
+                                <div className="mt-2 text-xs text-slate-600 flex flex-wrap items-center gap-3">
+                                  <span>Accuracy: <strong className="text-cyan-700 font-bold">{att.accuracy}%</strong></span>
+                                  <span>•</span>
+                                  <span>Performance: <span className="text-emerald-600 font-bold">{att.correctCount} Correct</span>, <span className="text-rose-500 font-bold">{att.incorrectCount} Wrong</span>, <span className="text-slate-400">{att.unattemptedCount} Skipped</span></span>
+                                  <span>•</span>
+                                  <span>Time Taken: <strong className="font-mono text-slate-700">{Math.floor(att.timeTakenSeconds / 60)}m {att.timeTakenSeconds % 60}s</strong></span>
+                                </div>
+                              </div>
+
+                              {/* Marks & Solution Review Button */}
+                              <div className="flex md:flex-col items-center md:items-end justify-between gap-3 shrink-0 pt-3 md:pt-0 border-t md:border-t-0 border-slate-100">
+                                <div className="text-left md:text-right">
+                                  <div className="text-[10px] uppercase font-bold text-slate-400">Olympiad Score</div>
+                                  <div className="flex items-baseline gap-1 md:justify-end">
+                                    <span className="text-2xl font-black text-cyan-600">{att.score}</span>
+                                    <span className="text-xs font-bold text-slate-400">/ {att.maxScore}</span>
+                                  </div>
+                                  <div className="mt-0.5">
+                                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-100 text-cyan-800">
+                                      {att.accuracy}% Accuracy Rate
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <button
+                                  onClick={() => {
+                                    setReviewingTest(att.rawTest);
+                                    setReviewingAttempt(att.rawAttempt);
+                                  }}
+                                  className="px-3.5 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm shadow-cyan-600/25 transition-all hover:scale-105 active:scale-95"
+                                >
+                                  <BookOpen className="w-3.5 h-3.5" /> View Solutions & Explanations
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* ============================================================= */}
             {/* 10. BOOKMARKED QUESTIONS                                      */}

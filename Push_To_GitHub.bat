@@ -1,13 +1,14 @@
 @echo off
 title Push Goyal Coaching Center to GitHub
-cd /d "e:\goyal coaching center"
+cd /d "%~dp0"
 echo ========================================================
-echo Pushing all 159 files to GitHub (goyalharshit543-bit/goyalcoachingcenter)...
-echo A GitHub window will open - click "Sign in with your browser".
+echo Staging and pushing latest updates to GitHub (goyalcoachingcenter)...
 echo ========================================================
-git push -u origin main --force
+git add -A
+git commit -m "Update marks ledger, student portal reports, excel sync registers, and sync workflows"
+git push origin main
 echo.
 echo ========================================================
-echo PUSH COMPLETE! All folders (navbar, portal, website, etc.) are now on GitHub!
+echo PUSH COMPLETE! All files are now synchronized to GitHub!
 echo ========================================================
 pause

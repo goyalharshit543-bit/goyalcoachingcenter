@@ -17,7 +17,8 @@ export const CATEGORIES = {
   ENROLLED: 'Enrolled_Students',
   GTSE: 'GTSE_Talent_Search_Exam',
   ADMISSIONS: 'Admissions_Applications',
-  QUERIES: 'Queries_And_Contact'
+  QUERIES: 'Queries_And_Contact',
+  MARKS: 'Examination_Marks_And_Reports'
 };
 
 export const STANDARD_CLASSES = [
@@ -609,6 +610,10 @@ export function rebuildEnrolledStudentsExcel(studentsList = null) {
     'Total Fees (Rs)',
     'Paid Fees (Rs)',
     'Fee Status',
+    'Overall Marks %',
+    'Total Tests Evaluated',
+    'Attendance %',
+    'Classes Attended',
     'Enrollment Date',
     'Teacher Remarks'
   ];
@@ -617,6 +622,10 @@ export function rebuildEnrolledStudentsExcel(studentsList = null) {
     const className = normalizeClass(s.grade || s.batch);
     const rollNo = s.rollNo || s.id;
     const timestamp = s.enrollmentDate || '2026-11-20';
+    const overallPct = s.overallPercentage !== undefined ? `${s.overallPercentage}%` : '0%';
+    const testsCount = s.totalTestsEvaluated !== undefined ? s.totalTestsEvaluated : 0;
+    const attPct = s.attendancePercentage !== undefined ? `${s.attendancePercentage}%` : '0%';
+    const attendedClasses = `${s.attendedDays ?? s.totalClassesAttended ?? 0} / ${s.workingDays ?? s.totalClassesHeld ?? 0}`;
     return [
       rollNo,
       s.name || '',
@@ -629,6 +638,10 @@ export function rebuildEnrolledStudentsExcel(studentsList = null) {
       s.fees?.total || s.totalFees || 0,
       s.fees?.paid || s.paidFees || 0,
       s.fees?.status || (s.fees?.due === 0 ? 'Fully Paid' : 'Pending'),
+      overallPct,
+      testsCount,
+      attPct,
+      attendedClasses,
       timestamp,
       s.teacherRemarks || ''
     ];
@@ -658,6 +671,10 @@ export function rebuildEnrolledStudentsExcel(studentsList = null) {
       const classRows = classStudents.map(s => {
         const rollNo = s.rollNo || s.id;
         const timestamp = s.enrollmentDate || '2026-11-20';
+        const overallPct = s.overallPercentage !== undefined ? `${s.overallPercentage}%` : '0%';
+        const testsCount = s.totalTestsEvaluated !== undefined ? s.totalTestsEvaluated : 0;
+        const attPct = s.attendancePercentage !== undefined ? `${s.attendancePercentage}%` : '0%';
+        const attendedClasses = `${s.attendedDays ?? s.totalClassesAttended ?? 0} / ${s.workingDays ?? s.totalClassesHeld ?? 0}`;
         return [
           rollNo,
           s.name || '',
@@ -670,6 +687,10 @@ export function rebuildEnrolledStudentsExcel(studentsList = null) {
           s.fees?.total || s.totalFees || 0,
           s.fees?.paid || s.paidFees || 0,
           s.fees?.status || (s.fees?.due === 0 ? 'Fully Paid' : 'Pending'),
+          overallPct,
+          testsCount,
+          attPct,
+          attendedClasses,
           timestamp,
           s.teacherRemarks || ''
         ];
@@ -699,6 +720,172 @@ export function rebuildEnrolledStudentsExcel(studentsList = null) {
     exportClassHierarchies();
   } catch (err) {
     console.error('[RecordManager] exportClassHierarchies error:', err.message);
+  }
+}
+
+/**
+ * Generates comprehensive Master Examination Marks Registers in records/Examination_Marks_And_Reports/
+ * and server/records/Examination_Marks_And_Reports/
+ */
+export function rebuildMasterMarksAndTestsExcel(dbInput = null) {
+  let db = dbInput;
+  if (!db) {
+    try {
+      const dataFilePath = path.resolve(__dirname, 'data.json');
+      if (fs.existsSync(dataFilePath)) {
+        db = JSON.parse(fs.readFileSync(dataFilePath, 'utf-8'));
+      }
+    } catch {
+      db = { students: [], tests: [], onlineTests: [] };
+    }
+  }
+
+  const students = db.students || [];
+  const tests = db.tests || [];
+  const onlineTests = db.onlineTests || [];
+
+  // Sheet 1: Individual test scores
+  const scoreRows = [];
+  let sNo = 1;
+
+  // Process offline tests
+  tests.forEach(test => {
+    (test.results || []).forEach(r => {
+      const stu = students.find(s => 
+        (s.id && String(s.id).toLowerCase() === String(r.studentId || '').toLowerCase()) ||
+        (s.rollNo && String(s.rollNo).toLowerCase() === String(r.rollNo || r.studentId || '').toLowerCase())
+      );
+      scoreRows.push({
+        'S.No': sNo++,
+        'Roll Number': r.rollNo || (stu ? stu.rollNo : r.studentId),
+        'Student Name': r.studentName || (stu ? stu.name : 'N/A'),
+        'Class / Grade': test.grade || test.batch || (stu ? stu.grade : 'Class 10'),
+        'Exam Type': test.type || 'Offline Classroom Test',
+        'Test Title': test.title,
+        'Subject': test.subject || 'All Subjects',
+        'Exam Date': test.date,
+        'Marks Scored': r.marksObtained !== undefined ? r.marksObtained : 'Absent',
+        'Max Marks': test.maxMarks || 50,
+        'Percentage %': `${r.percentage !== undefined ? r.percentage : 0}%`,
+        'Batch Rank': r.rank || '-',
+        'Result Status': r.status || (Number(r.percentage || 0) >= 85 ? 'Distinction' : 'Passed'),
+        'Class Highest': test.highestMarks || '-',
+        'Class Average': test.avgMarks || '-',
+        'Teacher Feedback': r.remarks || 'Evaluated successfully'
+      });
+    });
+  });
+
+  // Process online Olympiad tests
+  onlineTests.forEach(ot => {
+    (ot.attempts || []).forEach(att => {
+      const stu = students.find(s => 
+        (s.id && String(s.id).toLowerCase() === String(att.studentId || '').toLowerCase()) ||
+        (s.rollNo && String(s.rollNo).toLowerCase() === String(att.rollNo || att.studentId || '').toLowerCase())
+      );
+      scoreRows.push({
+        'S.No': sNo++,
+        'Roll Number': att.rollNo || (stu ? stu.rollNo : att.studentId),
+        'Student Name': att.studentName || (stu ? stu.name : 'N/A'),
+        'Class / Grade': ot.grade || (stu ? stu.grade : 'Class 10'),
+        'Exam Type': 'Olympiad MCQ Arena',
+        'Test Title': ot.title,
+        'Subject': ot.subject || 'Olympiad',
+        'Exam Date': att.submittedAt ? new Date(att.submittedAt).toLocaleDateString() : 'Recent',
+        'Marks Scored': att.score,
+        'Max Marks': att.maxScore || ot.totalMarks || 40,
+        'Percentage %': `${att.accuracy || 0}%`,
+        'Batch Rank': '-',
+        'Result Status': att.accuracy >= 85 ? 'Distinction' : 'Completed',
+        'Class Highest': '-',
+        'Class Average': '-',
+        'Teacher Feedback': `${att.correctCount} Correct, ${att.incorrectCount} Wrong in ${Math.floor((att.timeTakenSeconds || 0)/60)}m`
+      });
+    });
+  });
+
+  // Sheet 2: Student Master Academic Summary
+  const studentSummaryRows = students.map((s, idx) => {
+    const sClean = (val) => String(val || '').trim().toLowerCase();
+    const sId = sClean(s.id);
+    const sRoll = sClean(s.rollNo);
+    const sName = sClean(s.name);
+
+    let offlineCount = 0;
+    tests.forEach(t => {
+      if ((t.results || []).some(r => sClean(r.rollNo) === sRoll || sClean(r.studentId) === sId || sClean(r.studentName) === sName)) {
+        offlineCount++;
+      }
+    });
+
+    let onlineCount = 0;
+    onlineTests.forEach(ot => {
+      if ((ot.attempts || []).some(a => sClean(a.rollNo) === sRoll || sClean(a.studentId) === sId || sClean(a.studentName) === sName)) {
+        onlineCount++;
+      }
+    });
+
+    const overallPct = Number(s.overallPercentage || 0);
+    return {
+      'S.No': idx + 1,
+      'Roll Number': s.rollNo || s.id,
+      'Student Name': s.name,
+      'Class / Grade': s.grade || s.batch || 'Class 10',
+      'Academic Stream': s.stream || 'Standard',
+      'Parent Contact': s.parentPhone || 'N/A',
+      'Overall Marks %': `${overallPct}%`,
+      'Total Tests Taken': offlineCount + onlineCount,
+      'Offline Tests Evaluated': offlineCount,
+      'Olympiad Tests Attempted': onlineCount,
+      'Center Attendance %': `${s.attendancePercentage || 0}%`,
+      'Classes Attended': `${s.attendedDays ?? s.totalClassesAttended ?? 0} / ${s.workingDays ?? s.totalClassesHeld ?? 0}`,
+      'Performance Standing': overallPct >= 85 ? 'Distinction Student (Top 5%)' : (overallPct >= 60 ? 'First Class' : 'Regular Track'),
+      'Teacher / Director Remarks': s.teacherRemarks || 'Active student with regular attendance'
+    };
+  });
+
+  for (const baseDir of TARGET_DIRS) {
+    const marksDir = path.join(baseDir, CATEGORIES.MARKS);
+    if (!fs.existsSync(marksDir)) fs.mkdirSync(marksDir, { recursive: true });
+
+    // Master All-Students Marks Workbook
+    const masterMarksPath = path.join(marksDir, 'All_Students_Master_Marks_Register.xlsx');
+    const masterMarksWb = XLSX.utils.book_new();
+    const ws1 = XLSX.utils.json_to_sheet(scoreRows.length > 0 ? scoreRows : [{ 'Notice': 'No examination records evaluated yet.' }]);
+    const ws2 = XLSX.utils.json_to_sheet(studentSummaryRows);
+    XLSX.utils.book_append_sheet(masterMarksWb, ws2, 'Students_Marks_Summary');
+    XLSX.utils.book_append_sheet(masterMarksWb, ws1, 'All_Tests_Scorecard');
+
+    try {
+      XLSX.writeFile(masterMarksWb, masterMarksPath);
+    } catch (err) {
+      console.error(`[RecordManager] Error writing master marks excel ${masterMarksPath}:`, err.message);
+    }
+
+    // Class-specific marks registers
+    for (const cls of STANDARD_CLASSES) {
+      const clsDir = path.join(marksDir, cls);
+      if (!fs.existsSync(clsDir)) fs.mkdirSync(clsDir, { recursive: true });
+
+      const classStudents = students.filter(s => normalizeClass(s.grade || s.batch) === cls);
+      const classRolls = new Set(classStudents.map(s => String(s.rollNo || s.id).trim().toLowerCase()));
+
+      const classScoreRows = scoreRows.filter(r => classRolls.has(String(r['Roll Number']).trim().toLowerCase()));
+      const classSummaryRows = studentSummaryRows.filter(s => classRolls.has(String(s['Roll Number']).trim().toLowerCase()));
+
+      const classMarksPath = path.join(clsDir, `${cls}_Marks_Register.xlsx`);
+      const classMarksWb = XLSX.utils.book_new();
+      const cws1 = XLSX.utils.json_to_sheet(classSummaryRows.length > 0 ? classSummaryRows : [{ 'Notice': 'No students enrolled in this class.' }]);
+      const cws2 = XLSX.utils.json_to_sheet(classScoreRows.length > 0 ? classScoreRows : [{ 'Notice': 'No tests evaluated for this class yet.' }]);
+      XLSX.utils.book_append_sheet(classMarksWb, cws1, `${cls}_Summary`);
+      XLSX.utils.book_append_sheet(classMarksWb, cws2, `${cls}_Scores`);
+
+      try {
+        XLSX.writeFile(classMarksWb, classMarksPath);
+      } catch (err) {
+        console.error(`[RecordManager] Error writing class marks excel ${classMarksPath}:`, err.message);
+      }
+    }
   }
 }
 

@@ -60,6 +60,7 @@ import AssignmentsManager from './AssignmentsManager';
 import LecturesManager from './LecturesManager';
 import OnlineTestManager from './OnlineTestManager';
 import OfflineExamsManager from './OfflineExamsManager';
+import AllStudentMarksManager from './AllStudentMarksManager';
 
 export default function MainAdminPortal({ adminUser, onLogout, onBackToHome, isDarkMode = false }) {
   const [teachers, setTeachers] = useState([]);
@@ -593,6 +594,13 @@ export default function MainAdminPortal({ adminUser, onLogout, onBackToHome, isD
         </button>
 
         <button
+          onClick={() => setActiveTab('allMarks')}
+          className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer ${getTabClass('allMarks')}`}
+        >
+          <Award className="w-4 h-4 text-amber-500" /> 📊 All Student Marks & Reports
+        </button>
+
+        <button
           onClick={() => setActiveTab('attendance')}
           className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer ${getTabClass('attendance')}`}
         >
@@ -856,6 +864,22 @@ export default function MainAdminPortal({ adminUser, onLogout, onBackToHome, isD
 
         return (
         <div className="space-y-4">
+          {/* Quick Marks Banner */}
+          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-md border border-blue-500/30">
+            <div className="flex items-center gap-2.5">
+              <Award className="w-5 h-5 text-amber-300 shrink-0" />
+              <span>
+                Want to review all exam scores, offline Sunday test sheets, and Olympiad MCQ results for all students?
+              </span>
+            </div>
+            <button
+              onClick={() => setActiveTab('allMarks')}
+              className="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black cursor-pointer shrink-0 transition-all hover:scale-105 active:scale-95 shadow-sm"
+            >
+              Open All Marks Ledger ➔
+            </button>
+          </div>
+
           <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="relative flex-1 max-w-md">
               <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
@@ -992,6 +1016,14 @@ export default function MainAdminPortal({ adminUser, onLogout, onBackToHome, isD
                           </td>
                           <td className="p-3.5 text-right space-x-1.5 whitespace-nowrap">
                             <button
+                              onClick={() => setActiveTab('allMarks')}
+                              className="px-2.5 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-[11px] font-semibold cursor-pointer inline-flex items-center gap-1 transition-colors"
+                              title="View Student Exam Marks & Reports"
+                            >
+                              <Award className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                              <span>Marks</span>
+                            </button>
+                            <button
                               onClick={() => {
                                 setSelectedStudent(s);
                                 setNewStudentPassword('');
@@ -1022,6 +1054,16 @@ export default function MainAdminPortal({ adminUser, onLogout, onBackToHome, isD
         </div>
         );
       })()}
+
+      {/* ================= TAB: ALL STUDENT MARKS & ACADEMIC EXAMINATION REPORTS ================= */}
+      {activeTab === 'allMarks' && (
+        <AllStudentMarksManager
+          students={students}
+          currentUser={adminUser}
+          onDataSaved={loadAllAdminData}
+          isDarkMode={isDarkMode}
+        />
+      )}
 
       {/* ================= TAB: CLASS-WISE ATTENDANCE ================= */}
       {activeTab === 'attendance' && (

@@ -6,7 +6,8 @@ import {
   migrateExistingRecords, 
   initRecordsDirectories, 
   removeEnrolledStudent, 
-  rebuildEnrolledStudentsExcel 
+  rebuildEnrolledStudentsExcel,
+  rebuildMasterMarksAndTestsExcel
 } from '../server/recordManager.js';
 import { exportClassHierarchies } from './exportClassHierarchies.js';
 
@@ -297,6 +298,61 @@ function mergeDatasets(localDb, remoteDb) {
   merged.impactStats = localDb.impactStats || remoteDb.impactStats || { courses: 15, students: 7286, teachers: 25 };
   merged.resultsPhoto = localDb.resultsPhoto || remoteDb.resultsPhoto || { photos: [] };
 
+  // 9. Recalculate test metrics and overall percentages for all students
+  const sClean = (val) => String(val || '').trim().toLowerCase();
+  (merged.students || []).forEach(student => {
+    let sumPct = 0;
+    let count = 0;
+    const sId = sClean(student.id);
+    const sRoll = sClean(student.rollNo);
+    const sName = sClean(student.name);
+
+    (merged.tests || []).forEach(t => {
+      const match = (t.results || []).find(r => {
+        const rId = sClean(r.studentId);
+        const rRoll = sClean(r.rollNo);
+        const rName = sClean(r.studentName || r.name);
+        return (
+          (rId && (rId === sId || rId === sRoll)) ||
+          (rRoll && (rRoll === sRoll || rRoll === sId)) ||
+          (rName && sName && (rName === sName || rName.includes(sName) || sName.includes(rName)))
+        );
+      });
+      if (match) {
+        const max = Number(t.maxMarks || match.maxMarks) || 50;
+        const scored = Number(match.marksObtained);
+        const p = match.percentage !== undefined ? Number(match.percentage) : ((scored / max) * 100);
+        sumPct += p;
+        count++;
+      }
+    });
+
+    (merged.onlineTests || []).forEach(ot => {
+      const match = (ot.attempts || []).find(a => {
+        const aId = sClean(a.studentId);
+        const aRoll = sClean(a.rollNo);
+        const aName = sClean(a.studentName || a.name);
+        return (
+          (aId && (aId === sId || aId === sRoll)) ||
+          (aRoll && (aRoll === sRoll || aRoll === sId)) ||
+          (aName && sName && (aName === sName || aName.includes(sName) || sName.includes(aName)))
+        );
+      });
+      if (match) {
+        const max = Number(ot.totalMarks || match.totalMarks) || 100;
+        const scored = Number(match.score);
+        const p = match.percentage !== undefined ? Number(match.percentage) : ((scored / max) * 100);
+        sumPct += p;
+        count++;
+      }
+    });
+
+    if (count > 0) {
+      student.overallPercentage = Number((sumPct / count).toFixed(1));
+      student.totalTestsEvaluated = count;
+    }
+  });
+
   return merged;
 }
 
@@ -474,6 +530,7 @@ export async function syncData(customUrl = null) {
     // 5. Update Excel registers in records/ and server/records/
     initRecordsDirectories();
     rebuildEnrolledStudentsExcel(mergedData.students);
+    rebuildMasterMarksAndTestsExcel(mergedData);
     migrateExistingRecords(mergedData);
 
     // 6. Generate hierarchical Class folders & dossiers in Class_Organized_Records/
@@ -501,6 +558,7 @@ export async function syncData(customUrl = null) {
     try {
       initRecordsDirectories();
       rebuildEnrolledStudentsExcel(localDb.students || []);
+      rebuildMasterMarksAndTestsExcel(localDb);
       migrateExistingRecords(localDb);
       exportClassHierarchies();
       console.log(`Local records refreshed successfully.`);

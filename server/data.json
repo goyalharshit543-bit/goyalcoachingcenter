@@ -88,54 +88,261 @@
   ],
   "students": [
     {
-      "name": "Harshit",
-      "rollNo": "CGC-1001",
-      "grade": "Class 8",
+      "name": "Test",
+      "rollNo": "GCC261101067",
+      "grade": "Class 10",
       "stream": "Science & Mathematics",
       "batch": "Class 10 Board Champions",
-      "parentName": "Gitti Goyal",
-      "parentPhone": "52",
+      "parentName": "dd",
+      "parentPhone": "5868658",
       "totalFees": 38000,
       "paidFees": 38000,
-      "id": "CGC-1001",
+      "id": "GCC261101067",
       "fees": {
         "total": 38000,
         "paid": 38000,
         "due": 0,
         "status": "Fully Paid",
-        "lastReceipt": "REC-0817"
+        "lastReceipt": "REC-9400"
       },
       "batchRank": null,
-      "totalBatchStudents": 1,
-      "overallPercentage": 0,
+      "totalBatchStudents": 5,
+      "overallPercentage": 83.5,
       "attendancePercentage": 0,
       "totalClassesAttended": 0,
       "totalClassesHeld": 0,
-      "teacherRemarks": "Newly admitted student. No assessments or attendance marked yet.",
+      "teacherRemarks": "Diligent student. Good concept clarity and active classroom participation.",
       "photo": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=400&q=80",
       "enrollmentDate": "2026-11-27",
       "workingDays": 0,
       "attendedDays": 0,
+      "totalTestsEvaluated": 4,
+      "password": "student123"
+    },
+    {
+      "name": "Naman",
+      "rollNo": "GCC-902",
+      "grade": "Class 9",
+      "stream": "Science & Mathematics",
+      "batch": "Class 10 Board Champions",
+      "parentName": "Rocky",
+      "parentPhone": "9872534466",
+      "totalFees": 38000,
+      "paidFees": 38000,
+      "id": "GCC-902",
+      "fees": {
+        "total": 38000,
+        "paid": 38000,
+        "due": 0,
+        "status": "Fully Paid",
+        "lastReceipt": "REC-3661"
+      },
+      "batchRank": null,
+      "totalBatchStudents": 4,
+      "overallPercentage": 81.3,
+      "attendancePercentage": 0,
+      "totalClassesAttended": 0,
+      "totalClassesHeld": 1,
+      "teacherRemarks": "Diligent student. Good concept clarity and active classroom participation.",
+      "photo": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=400&q=80",
+      "enrollmentDate": "2026-11-27",
+      "workingDays": 1,
+      "attendedDays": 0,
+      "totalTestsEvaluated": 3,
+      "password": "student123"
+    },
+    {
+      "name": "Palak",
+      "rollNo": "GCC-1002",
+      "grade": "Class 10",
+      "stream": "Science & Mathematics",
+      "batch": "Class 10 Board Champions",
+      "parentName": "Kuldeep",
+      "parentPhone": "8847033200",
+      "totalFees": 38000,
+      "paidFees": 38000,
+      "id": "GCC-1002",
+      "fees": {
+        "total": 38000,
+        "paid": 38000,
+        "due": 0,
+        "status": "Fully Paid",
+        "lastReceipt": "REC-2105"
+      },
+      "batchRank": null,
+      "totalBatchStudents": 4,
+      "overallPercentage": 86.7,
+      "attendancePercentage": 100,
+      "totalClassesAttended": 1,
+      "totalClassesHeld": 1,
+      "teacherRemarks": "Diligent student. Good concept clarity and active classroom participation.",
+      "photo": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=400&q=80",
+      "enrollmentDate": "2026-11-27",
+      "workingDays": 1,
+      "attendedDays": 1,
+      "totalTestsEvaluated": 4,
+      "password": "student123"
+    },
+    {
+      "name": "Khusleen",
+      "rollNo": "GCC-1001",
+      "grade": "Class 10",
+      "stream": "Science & Mathematics",
+      "batch": "Class 10 Board Champions",
+      "parentName": "N/a",
+      "parentPhone": "7719456889",
+      "totalFees": 38000,
+      "paidFees": 38000,
+      "id": "GCC-1001",
+      "fees": {
+        "total": 38000,
+        "paid": 38000,
+        "due": 0,
+        "status": "Fully Paid",
+        "lastReceipt": "REC-2545"
+      },
+      "batchRank": null,
+      "totalBatchStudents": 3,
+      "overallPercentage": 94,
+      "attendancePercentage": 100,
+      "totalClassesAttended": 1,
+      "totalClassesHeld": 1,
+      "teacherRemarks": "Distinction student. Superb analytical problem solving and consistent high ranks.",
+      "photo": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=400&q=80",
+      "enrollmentDate": "2026-11-27",
+      "workingDays": 1,
+      "attendedDays": 1,
+      "totalTestsEvaluated": 4,
+      "password": "student123"
+    },
+    {
+      "name": "Gursangam",
+      "rollNo": "GCC-901",
+      "grade": "Class 9",
+      "stream": "Science & Mathematics",
+      "batch": "Class 10 Board Champions",
+      "parentName": "Harpreet",
+      "parentPhone": "9463616680",
+      "totalFees": 38000,
+      "paidFees": 38000,
+      "id": "GCC-901",
+      "fees": {
+        "total": 38000,
+        "paid": 38000,
+        "due": 0,
+        "status": "Fully Paid",
+        "lastReceipt": "REC-5589"
+      },
+      "batchRank": null,
+      "totalBatchStudents": 2,
+      "overallPercentage": 96.3,
+      "attendancePercentage": 100,
+      "totalClassesAttended": 1,
+      "totalClassesHeld": 1,
+      "teacherRemarks": "Distinction student. Superb analytical problem solving and consistent high ranks.",
+      "photo": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=400&q=80",
+      "enrollmentDate": "2026-11-27",
+      "workingDays": 1,
+      "attendedDays": 1,
+      "totalTestsEvaluated": 3,
       "password": "student123"
     }
   ],
-  "attendanceLogs": [],
+  "attendanceLogs": [
+    {
+      "date": "2026-11-27",
+      "studentId": "GCC-1001",
+      "status": "Present",
+      "timeIn": "04:00 PM",
+      "remarks": "Present on time",
+      "className": "Class 10th",
+      "createdAt": "2026-11-27T14:11:51.287Z",
+      "updatedAt": "2026-11-27T14:11:51.287Z"
+    },
+    {
+      "date": "2026-11-27",
+      "studentId": "GCC-1002",
+      "status": "Present",
+      "timeIn": "04:00 PM",
+      "remarks": "Present on time",
+      "className": "Class 10th",
+      "createdAt": "2026-11-27T14:11:51.287Z",
+      "updatedAt": "2026-11-27T14:11:51.287Z"
+    },
+    {
+      "date": "2026-11-27",
+      "studentId": "GCC-901",
+      "status": "Present",
+      "timeIn": "04:00 PM",
+      "remarks": "Present on time",
+      "className": "Class 9th",
+      "createdAt": "2026-11-27T14:11:40.998Z",
+      "updatedAt": "2026-11-27T14:11:40.998Z"
+    },
+    {
+      "date": "2026-11-27",
+      "studentId": "GCC-902",
+      "status": "Absent",
+      "timeIn": "-",
+      "remarks": "Absent from class",
+      "className": "Class 9th",
+      "createdAt": "2026-11-27T14:11:40.998Z",
+      "updatedAt": "2026-11-27T14:11:40.998Z"
+    }
+  ],
   "tests": [
     {
       "id": "TST-101",
       "title": "Class 10 CBSE Board Pattern Mock Exam #1 - Mathematics (Real Numbers & Trigonometry)",
       "subject": "Mathematics",
       "grade": "Class 10",
-      "batch": "Class 10th",
+      "batch": "Class 10 Board Champions",
       "date": "2026-11-15",
       "maxMarks": 50,
       "passingMarks": 20,
-      "highestMarks": 49,
-      "avgMarks": 42.5,
+      "highestMarks": 48,
+      "avgMarks": 44.7,
       "type": "Offline Classroom Test",
       "createdBy": "Er. Alok Goyal",
       "createdAt": "2026-11-15T12:00:00.000Z",
-      "results": [],
+      "results": [
+        {
+          "studentId": "GCC-1001",
+          "rollNo": "GCC-1001",
+          "studentName": "Khusleen",
+          "marksObtained": 48,
+          "maxMarks": 50,
+          "percentage": 96,
+          "rank": 1,
+          "status": "Distinction",
+          "remarks": "Outstanding step-by-step proofs and accurate trigonometry solutions.",
+          "evaluatedAt": "2026-11-16T10:00:00.000Z"
+        },
+        {
+          "studentId": "GCC-1002",
+          "rollNo": "GCC-1002",
+          "studentName": "Palak",
+          "marksObtained": 44,
+          "maxMarks": 50,
+          "percentage": 88,
+          "rank": 2,
+          "status": "Distinction",
+          "remarks": "Great conceptual clarity and neat method presentation. Minor calculation slip in Q4.",
+          "evaluatedAt": "2026-11-16T10:00:00.000Z"
+        },
+        {
+          "studentId": "GCC261101067",
+          "rollNo": "GCC261101067",
+          "studentName": "Test",
+          "marksObtained": 42,
+          "maxMarks": 50,
+          "percentage": 84,
+          "rank": 3,
+          "status": "Passed",
+          "remarks": "Very good score. Practice more assertion-reason questions.",
+          "evaluatedAt": "2026-11-16T10:00:00.000Z"
+        }
+      ],
       "questionPaperUrl": "https://images.unsplash.com/photo-1596495578065-6e0763fa1178?auto=format&fit=crop&w=1200&q=80",
       "questionPaperName": "CBSE_Class10_Maths_Board_Mock_Question_Paper.pdf",
       "questionPaperType": "pdf"
@@ -145,16 +352,53 @@
       "title": "Class 10 Science Sunday Classroom Unit Test - Light: Reflection & Refraction",
       "subject": "Science",
       "grade": "Class 10",
-      "batch": "Class 10th",
+      "batch": "Class 10 Board Champions",
       "date": "2026-11-08",
       "maxMarks": 40,
       "passingMarks": 16,
       "highestMarks": 38,
-      "avgMarks": 33,
+      "avgMarks": 36.3,
       "type": "Offline Classroom Test",
       "createdBy": "Er. Alok Goyal",
       "createdAt": "2026-11-08T12:00:00.000Z",
-      "results": [],
+      "results": [
+        {
+          "studentId": "GCC-1001",
+          "rollNo": "GCC-1001",
+          "studentName": "Khusleen",
+          "marksObtained": 38,
+          "maxMarks": 40,
+          "percentage": 95,
+          "rank": 1,
+          "status": "Distinction",
+          "remarks": "Flawless ray diagrams and correct sign conventions throughout.",
+          "evaluatedAt": "2026-11-09T14:30:00.000Z"
+        },
+        {
+          "studentId": "GCC-1002",
+          "rollNo": "GCC-1002",
+          "studentName": "Palak",
+          "marksObtained": 36,
+          "maxMarks": 40,
+          "percentage": 90,
+          "rank": 2,
+          "status": "Distinction",
+          "remarks": "Neat diagram work and accurate lens formula calculations.",
+          "evaluatedAt": "2026-11-09T14:30:00.000Z"
+        },
+        {
+          "studentId": "GCC261101067",
+          "rollNo": "GCC261101067",
+          "studentName": "Test",
+          "marksObtained": 35,
+          "maxMarks": 40,
+          "percentage": 87.5,
+          "rank": 3,
+          "status": "Distinction",
+          "remarks": "Strong understanding of mirror magnification and refraction index.",
+          "evaluatedAt": "2026-11-09T14:30:00.000Z"
+        }
+      ],
       "questionPaperUrl": "https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1200&q=80",
       "questionPaperName": "Class10_Physics_Light_Test_Paper.pdf",
       "questionPaperType": "pdf"
@@ -177,6 +421,150 @@
       "questionPaperUrl": "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=1200&q=80",
       "questionPaperName": "Class7_Maths_Sunday_Test_Paper.pdf",
       "questionPaperType": "pdf"
+    },
+    {
+      "id": "TST-103",
+      "title": "Class 10 Mathematics Standard Pre-Board Simulated Test #2 - Quadratic Equations & Circles",
+      "subject": "Mathematics",
+      "grade": "Class 10",
+      "batch": "Class 10 Board Champions",
+      "date": "2026-11-20",
+      "maxMarks": 80,
+      "passingMarks": 32,
+      "highestMarks": 76,
+      "avgMarks": 71.7,
+      "type": "Offline Classroom Test",
+      "createdBy": "Er. Alok Goyal",
+      "createdAt": "2026-11-20T12:00:00.000Z",
+      "questionPaperUrl": "https://images.unsplash.com/photo-1596495578065-6e0763fa1178?auto=format&fit=crop&w=1200&q=80",
+      "questionPaperName": "Class10_PreBoard_Maths_Quadratic_Circles.pdf",
+      "questionPaperType": "pdf",
+      "results": [
+        {
+          "studentId": "GCC-1001",
+          "rollNo": "GCC-1001",
+          "studentName": "Khusleen",
+          "marksObtained": 76,
+          "maxMarks": 80,
+          "percentage": 95,
+          "rank": 1,
+          "status": "Distinction",
+          "remarks": "Top-notch time management and comprehensive theorem proofs.",
+          "evaluatedAt": "2026-11-21T11:00:00.000Z"
+        },
+        {
+          "studentId": "GCC-1002",
+          "rollNo": "GCC-1002",
+          "studentName": "Palak",
+          "marksObtained": 71,
+          "maxMarks": 80,
+          "percentage": 88.8,
+          "rank": 2,
+          "status": "Distinction",
+          "remarks": "High accuracy in quadratic formulas and circle tangents.",
+          "evaluatedAt": "2026-11-21T11:00:00.000Z"
+        },
+        {
+          "studentId": "GCC261101067",
+          "rollNo": "GCC261101067",
+          "studentName": "Test",
+          "marksObtained": 68,
+          "maxMarks": 80,
+          "percentage": 85,
+          "rank": 3,
+          "status": "Distinction",
+          "remarks": "Good presentation. Keep practicing 5-mark theorem deductions.",
+          "evaluatedAt": "2026-11-21T11:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "TST-901",
+      "title": "Class 9 Mathematics & Science Sunday Mock - Polynomials & Laws of Motion",
+      "subject": "Mathematics & Science",
+      "grade": "Class 9",
+      "batch": "Class 9th",
+      "date": "2026-11-17",
+      "maxMarks": 50,
+      "passingMarks": 20,
+      "highestMarks": 47,
+      "avgMarks": 44.5,
+      "type": "Offline Classroom Test",
+      "createdBy": "Er. Alok Goyal",
+      "createdAt": "2026-11-17T12:00:00.000Z",
+      "questionPaperUrl": "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=1200&q=80",
+      "questionPaperName": "Class9_Sunday_Mock_Polynomials_Motion.pdf",
+      "questionPaperType": "pdf",
+      "results": [
+        {
+          "studentId": "GCC-901",
+          "rollNo": "GCC-901",
+          "studentName": "Gursangam",
+          "marksObtained": 47,
+          "maxMarks": 50,
+          "percentage": 94,
+          "rank": 1,
+          "status": "Distinction",
+          "remarks": "Brilliant algebraic factorization and accurate physics numericals.",
+          "evaluatedAt": "2026-11-18T10:00:00.000Z"
+        },
+        {
+          "studentId": "GCC-902",
+          "rollNo": "GCC-902",
+          "studentName": "Naman",
+          "marksObtained": 42,
+          "maxMarks": 50,
+          "percentage": 84,
+          "rank": 2,
+          "status": "Passed",
+          "remarks": "Very good effort. Practice more momentum calculation numericals.",
+          "evaluatedAt": "2026-11-18T10:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "TST-902",
+      "title": "Class 9 Science Unit Test - Atoms & Molecules and Structure of Atom",
+      "subject": "Science",
+      "grade": "Class 9",
+      "batch": "Class 9th",
+      "date": "2026-11-10",
+      "maxMarks": 40,
+      "passingMarks": 16,
+      "highestMarks": 38,
+      "avgMarks": 36,
+      "type": "Offline Classroom Test",
+      "createdBy": "Er. Alok Goyal",
+      "createdAt": "2026-11-10T12:00:00.000Z",
+      "questionPaperUrl": "https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1200&q=80",
+      "questionPaperName": "Class9_Science_Atoms_Molecules.pdf",
+      "questionPaperType": "pdf",
+      "results": [
+        {
+          "studentId": "GCC-901",
+          "rollNo": "GCC-901",
+          "studentName": "Gursangam",
+          "marksObtained": 38,
+          "maxMarks": 40,
+          "percentage": 95,
+          "rank": 1,
+          "status": "Distinction",
+          "remarks": "Excellent chemical formula writing and valency concepts.",
+          "evaluatedAt": "2026-11-11T12:00:00.000Z"
+        },
+        {
+          "studentId": "GCC-902",
+          "rollNo": "GCC-902",
+          "studentName": "Naman",
+          "marksObtained": 34,
+          "maxMarks": 40,
+          "percentage": 85,
+          "rank": 2,
+          "status": "Distinction",
+          "remarks": "Good conceptual clarity. Well explained isotopes and isobars.",
+          "evaluatedAt": "2026-11-11T12:00:00.000Z"
+        }
+      ]
     }
   ],
   "notices": [
@@ -711,38 +1099,6 @@
       "createdAt": "2026-11-18T10:00:00.000Z",
       "createdBy": "Er. Alok Goyal",
       "submissions": []
-    },
-    {
-      "id": "ASG-102",
-      "title": "Class 10 Science: Light Reflection & Spherical Mirrors DPP-04",
-      "subject": "Science",
-      "grade": "Class 10",
-      "batch": "Class 10 Board Champions",
-      "dueDate": "2026-11-28",
-      "totalMarks": 20,
-      "description": "Draw ray diagrams for concave and convex mirrors for all 6 object positions using sharp pencil and scale. Calculate focal lengths with standard mirror formula.",
-      "photos": [
-        "https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80"
-      ],
-      "createdAt": "2026-11-19T11:00:00.000Z",
-      "createdBy": "Er. Alok Goyal",
-      "submissions": []
-    },
-    {
-      "id": "ASG-103",
-      "title": "Class 7 Science: Heat and Temperature Daily Practice Sheet",
-      "subject": "Science",
-      "grade": "Class 7",
-      "batch": "Class 7 Foundation Batch",
-      "dueDate": "2026-11-26",
-      "totalMarks": 15,
-      "description": "Answer questions 1 through 8 from Chapter 4 Heat. Differentiate between clinical and laboratory thermometers with sketches.",
-      "photos": [
-        "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80"
-      ],
-      "createdAt": "2026-11-20T09:30:00.000Z",
-      "createdBy": "Er. Alok Goyal",
-      "submissions": []
     }
   ],
   "lectures": [
@@ -769,7 +1125,7 @@
   "onlineTests": [
     {
       "id": "MCQ-7729",
-      "title": "Class 10",
+      "title": "Class 10 Physics Olympiad - Light: Reflection & Refraction",
       "subject": "Physics",
       "grade": "Class 10",
       "batch": "Class 10 Board Champions",
@@ -1035,7 +1391,699 @@
       ],
       "createdBy": "Harshit Goyal (Director)",
       "createdAt": "2026-11-22T04:24:07.729Z",
-      "attempts": []
+      "attempts": [
+        {
+          "id": "ATT-1001",
+          "testId": "MCQ-7729",
+          "studentId": "GCC-1001",
+          "studentName": "Khusleen",
+          "rollNo": "GCC-1001",
+          "grade": "Class 10",
+          "score": 36,
+          "maxScore": 40,
+          "correctCount": 9,
+          "incorrectCount": 1,
+          "unattemptedCount": 0,
+          "totalQuestions": 10,
+          "accuracy": 90,
+          "timeTakenSeconds": 1420,
+          "submittedAt": "2026-11-23T16:30:00.000Z",
+          "isPractice": false,
+          "answers": {
+            "Q1": "C",
+            "Q2": "A",
+            "Q3": "C",
+            "Q4": "B",
+            "Q5": "B",
+            "Q6": "A",
+            "Q7": "B",
+            "Q8": "B",
+            "Q9": "C",
+            "Q10": "C"
+          },
+          "detailedBreakdown": [
+            {
+              "questionId": "Q1",
+              "text": "A ray of light falls normally on a plane mirror. The angle of reflection is:",
+              "image": "",
+              "chosenOption": "C",
+              "correctOption": "C",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "When a ray falls normally, it travels along the normal.  Therefore, the angle of incidence is 0°.  According to the law of reflection:  ∠ i = ∠ r ∠i=∠r"
+            },
+            {
+              "questionId": "Q2",
+              "text": "An object is placed 12 cm in front of a plane mirror. The distance between the object and its image is:",
+              "image": "",
+              "chosenOption": "A",
+              "correctOption": "A",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "In a plane mirror:  Image distance = Object distance.  Object distance = 12 cm.  Image distance = 12 cm.  Therefore,  12 + 12 = 24  cm 12+12=24 cm"
+            },
+            {
+              "questionId": "Q3",
+              "text": ". Which phenomenon proves that light travels in a straight line?",
+              "image": "",
+              "chosenOption": "C",
+              "correctOption": "C",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "When an opaque object blocks light, a shadow is formed behind it.  This happens because light travels in straight lines in a uniform medium.  This property is called rectilinear propagation of light."
+            },
+            {
+              "questionId": "Q4",
+              "text": "A concave mirror is used by dentists because it can produce:",
+              "image": "",
+              "chosenOption": "B",
+              "correctOption": "B",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": ""
+            },
+            {
+              "questionId": "Q5",
+              "text": "If the angle between the incident ray and the reflected ray is 80°, the angle of incidence is:",
+              "image": "",
+              "chosenOption": "B",
+              "correctOption": "B",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "According to the law of reflection:  i = r i=r The angle between the incident and reflected rays is:  i + r = 80 ∘ i+r=80  ∘   2 i = 80 ∘ 2i=80  ∘   i = 40 ∘ i=40  ∘   ​"
+            },
+            {
+              "questionId": "Q6",
+              "text": "Which mirror always forms a virtual, erect and diminished image?",
+              "image": "",
+              "chosenOption": "A",
+              "correctOption": "A",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "A convex mirror always forms an image that is:  Virtual  Erect  Diminished  It is commonly used as a rear-view mirror in vehicles because it provides a wider field of view."
+            },
+            {
+              "questionId": "Q7",
+              "text": "The focal length of a spherical mirror is:",
+              "image": "",
+              "chosenOption": "B",
+              "correctOption": "B",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "The relationship between focal length and radius of curvature is:  f = R 2 f=  2 R ​   ​   Where:  f f = focal length  R R = radius of curvature  For example, if R = 20 cm:  f = 20 2 = 10  cm f=  2 20 ​  =10 cm"
+            },
+            {
+              "questionId": "Q8",
+              "text": "A ray of light passing through the centre of curvature of a spherical mirror:",
+              "image": "",
+              "chosenOption": "B",
+              "correctOption": "B",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "A ray passing through the centre of curvature strikes the mirror normally because it travels along the normal.  Therefore, it is reflected back along the same path."
+            },
+            {
+              "questionId": "Q9",
+              "text": "Which of the following can produce a real image?",
+              "image": "",
+              "chosenOption": "C",
+              "correctOption": "C",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "Explanation:  Plane mirror: Always forms a virtual image.  Convex mirror: Always forms a virtual image.  Concave mirror: Can form both real and virtual images depending on the object's position.  Therefore, the correct answer is concave mirror."
+            },
+            {
+              "questionId": "Q10",
+              "text": "The image formed by a plane mirror is:",
+              "image": "",
+              "chosenOption": "C",
+              "correctOption": "A",
+              "isCorrect": false,
+              "isUnattempted": false,
+              "explanation": "Lateral inversion means:  Left appears right.  Right appears left.  The image is also virtual, erect and equal in size to the object."
+            }
+          ]
+        },
+        {
+          "id": "ATT-1002",
+          "testId": "MCQ-7729",
+          "studentId": "GCC-1002",
+          "studentName": "Palak",
+          "rollNo": "GCC-1002",
+          "grade": "Class 10",
+          "score": 32,
+          "maxScore": 40,
+          "correctCount": 8,
+          "incorrectCount": 1,
+          "unattemptedCount": 1,
+          "totalQuestions": 10,
+          "accuracy": 89,
+          "timeTakenSeconds": 1560,
+          "submittedAt": "2026-11-23T17:10:00.000Z",
+          "isPractice": false,
+          "answers": {
+            "Q1": "C",
+            "Q2": "A",
+            "Q3": "C",
+            "Q4": "B",
+            "Q5": "B",
+            "Q6": "A",
+            "Q7": "B",
+            "Q8": "B",
+            "Q9": "A",
+            "Q10": ""
+          },
+          "detailedBreakdown": [
+            {
+              "questionId": "Q1",
+              "text": "A ray of light falls normally on a plane mirror. The angle of reflection is:",
+              "image": "",
+              "chosenOption": "C",
+              "correctOption": "C",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "When a ray falls normally, it travels along the normal.  Therefore, the angle of incidence is 0°.  According to the law of reflection:  ∠ i = ∠ r ∠i=∠r"
+            },
+            {
+              "questionId": "Q2",
+              "text": "An object is placed 12 cm in front of a plane mirror. The distance between the object and its image is:",
+              "image": "",
+              "chosenOption": "A",
+              "correctOption": "A",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "In a plane mirror:  Image distance = Object distance.  Object distance = 12 cm.  Image distance = 12 cm.  Therefore,  12 + 12 = 24  cm 12+12=24 cm"
+            },
+            {
+              "questionId": "Q3",
+              "text": ". Which phenomenon proves that light travels in a straight line?",
+              "image": "",
+              "chosenOption": "C",
+              "correctOption": "C",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "When an opaque object blocks light, a shadow is formed behind it.  This happens because light travels in straight lines in a uniform medium.  This property is called rectilinear propagation of light."
+            },
+            {
+              "questionId": "Q4",
+              "text": "A concave mirror is used by dentists because it can produce:",
+              "image": "",
+              "chosenOption": "B",
+              "correctOption": "B",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": ""
+            },
+            {
+              "questionId": "Q5",
+              "text": "If the angle between the incident ray and the reflected ray is 80°, the angle of incidence is:",
+              "image": "",
+              "chosenOption": "B",
+              "correctOption": "B",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "According to the law of reflection:  i = r i=r The angle between the incident and reflected rays is:  i + r = 80 ∘ i+r=80  ∘   2 i = 80 ∘ 2i=80  ∘   i = 40 ∘ i=40  ∘   ​"
+            },
+            {
+              "questionId": "Q6",
+              "text": "Which mirror always forms a virtual, erect and diminished image?",
+              "image": "",
+              "chosenOption": "A",
+              "correctOption": "A",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "A convex mirror always forms an image that is:  Virtual  Erect  Diminished  It is commonly used as a rear-view mirror in vehicles because it provides a wider field of view."
+            },
+            {
+              "questionId": "Q7",
+              "text": "The focal length of a spherical mirror is:",
+              "image": "",
+              "chosenOption": "B",
+              "correctOption": "B",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "The relationship between focal length and radius of curvature is:  f = R 2 f=  2 R ​   ​   Where:  f f = focal length  R R = radius of curvature  For example, if R = 20 cm:  f = 20 2 = 10  cm f=  2 20 ​  =10 cm"
+            },
+            {
+              "questionId": "Q8",
+              "text": "A ray of light passing through the centre of curvature of a spherical mirror:",
+              "image": "",
+              "chosenOption": "B",
+              "correctOption": "B",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "A ray passing through the centre of curvature strikes the mirror normally because it travels along the normal.  Therefore, it is reflected back along the same path."
+            },
+            {
+              "questionId": "Q9",
+              "text": "Which of the following can produce a real image?",
+              "image": "",
+              "chosenOption": "A",
+              "correctOption": "C",
+              "isCorrect": false,
+              "isUnattempted": false,
+              "explanation": "Explanation:  Plane mirror: Always forms a virtual image.  Convex mirror: Always forms a virtual image.  Concave mirror: Can form both real and virtual images depending on the object's position.  Therefore, the correct answer is concave mirror."
+            },
+            {
+              "questionId": "Q10",
+              "text": "The image formed by a plane mirror is:",
+              "image": "",
+              "chosenOption": null,
+              "correctOption": "A",
+              "isCorrect": false,
+              "isUnattempted": true,
+              "explanation": "Lateral inversion means:  Left appears right.  Right appears left.  The image is also virtual, erect and equal in size to the object."
+            }
+          ]
+        },
+        {
+          "id": "ATT-1003",
+          "testId": "MCQ-7729",
+          "studentId": "GCC261101067",
+          "studentName": "Test",
+          "rollNo": "GCC261101067",
+          "grade": "Class 10",
+          "score": 31,
+          "maxScore": 40,
+          "correctCount": 8,
+          "incorrectCount": 2,
+          "unattemptedCount": 0,
+          "totalQuestions": 10,
+          "accuracy": 80,
+          "timeTakenSeconds": 1640,
+          "submittedAt": "2026-11-23T18:00:00.000Z",
+          "isPractice": false,
+          "answers": {
+            "Q1": "C",
+            "Q2": "A",
+            "Q3": "C",
+            "Q4": "B",
+            "Q5": "B",
+            "Q6": "B",
+            "Q7": "B",
+            "Q8": "B",
+            "Q9": "C",
+            "Q10": "C"
+          },
+          "detailedBreakdown": [
+            {
+              "questionId": "Q1",
+              "text": "A ray of light falls normally on a plane mirror. The angle of reflection is:",
+              "image": "",
+              "chosenOption": "C",
+              "correctOption": "C",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "When a ray falls normally, it travels along the normal.  Therefore, the angle of incidence is 0°.  According to the law of reflection:  ∠ i = ∠ r ∠i=∠r"
+            },
+            {
+              "questionId": "Q2",
+              "text": "An object is placed 12 cm in front of a plane mirror. The distance between the object and its image is:",
+              "image": "",
+              "chosenOption": "A",
+              "correctOption": "A",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "In a plane mirror:  Image distance = Object distance.  Object distance = 12 cm.  Image distance = 12 cm.  Therefore,  12 + 12 = 24  cm 12+12=24 cm"
+            },
+            {
+              "questionId": "Q3",
+              "text": ". Which phenomenon proves that light travels in a straight line?",
+              "image": "",
+              "chosenOption": "C",
+              "correctOption": "C",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "When an opaque object blocks light, a shadow is formed behind it.  This happens because light travels in straight lines in a uniform medium.  This property is called rectilinear propagation of light."
+            },
+            {
+              "questionId": "Q4",
+              "text": "A concave mirror is used by dentists because it can produce:",
+              "image": "",
+              "chosenOption": "B",
+              "correctOption": "B",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": ""
+            },
+            {
+              "questionId": "Q5",
+              "text": "If the angle between the incident ray and the reflected ray is 80°, the angle of incidence is:",
+              "image": "",
+              "chosenOption": "B",
+              "correctOption": "B",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "According to the law of reflection:  i = r i=r The angle between the incident and reflected rays is:  i + r = 80 ∘ i+r=80  ∘   2 i = 80 ∘ 2i=80  ∘   i = 40 ∘ i=40  ∘   ​"
+            },
+            {
+              "questionId": "Q6",
+              "text": "Which mirror always forms a virtual, erect and diminished image?",
+              "image": "",
+              "chosenOption": "B",
+              "correctOption": "A",
+              "isCorrect": false,
+              "isUnattempted": false,
+              "explanation": "A convex mirror always forms an image that is:  Virtual  Erect  Diminished  It is commonly used as a rear-view mirror in vehicles because it provides a wider field of view."
+            },
+            {
+              "questionId": "Q7",
+              "text": "The focal length of a spherical mirror is:",
+              "image": "",
+              "chosenOption": "B",
+              "correctOption": "B",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "The relationship between focal length and radius of curvature is:  f = R 2 f=  2 R ​   ​   Where:  f f = focal length  R R = radius of curvature  For example, if R = 20 cm:  f = 20 2 = 10  cm f=  2 20 ​  =10 cm"
+            },
+            {
+              "questionId": "Q8",
+              "text": "A ray of light passing through the centre of curvature of a spherical mirror:",
+              "image": "",
+              "chosenOption": "B",
+              "correctOption": "B",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "A ray passing through the centre of curvature strikes the mirror normally because it travels along the normal.  Therefore, it is reflected back along the same path."
+            },
+            {
+              "questionId": "Q9",
+              "text": "Which of the following can produce a real image?",
+              "image": "",
+              "chosenOption": "C",
+              "correctOption": "C",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "Explanation:  Plane mirror: Always forms a virtual image.  Convex mirror: Always forms a virtual image.  Concave mirror: Can form both real and virtual images depending on the object's position.  Therefore, the correct answer is concave mirror."
+            },
+            {
+              "questionId": "Q10",
+              "text": "The image formed by a plane mirror is:",
+              "image": "",
+              "chosenOption": "C",
+              "correctOption": "A",
+              "isCorrect": false,
+              "isUnattempted": false,
+              "explanation": "Lateral inversion means:  Left appears right.  Right appears left.  The image is also virtual, erect and equal in size to the object."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MCQ-901",
+      "title": "National Science & Mathematics Junior Olympiad Class 9 Challenge",
+      "subject": "Junior Science & Maths Olympiad",
+      "grade": "Class 9",
+      "batch": "Class 9th",
+      "durationMinutes": 45,
+      "status": "active",
+      "startTime": "2026-11-20T05:30",
+      "endTime": "2026-11-30T07:00",
+      "positiveMarks": 4,
+      "negativeMarks": 1,
+      "totalMarks": 20,
+      "instructions": "Each correct answer carries +4 marks, -1 for incorrect. Choose the single best option.",
+      "questions": [
+        {
+          "id": "Q1",
+          "text": "A force of 5 N acts on an object of mass 2 kg. What is the acceleration produced?",
+          "options": [
+            {
+              "id": "A",
+              "text": "10 m/s²"
+            },
+            {
+              "id": "B",
+              "text": "2.5 m/s²"
+            },
+            {
+              "id": "C",
+              "text": "0.4 m/s²"
+            },
+            {
+              "id": "D",
+              "text": "7 m/s²"
+            }
+          ],
+          "correctOption": "B",
+          "explanation": "From Newton's second law: F = m * a => a = F / m = 5 / 2 = 2.5 m/s²."
+        },
+        {
+          "id": "Q2",
+          "text": "If p(x) = x² - 4x + 3, what are the zeros of p(x)?",
+          "options": [
+            {
+              "id": "A",
+              "text": "1 and 3"
+            },
+            {
+              "id": "B",
+              "text": "-1 and -3"
+            },
+            {
+              "id": "C",
+              "text": "2 and 2"
+            },
+            {
+              "id": "D",
+              "text": "0 and 4"
+            }
+          ],
+          "correctOption": "A",
+          "explanation": "x² - 4x + 3 = (x - 1)(x - 3) = 0 => x = 1, 3."
+        },
+        {
+          "id": "Q3",
+          "text": "Which of the following is a chemical change?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Melting of ice"
+            },
+            {
+              "id": "B",
+              "text": "Rusting of iron"
+            },
+            {
+              "id": "C",
+              "text": "Dissolving sugar in water"
+            },
+            {
+              "id": "D",
+              "text": "Boiling of milk"
+            }
+          ],
+          "correctOption": "B",
+          "explanation": "Rusting of iron forms hydrated iron oxide (a new substance) and is irreversible."
+        },
+        {
+          "id": "Q4",
+          "text": "The value of g at the centre of the Earth is:",
+          "options": [
+            {
+              "id": "A",
+              "text": "9.8 m/s²"
+            },
+            {
+              "id": "B",
+              "text": "Zero"
+            },
+            {
+              "id": "C",
+              "text": "Infinity"
+            },
+            {
+              "id": "D",
+              "text": "4.9 m/s²"
+            }
+          ],
+          "correctOption": "B",
+          "explanation": "At the centre of the Earth, gravitational pull from all sides cancels out, so g = 0."
+        },
+        {
+          "id": "Q5",
+          "text": "Degree of the zero polynomial is:",
+          "options": [
+            {
+              "id": "A",
+              "text": "0"
+            },
+            {
+              "id": "B",
+              "text": "1"
+            },
+            {
+              "id": "C",
+              "text": "Not defined"
+            },
+            {
+              "id": "D",
+              "text": "Any natural number"
+            }
+          ],
+          "correctOption": "C",
+          "explanation": "The degree of a non-zero constant polynomial is 0, but the degree of the zero polynomial is not defined."
+        }
+      ],
+      "createdBy": "Er. Alok Goyal",
+      "createdAt": "2026-11-20T04:00:00.000Z",
+      "attempts": [
+        {
+          "id": "ATT-901",
+          "testId": "MCQ-901",
+          "studentId": "GCC-901",
+          "studentName": "Gursangam",
+          "rollNo": "GCC-901",
+          "grade": "Class 9",
+          "score": 20,
+          "maxScore": 20,
+          "correctCount": 5,
+          "incorrectCount": 0,
+          "unattemptedCount": 0,
+          "totalQuestions": 5,
+          "accuracy": 100,
+          "timeTakenSeconds": 1120,
+          "submittedAt": "2026-11-21T15:20:00.000Z",
+          "isPractice": false,
+          "answers": {
+            "Q1": "B",
+            "Q2": "A",
+            "Q3": "B",
+            "Q4": "B",
+            "Q5": "C"
+          },
+          "detailedBreakdown": [
+            {
+              "questionId": "Q1",
+              "text": "A force of 5 N acts on an object of mass 2 kg. What is the acceleration produced?",
+              "image": "",
+              "chosenOption": "B",
+              "correctOption": "B",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "From Newton's second law: F = m * a => a = F / m = 5 / 2 = 2.5 m/s²."
+            },
+            {
+              "questionId": "Q2",
+              "text": "If p(x) = x² - 4x + 3, what are the zeros of p(x)?",
+              "image": "",
+              "chosenOption": "A",
+              "correctOption": "A",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "x² - 4x + 3 = (x - 1)(x - 3) = 0 => x = 1, 3."
+            },
+            {
+              "questionId": "Q3",
+              "text": "Which of the following is a chemical change?",
+              "image": "",
+              "chosenOption": "B",
+              "correctOption": "B",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "Rusting of iron forms hydrated iron oxide (a new substance) and is irreversible."
+            },
+            {
+              "questionId": "Q4",
+              "text": "The value of g at the centre of the Earth is:",
+              "image": "",
+              "chosenOption": "B",
+              "correctOption": "B",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "At the centre of the Earth, gravitational pull from all sides cancels out, so g = 0."
+            },
+            {
+              "questionId": "Q5",
+              "text": "Degree of the zero polynomial is:",
+              "image": "",
+              "chosenOption": "C",
+              "correctOption": "C",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "The degree of a non-zero constant polynomial is 0, but the degree of the zero polynomial is not defined."
+            }
+          ]
+        },
+        {
+          "id": "ATT-902",
+          "testId": "MCQ-901",
+          "studentId": "GCC-902",
+          "studentName": "Naman",
+          "rollNo": "GCC-902",
+          "grade": "Class 9",
+          "score": 15,
+          "maxScore": 20,
+          "correctCount": 4,
+          "incorrectCount": 1,
+          "unattemptedCount": 0,
+          "totalQuestions": 5,
+          "accuracy": 80,
+          "timeTakenSeconds": 1350,
+          "submittedAt": "2026-11-21T16:00:00.000Z",
+          "isPractice": false,
+          "answers": {
+            "Q1": "B",
+            "Q2": "A",
+            "Q3": "B",
+            "Q4": "B",
+            "Q5": "A"
+          },
+          "detailedBreakdown": [
+            {
+              "questionId": "Q1",
+              "text": "A force of 5 N acts on an object of mass 2 kg. What is the acceleration produced?",
+              "image": "",
+              "chosenOption": "B",
+              "correctOption": "B",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "From Newton's second law: F = m * a => a = F / m = 5 / 2 = 2.5 m/s²."
+            },
+            {
+              "questionId": "Q2",
+              "text": "If p(x) = x² - 4x + 3, what are the zeros of p(x)?",
+              "image": "",
+              "chosenOption": "A",
+              "correctOption": "A",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "x² - 4x + 3 = (x - 1)(x - 3) = 0 => x = 1, 3."
+            },
+            {
+              "questionId": "Q3",
+              "text": "Which of the following is a chemical change?",
+              "image": "",
+              "chosenOption": "B",
+              "correctOption": "B",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "Rusting of iron forms hydrated iron oxide (a new substance) and is irreversible."
+            },
+            {
+              "questionId": "Q4",
+              "text": "The value of g at the centre of the Earth is:",
+              "image": "",
+              "chosenOption": "B",
+              "correctOption": "B",
+              "isCorrect": true,
+              "isUnattempted": false,
+              "explanation": "At the centre of the Earth, gravitational pull from all sides cancels out, so g = 0."
+            },
+            {
+              "questionId": "Q5",
+              "text": "Degree of the zero polynomial is:",
+              "image": "",
+              "chosenOption": "A",
+              "correctOption": "C",
+              "isCorrect": false,
+              "isUnattempted": false,
+              "explanation": "The degree of a non-zero constant polynomial is 0, but the degree of the zero polynomial is not defined."
+            }
+          ]
+        }
+      ]
     }
   ],
   "deletedStudentRolls": [
@@ -1057,6 +2105,10 @@
     "CGC-AUTO-99"
   ],
   "syncedStudentRolls": [
-    "CGC-1001"
+    "GCC261101067",
+    "GCC-902",
+    "GCC-1002",
+    "GCC-1001",
+    "GCC-901"
   ]
 }
