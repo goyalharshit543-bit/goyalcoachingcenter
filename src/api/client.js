@@ -1,6 +1,32 @@
 import { initialData } from '../data/initialData';
 
 const LOCAL_STORAGE_KEY = 'GCC_DATA_STORE_V2';
+const AUTH_TOKEN_KEY = 'GCC_AUTH_TOKEN';
+
+export function getAuthToken() {
+  try {
+    return localStorage.getItem(AUTH_TOKEN_KEY) || '';
+  } catch {
+    return '';
+  }
+}
+
+export function setAuthToken(token) {
+  try {
+    if (token) localStorage.setItem(AUTH_TOKEN_KEY, token);
+    else localStorage.removeItem(AUTH_TOKEN_KEY);
+  } catch {}
+}
+
+const originalFetch = typeof window !== 'undefined' ? window.fetch.bind(window) : fetch;
+const fetch = (url, options = {}) => {
+  const token = getAuthToken();
+  const headers = { ...(options.headers || {}) };
+  if (token && !headers['Authorization'] && typeof url === 'string' && url.startsWith('/api')) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return originalFetch(url, { ...options, headers });
+};
 
 function sanitizeData(data) {
   if (!data) return data;
@@ -148,7 +174,9 @@ export const api = {
         body: JSON.stringify({ role, username, rollNo, password, phone })
       });
       if (res.ok) {
-        return await res.json();
+        const json = await res.json();
+        if (json.token) setAuthToken(json.token);
+        return json;
       } else {
         const err = await res.json();
         throw new Error(err.error || 'Authentication failed');

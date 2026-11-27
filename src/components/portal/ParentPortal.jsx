@@ -418,36 +418,34 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
     }
   };
 
-  // Sync initialSession & start live polling
+  // Sync initialSession & fetch fresh background details
   useEffect(() => {
-    if (initialSession) {
+    if (initialSession && initialSession?.student?.id !== session?.student?.id) {
       setSession(initialSession);
-      const sId = initialSession?.student?.id || initialSession?.student?.rollNo;
-      if (sId) {
-        api.getStudentSession(sId).then(fresh => {
-          if (fresh && fresh.student) setSession(fresh);
-        }).catch(() => {});
-      }
     }
-  }, [initialSession]);
+    const sId = initialSession?.student?.id || initialSession?.student?.rollNo;
+    if (sId) {
+      api.getStudentSession(sId).then(fresh => {
+        if (fresh && fresh.student) setSession(fresh);
+      }).catch(() => {});
+    }
+  }, [initialSession?.student?.id, initialSession?.student?.rollNo]);
 
-  // Live polling every 5 seconds while in Student Portal so teacher updates appear instantly
+  // Live polling every 30 seconds while in Student Portal so teacher updates appear automatically
   useEffect(() => {
     const targetId = session?.student?.id || session?.student?.rollNo;
     if (!targetId) return;
 
-    // Refresh immediately on tab switch
-    refreshStudentData(false);
-
     const interval = setInterval(() => {
       refreshStudentData(false);
-    }, 5000);
+    }, 30000);
 
     return () => clearInterval(interval);
-  }, [session?.student?.id, session?.student?.rollNo, activeTab]);
+  }, [session?.student?.id, session?.student?.rollNo]);
 
   const handleUserLogout = () => {
     setSession(null);
+    try { localStorage.removeItem('GCC_AUTH_TOKEN'); } catch {}
     if (onLogout) onLogout();
   };
 

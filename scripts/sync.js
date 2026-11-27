@@ -143,14 +143,17 @@ async function pushToCloudServer(targetUrl, mergedData, remoteDb) {
   const cleanUrl = targetUrl.replace(/\/$/, '');
   console.log(`[PUSH] Uploading synced data to cloud website (${cleanUrl})...`);
 
+  const adminHeaders = {
+    'Content-Type': 'application/json',
+    'x-admin-key': process.env.ADMIN_PASSWORD || 'Harry@962008',
+    'x-admin-auth': 'true'
+  };
+
   // Attempt 1: Bulk /api/sync endpoint
   try {
     const syncRes = await fetch(`${cleanUrl}/api/sync`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-admin-auth': 'true'
-      },
+      headers: adminHeaders,
       body: JSON.stringify(mergedData)
     });
 
@@ -179,7 +182,7 @@ async function pushToCloudServer(targetUrl, mergedData, remoteDb) {
         // Create new student on cloud
         const postRes = await fetch(`${cleanUrl}/api/students`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: adminHeaders,
           body: JSON.stringify(student)
         });
         if (postRes.ok) studentsSynced++;
@@ -187,7 +190,7 @@ async function pushToCloudServer(targetUrl, mergedData, remoteDb) {
         // Update existing student on cloud with latest laptop changes
         const putRes = await fetch(`${cleanUrl}/api/students/${encodeURIComponent(student.id || student.rollNo)}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers: adminHeaders,
           body: JSON.stringify(student)
         });
         if (putRes.ok) studentsSynced++;

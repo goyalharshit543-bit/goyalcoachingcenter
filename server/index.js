@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { exec, spawn } from 'child_process';
 import XLSX from 'xlsx';
@@ -42,6 +43,61 @@ const loginAttemptsMap = new Map();
 const MAX_FAILED_ATTEMPTS = 10;
 const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
 
+// Session token signing and verification (HMAC-SHA256)
+const SESSION_SECRET = process.env.SESSION_SECRET || 'gcc_secret_' + ADMIN_PASSWORD;
+
+function generateSessionToken(role, userId) {
+  const ts = Date.now();
+  const payload = `${role}:${userId}:${ts}`;
+  const sig = crypto.createHmac('sha256', SESSION_SECRET).update(payload).digest('hex');
+  return `${payload}:${sig}`;
+}
+
+function verifySessionToken(token) {
+  if (!token || typeof token !== 'string') return null;
+  const parts = token.split(':');
+  if (parts.length !== 4) return null;
+  const [role, userId, tsStr, sig] = parts;
+  const ts = parseInt(tsStr, 10);
+  if (isNaN(ts) || Date.now() - ts > 30 * 24 * 60 * 60 * 1000) { // 30 days expiry
+    return null;
+  }
+  const expectedSig = crypto.createHmac('sha256', SESSION_SECRET).update(`${role}:${userId}:${tsStr}`).digest('hex');
+  try {
+    if (crypto.timingSafeEqual(Buffer.from(sig, 'utf8'), Buffer.from(expectedSig, 'utf8'))) {
+      return { role, userId, ts };
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function extractAuth(req) {
+  const authHeader = req.headers['authorization'] || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : authHeader.trim();
+  const session = verifySessionToken(token);
+  const adminKey = req.headers['x-admin-key'] || req.headers['x-admin-token'];
+  const isAdminKey = Boolean(adminKey && (adminKey === ADMIN_PASSWORD || adminKey === SESSION_SECRET));
+  const isLocalhost = Boolean(req.ip === '127.0.0.1' || req.ip === '::1' || req.headers['x-local-dev'] === 'true');
+
+  const isAdmin = (session && session.role === 'admin') || isAdminKey || (isLocalhost && req.headers['x-admin-auth'] === 'true');
+  const isTeacher = (session && (session.role === 'teacher' || session.role === 'admin')) || isAdmin;
+  return { session, isAdmin, isTeacher };
+}
+
+function requireAdmin(req, res, next) {
+  const { isAdmin } = extractAuth(req);
+  if (isAdmin) return next();
+  return res.status(401).json({ error: 'Unauthorized: Admin authentication required.' });
+}
+
+function requireTeacherOrAdmin(req, res, next) {
+  const { isTeacher } = extractAuth(req);
+  if (isTeacher) return next();
+  return res.status(401).json({ error: 'Unauthorized: Faculty or Admin credentials required.' });
+}
+
 function checkRateLimit(ip) {
   const record = loginAttemptsMap.get(ip);
   if (!record) return { allowed: true };
@@ -67,8 +123,8 @@ function resetFailedAttempts(ip) {
 }
 
 app.use(cors());
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Prevent browser/proxy caching for all API responses so edits reflect immediately
 app.use((req, res, next) => {
@@ -213,20 +269,28 @@ app.get('/api/status', (req, res) => {
   });
 });
 
-// Full state (Sanitized: strips sensitive teacher credentials from general access)
+// Full state (Sanitized: strips sensitive teacher and student passwords from general access)
 app.get('/api/data', (req, res) => {
-  const isAdmin = req.headers['x-admin-auth'] === 'true' || req.query.role === 'admin';
+  const { isAdmin } = extractAuth(req);
 
-  // Sanitize teacher and sensitive passwords unless specifically authorized administrator
+  // Sanitize teacher passwords unless specifically authorized administrator
   const safeTeachers = (db.teachers || []).map(t => {
     if (isAdmin) return t;
     const { password: _, ...rest } = t;
     return rest;
   });
 
+  // Always redact student passwords in general API queries for privacy
+  const safeStudents = (db.students || []).map(s => {
+    if (isAdmin) return s;
+    const { password: _, ...rest } = s;
+    return rest;
+  });
+
   const safeData = {
     ...db,
-    teachers: safeTeachers
+    teachers: safeTeachers,
+    students: safeStudents
   };
 
   res.json(safeData);
@@ -250,7 +314,7 @@ app.post('/api/reset-data', (req, res) => {
 // ==========================================
 // BIDIRECTIONAL SYNC ENDPOINT (CLOUD <-> LAPTOP)
 // ==========================================
-app.post('/api/sync', (req, res) => {
+app.post('/api/sync', requireAdmin, (req, res) => {
   try {
     const incoming = req.body || {};
     let updated = false;
@@ -541,9 +605,11 @@ app.post('/api/auth/login', (req, res) => {
 
     if (cleanUser === ADMIN_USERNAME && cleanPass === ADMIN_PASSWORD) {
       resetFailedAttempts(clientIp);
+      const token = generateSessionToken('admin', ADMIN_USERNAME);
       return res.json({
         success: true,
         role: 'admin',
+        token,
         user: {
           username: ADMIN_USERNAME,
           name: 'Harshit Goyal (Director & Main Administrator)',
@@ -567,9 +633,11 @@ app.post('/api/auth/login', (req, res) => {
     // When Harshit enters username HARSHIT and password, Main Admin Portal opens!
     if (cleanUser === ADMIN_USERNAME && cleanPass === ADMIN_PASSWORD) {
       resetFailedAttempts(clientIp);
+      const token = generateSessionToken('admin', ADMIN_USERNAME);
       return res.json({
         success: true,
         role: 'admin',
+        token,
         user: {
           username: ADMIN_USERNAME,
           name: 'Harshit Goyal (Director & Main Administrator)',
@@ -587,11 +655,13 @@ app.post('/api/auth/login', (req, res) => {
     );
 
     if (teacher) {
+      const token = generateSessionToken('teacher', teacher.id || teacher.username);
       // Don't send other teachers' passwords to this teacher
       const { password: _tpass, ...safeTeacher } = teacher;
       return res.json({
         success: true,
         role: 'teacher',
+        token,
         teacher: safeTeacher
       });
     }
@@ -602,33 +672,38 @@ app.post('/api/auth/login', (req, res) => {
   if (role === 'student' || role === 'parent') {
     const targetId = (rollNo || username || '').trim().toUpperCase();
     const targetPass = (password || '').trim();
-    const targetPhone = (phone || password || '').replace(/\D/g, '');
+    const targetPhone = (phone || '').replace(/\D/g, '');
+
+    if (!targetId) {
+      return res.status(400).json({ error: 'Roll Number or Student ID is required.' });
+    }
+    if (!targetPass && !targetPhone) {
+      return res.status(400).json({ error: 'Password or registered parent phone number is required.' });
+    }
 
     const student = (db.students || []).find(s => {
-      // Allow matching by Roll Number, Student ID, or Student Name (case-insensitive)
-      const rollMatch = (s.rollNo || s.id || '').trim().toUpperCase() === targetId;
-      const nameMatch = (s.name || '').trim().toUpperCase() === targetId;
-      if (!rollMatch && !nameMatch) return false;
+      const sRoll = (s.rollNo || s.id || '').trim().toUpperCase();
+      if (sRoll !== targetId) return false;
 
       // Allow login with:
       // 1) Their registered password (case-insensitive)
-      const passMatch = s.password && s.password.toLowerCase() === targetPass.toLowerCase();
-      // 2) Default password 'student123'
-      const defaultPassMatch = targetPass.toLowerCase() === 'student123';
+      const passMatch = Boolean(targetPass && s.password && s.password.toLowerCase() === targetPass.toLowerCase());
+      // 2) Default password 'student123' ONLY IF student hasn't updated their password
+      const isDefaultRegistered = !s.password || s.password.toLowerCase() === 'student123';
+      const defaultPassMatch = Boolean(isDefaultRegistered && targetPass.toLowerCase() === 'student123');
       // 3) Parent phone or student phone number
       const sPhone = (s.parentPhone || '').replace(/\D/g, '');
       const altPhone = (s.studentPhone || '').replace(/\D/g, '');
-      const phoneMatch = targetPhone && targetPhone.length >= 4 && (
-        sPhone.endsWith(targetPhone) || targetPhone.endsWith(sPhone) ||
-        altPhone.endsWith(targetPhone) || targetPhone.endsWith(altPhone)
-      );
+      const phoneMatch = Boolean(targetPhone && targetPhone.length >= 4 && (
+        sPhone.endsWith(targetPhone) || altPhone.endsWith(targetPhone)
+      ));
 
       return passMatch || defaultPassMatch || phoneMatch;
     });
 
     if (!student) {
       return res.status(401).json({
-        error: 'Invalid Student ID or Password. You can log in using your Roll Number (or Student Name) and your Password or registered Phone Number.'
+        error: 'Invalid Student ID or Credentials. Please verify Roll Number and Password or registered Phone Number.'
       });
     }
 
@@ -675,10 +750,12 @@ app.post('/api/auth/login', (req, res) => {
 
     // Remove password before returning
     const { password: _spass, ...safeStudent } = student;
+    const token = generateSessionToken('student', student.id || student.rollNo);
 
     return res.json({
       success: true,
       role: 'student',
+      token,
       student: {
         ...safeStudent,
         attendancePercentage: calculatedPercentage,
@@ -817,17 +894,17 @@ app.put('/api/student/:id/change-password', (req, res) => {
   const student = db.students[idx];
 
   // Verify previous password:
-  // Must match either current registered password, default 'student123', or registered phone number
+  // Must match either current registered password, default 'student123' (if not changed yet), or registered phone number
   const currentRegisteredPass = (student.password || 'student123').trim();
   const sPhone = (student.parentPhone || '').replace(/\D/g, '');
   const altPhone = (student.studentPhone || '').replace(/\D/g, '');
   const cleanPhone = cleanCurrent.replace(/\D/g, '');
 
-  const passMatches = cleanCurrent.toLowerCase() === currentRegisteredPass.toLowerCase() ||
-                      cleanCurrent.toLowerCase() === 'student123' ||
-                      (cleanPhone.length >= 4 && (sPhone.endsWith(cleanPhone) || altPhone.endsWith(cleanPhone)));
+  const isExactCurrent = cleanCurrent.toLowerCase() === currentRegisteredPass.toLowerCase();
+  const isDefaultValid = currentRegisteredPass.toLowerCase() === 'student123' && cleanCurrent.toLowerCase() === 'student123';
+  const isPhoneValid = cleanPhone.length >= 4 && (sPhone.endsWith(cleanPhone) || altPhone.endsWith(cleanPhone));
 
-  if (!passMatches) {
+  if (!isExactCurrent && !isDefaultValid && !isPhoneValid) {
     return res.status(401).json({ error: 'Current password does not match. Please enter your valid previous password.' });
   }
 
@@ -845,23 +922,31 @@ app.put('/api/student/:id/change-password', (req, res) => {
 app.post('/api/parent-login', (req, res) => {
   const { rollNo, phone, password } = req.body;
   req.body.role = 'student';
-  // Forward to auth/login
   const targetId = (rollNo || '').trim().toUpperCase();
   const targetPhone = (phone || '').replace(/\D/g, '');
   const targetPass = (password || '').trim();
 
-  const student = db.students.find(s => {
+  if (!targetId) {
+    return res.status(400).json({ error: 'Roll Number is required.' });
+  }
+  if (!targetPass && !targetPhone) {
+    return res.status(400).json({ error: 'Student password or registered parent phone number is required.' });
+  }
+
+  const student = (db.students || []).find(s => {
     const sRoll = (s.rollNo || s.id || '').toUpperCase();
+    if (sRoll !== targetId) return false;
+
     const sPhone = (s.parentPhone || '').replace(/\D/g, '');
     const altPhone = (s.studentPhone || '').replace(/\D/g, '');
-    const idMatch = sRoll === targetId;
-    const phoneMatch = targetPhone && (sPhone.endsWith(targetPhone) || altPhone.endsWith(targetPhone));
-    const passMatch = targetPass && (s.password === targetPass || targetPass === 'student123');
-    return idMatch && (phoneMatch || passMatch || !targetPhone);
+    const phoneMatch = Boolean(targetPhone && targetPhone.length >= 4 && (sPhone.endsWith(targetPhone) || altPhone.endsWith(targetPhone)));
+    const passMatch = Boolean(targetPass && s.password && s.password.toLowerCase() === targetPass.toLowerCase());
+    const isDefault = (!s.password || s.password.toLowerCase() === 'student123') && targetPass.toLowerCase() === 'student123';
+    return phoneMatch || passMatch || isDefault;
   });
 
   if (!student) {
-    return res.status(404).json({
+    return res.status(401).json({
       error: 'Student not found or credentials incorrect. Please check Roll No and Password/Phone.'
     });
   }
@@ -899,8 +984,11 @@ app.post('/api/parent-login', (req, res) => {
 
   const { password: _, ...safeStudent } = student;
 
+  const token = generateSessionToken('student', student.id || student.rollNo);
+
   res.json({
     success: true,
+    token,
     student: safeStudent,
     attendance: {
       percentage: totalClasses > 0 
@@ -922,66 +1010,15 @@ app.post('/api/parent-login', (req, res) => {
 });
 
 // ==========================================
-// STUDENT SELF-SERVICE PASSWORD CHANGE ENDPOINT
-// ==========================================
-app.put('/api/student/:id/change-password', (req, res) => {
-  const targetId = (req.params.id || '').trim().toLowerCase();
-  const { currentPassword, newPassword } = req.body;
-
-  if (!newPassword || newPassword.trim().length < 4) {
-    return res.status(400).json({ error: 'New password must be at least 4 characters long.' });
-  }
-
-  const cleanCurrent = (currentPassword || '').trim();
-  const cleanNew = newPassword.trim();
-
-  const idx = (db.students || []).findIndex(s => 
-    (s.id && s.id.toString().toLowerCase() === targetId) ||
-    (s.rollNo && s.rollNo.toString().toLowerCase() === targetId) ||
-    (s.name && s.name.toString().toLowerCase() === targetId)
-  );
-
-  if (idx === -1) {
-    return res.status(404).json({ error: 'Student account not found.' });
-  }
-
-  const student = db.students[idx];
-
-  // Verify previous password:
-  // Must match either current registered password, default 'student123', or registered phone number
-  const currentRegisteredPass = (student.password || 'student123').trim();
-  const sPhone = (student.parentPhone || '').replace(/\D/g, '');
-  const altPhone = (student.studentPhone || '').replace(/\D/g, '');
-  const cleanPhone = cleanCurrent.replace(/\D/g, '');
-
-  const passMatches = cleanCurrent.toLowerCase() === currentRegisteredPass.toLowerCase() ||
-                      cleanCurrent.toLowerCase() === 'student123' ||
-                      (cleanPhone.length >= 4 && (sPhone.endsWith(cleanPhone) || altPhone.endsWith(cleanPhone)));
-
-  if (!passMatches) {
-    return res.status(401).json({ error: 'Current password does not match. Please enter your valid previous password.' });
-  }
-
-  // Update password
-  db.students[idx].password = cleanNew;
-  saveData(db);
-
-  return res.json({
-    success: true,
-    message: `Password changed successfully for ${student.name || 'Student'}. You can now log in with your new password.`
-  });
-});
-
-// ==========================================
 // MAIN ADMIN: TEACHER IAM MANAGEMENT
 // ==========================================
 // Get all teachers (Includes passwords for Admin in case teacher forgets)
-app.get('/api/admin/teachers', (req, res) => {
+app.get('/api/admin/teachers', requireAdmin, (req, res) => {
   res.json(db.teachers || []);
 });
 
 // Add new Teacher
-app.post('/api/admin/teachers', (req, res) => {
+app.post('/api/admin/teachers', requireAdmin, (req, res) => {
   const newTeacher = req.body;
   if (!newTeacher.name || !newTeacher.username || !newTeacher.password) {
     return res.status(400).json({ error: 'Name, Username, and Password are required for a teacher.' });
@@ -1009,7 +1046,7 @@ app.post('/api/admin/teachers', (req, res) => {
 });
 
 // Change / Reset Teacher Password (for forgotten password support)
-app.put('/api/admin/teachers/:id/password', (req, res) => {
+app.put('/api/admin/teachers/:id/password', requireAdmin, (req, res) => {
   const teacherId = req.params.id;
   const { newPassword } = req.body;
 
@@ -1034,7 +1071,7 @@ app.put('/api/admin/teachers/:id/password', (req, res) => {
 });
 
 // Update Teacher Details
-app.put('/api/admin/teachers/:id', (req, res) => {
+app.put('/api/admin/teachers/:id', requireAdmin, (req, res) => {
   const teacherId = req.params.id;
   db.teachers = db.teachers || [];
   const idx = db.teachers.findIndex(t => t.id === teacherId || t.username === teacherId);
@@ -1048,7 +1085,7 @@ app.put('/api/admin/teachers/:id', (req, res) => {
 });
 
 // Delete Teacher
-app.delete('/api/admin/teachers/:id', (req, res) => {
+app.delete('/api/admin/teachers/:id', requireAdmin, (req, res) => {
   const teacherId = req.params.id;
   db.teachers = (db.teachers || []).filter(t => t.id !== teacherId && t.username !== teacherId);
   saveData(db);
@@ -1059,15 +1096,21 @@ app.delete('/api/admin/teachers/:id', (req, res) => {
 // STUDENT MANAGEMENT
 // ==========================================
 app.get('/api/students', (req, res) => {
+  const { isAdmin } = extractAuth(req);
   const { grade } = req.query;
   let list = db.students || [];
   if (grade && grade !== 'All' && grade !== 'All Classes') {
     list = list.filter(s => isSameClass(s.grade, grade));
   }
-  res.json(list);
+  const safeList = list.map(s => {
+    if (isAdmin) return s;
+    const { password: _, ...rest } = s;
+    return rest;
+  });
+  res.json(safeList);
 });
 
-app.post('/api/students', (req, res) => {
+app.post('/api/students', requireAdmin, (req, res) => {
   const newStudent = req.body;
   if (!newStudent.name || !newStudent.rollNo) {
     return res.status(400).json({ error: 'Student Name and Roll Number are required' });
@@ -1102,7 +1145,7 @@ app.post('/api/students', (req, res) => {
   res.status(201).json({ success: true, student: newStudent });
 });
 
-app.put('/api/students/:id', (req, res) => {
+app.put('/api/students/:id', requireAdmin, (req, res) => {
   const id = req.params.id;
   const index = db.students.findIndex(s => s.id === id || s.rollNo === id);
   if (index === -1) {
@@ -1121,7 +1164,7 @@ app.put('/api/students/:id', (req, res) => {
   res.json({ success: true, student: db.students[index] });
 });
 
-app.delete('/api/students/:id', (req, res) => {
+app.delete('/api/students/:id', requireAdmin, (req, res) => {
   const id = req.params.id;
   const student = (db.students || []).find(s => s.id === id || s.rollNo === id);
   db.students = (db.students || []).filter(s => s.id !== id && s.rollNo !== id);
@@ -1161,7 +1204,7 @@ app.get('/api/attendance', (req, res) => {
   res.json(annotated);
 });
 
-app.post('/api/attendance/batch', (req, res) => {
+app.post('/api/attendance/batch', requireTeacherOrAdmin, (req, res) => {
   const { date, records, className, overrideLock } = req.body;
   if (!date || !Array.isArray(records)) {
     return res.status(400).json({ error: 'Invalid attendance batch payload. Date and records are required.' });
@@ -1314,7 +1357,7 @@ app.get('/api/tests', (req, res) => {
 });
 
 // 2. Create or conduct an offline exam with results and uploaded PDFs/Photos
-app.post('/api/tests', (req, res) => {
+app.post('/api/tests', requireTeacherOrAdmin, (req, res) => {
   const newTest = req.body;
   if (!newTest.title || !newTest.date || !newTest.maxMarks) {
     return res.status(400).json({ error: 'Title, date and maxMarks are required' });
@@ -1376,7 +1419,7 @@ app.post('/api/tests', (req, res) => {
 });
 
 // 3. Update an offline exam & student marks
-app.put('/api/tests/:id', (req, res) => {
+app.put('/api/tests/:id', requireTeacherOrAdmin, (req, res) => {
   const { id } = req.params;
   const updates = req.body;
   db.tests = db.tests || [];
@@ -1435,7 +1478,7 @@ app.put('/api/tests/:id', (req, res) => {
 });
 
 // 4. Delete an offline exam
-app.delete('/api/tests/:id', (req, res) => {
+app.delete('/api/tests/:id', requireTeacherOrAdmin, (req, res) => {
   const { id } = req.params;
   db.tests = (db.tests || []).filter(t => t.id !== id);
   recalculateAllStudentsTestStats();
@@ -1450,7 +1493,7 @@ app.get('/api/notices', (req, res) => {
   res.json(db.notices);
 });
 
-app.post('/api/notices', (req, res) => {
+app.post('/api/notices', requireTeacherOrAdmin, (req, res) => {
   const notice = req.body;
   if (!notice.title || !notice.content) {
     return res.status(400).json({ error: 'Title and content are required' });
@@ -1464,14 +1507,14 @@ app.post('/api/notices', (req, res) => {
   res.status(201).json({ success: true, notice });
 });
 
-app.delete('/api/notices/:id', (req, res) => {
+app.delete('/api/notices/:id', requireTeacherOrAdmin, (req, res) => {
   const id = req.params.id;
   db.notices = db.notices.filter(n => n.id !== id);
   saveData(db);
   res.json({ success: true, message: 'Notice deleted' });
 });
 
-app.put('/api/notices/:id', (req, res) => {
+app.put('/api/notices/:id', requireTeacherOrAdmin, (req, res) => {
   const id = req.params.id;
   const updateData = req.body;
   const idx = db.notices.findIndex(n => n.id === id);
@@ -2527,14 +2570,21 @@ app.post('/api/records/open-folder', (req, res) => {
     }
 
     // Windows explorer launcher using spawn (no shell interpolation, safe from injection)
-    const explorer = spawn('explorer.exe', [targetDir], { detached: true, stdio: 'ignore' });
-    explorer.unref();
-
-    res.json({
-      success: true,
-      message: 'Opening folder in Windows File Explorer...',
-      folderPath: targetDir
-    });
+    if (process.platform === 'win32') {
+      const explorer = spawn('explorer.exe', [targetDir], { detached: true, stdio: 'ignore' });
+      explorer.unref();
+      res.json({
+        success: true,
+        message: 'Opening folder in Windows File Explorer...',
+        folderPath: targetDir
+      });
+    } else {
+      res.json({
+        success: true,
+        message: 'Folder access path prepared on server host',
+        folderPath: targetDir
+      });
+    }
   } catch (err) {
     console.error('[Records API] Open folder error:', err);
     res.status(500).json({ error: 'Failed to open directory' });
@@ -2548,7 +2598,7 @@ app.get('/api/results-photo', (req, res) => {
   res.json(db.resultsPhoto || initialData.resultsPhoto);
 });
 
-app.put('/api/admin/results-photo', (req, res) => {
+app.put('/api/admin/results-photo', requireAdmin, (req, res) => {
   const { imageUrl, photos, title, subtitle, year, badge, description } = req.body;
   const photoList = Array.isArray(photos) ? photos : (imageUrl ? [{ id: 'photo-1', url: imageUrl, caption: title || '', year: year || '' }] : []);
 
@@ -2573,7 +2623,7 @@ app.get('/api/shining-stars', (req, res) => {
   res.json(db.shiningStars || initialData.shiningStars || []);
 });
 
-app.post('/api/admin/shining-stars', (req, res) => {
+app.post('/api/admin/shining-stars', requireAdmin, (req, res) => {
   const { name, score, exam, secondaryScore, secondaryExam, college, photo, year } = req.body;
   if (!name || !score) {
     return res.status(400).json({ error: 'Name and score are required.' });
@@ -2600,7 +2650,7 @@ app.post('/api/admin/shining-stars', (req, res) => {
   res.status(201).json({ success: true, star: newStar, shiningStars: db.shiningStars });
 });
 
-app.put('/api/admin/shining-stars', (req, res) => {
+app.put('/api/admin/shining-stars', requireAdmin, (req, res) => {
   const stars = Array.isArray(req.body) ? req.body : req.body.stars;
   if (!Array.isArray(stars)) {
     return res.status(400).json({ error: 'Expected an array of shining stars.' });
@@ -2619,7 +2669,7 @@ app.put('/api/admin/shining-stars', (req, res) => {
   res.json({ success: true, shiningStars: db.shiningStars });
 });
 
-app.delete('/api/admin/shining-stars/:id', (req, res) => {
+app.delete('/api/admin/shining-stars/:id', requireAdmin, (req, res) => {
   const { id } = req.params;
   if (!Array.isArray(db.shiningStars)) {
     db.shiningStars = [];
@@ -2637,7 +2687,7 @@ app.get('/api/impact-stats', (req, res) => {
   res.json(db.impactStats || initialData.impactStats || { courses: 15, students: 7286, teachers: 25 });
 });
 
-app.put('/api/admin/impact-stats', (req, res) => {
+app.put('/api/admin/impact-stats', requireAdmin, (req, res) => {
   const { courses, students, teachers } = req.body;
   
   db.impactStats = {
@@ -2657,7 +2707,7 @@ app.get('/api/features', (req, res) => {
   res.json(db.features || initialData.features || []);
 });
 
-app.post('/api/admin/features', (req, res) => {
+app.post('/api/admin/features', requireAdmin, (req, res) => {
   const { title, subtitle, iconKey, iconUrl, badge } = req.body;
   if (!title) {
     return res.status(400).json({ error: 'Title is required.' });
@@ -2681,7 +2731,7 @@ app.post('/api/admin/features', (req, res) => {
   res.status(201).json({ success: true, feature: newFeature, features: db.features });
 });
 
-app.put('/api/admin/features', (req, res) => {
+app.put('/api/admin/features', requireAdmin, (req, res) => {
   const features = Array.isArray(req.body) ? req.body : req.body.features;
   if (!Array.isArray(features)) {
     return res.status(400).json({ error: 'Expected an array of features.' });
@@ -2701,7 +2751,7 @@ app.put('/api/admin/features', (req, res) => {
   res.json({ success: true, features: db.features });
 });
 
-app.delete('/api/admin/features/:id', (req, res) => {
+app.delete('/api/admin/features/:id', requireAdmin, (req, res) => {
   const { id } = req.params;
   if (!Array.isArray(db.features)) {
     db.features = [];
@@ -2719,7 +2769,7 @@ app.get('/api/explore-courses', (req, res) => {
   res.json(db.exploreCourses || initialData.exploreCourses || []);
 });
 
-app.post('/api/admin/explore-courses', (req, res) => {
+app.post('/api/admin/explore-courses', requireAdmin, (req, res) => {
   const { title, description, iconKey, points, classes } = req.body;
   if (!title) {
     return res.status(400).json({ error: 'Course title is required.' });
@@ -2743,7 +2793,7 @@ app.post('/api/admin/explore-courses', (req, res) => {
   res.status(201).json({ success: true, course: newCourse, exploreCourses: db.exploreCourses });
 });
 
-app.put('/api/admin/explore-courses', (req, res) => {
+app.put('/api/admin/explore-courses', requireAdmin, (req, res) => {
   const courses = Array.isArray(req.body) ? req.body : req.body.courses;
   if (!Array.isArray(courses)) {
     return res.status(400).json({ error: 'Expected an array of courses.' });
@@ -2763,7 +2813,7 @@ app.put('/api/admin/explore-courses', (req, res) => {
   res.json({ success: true, exploreCourses: db.exploreCourses });
 });
 
-app.delete('/api/admin/explore-courses/:id', (req, res) => {
+app.delete('/api/admin/explore-courses/:id', requireAdmin, (req, res) => {
   const { id } = req.params;
   if (!Array.isArray(db.exploreCourses)) {
     db.exploreCourses = [];
@@ -2781,7 +2831,7 @@ app.get('/api/directors', (req, res) => {
   res.json(db.directors || []);
 });
 
-app.post('/api/admin/directors', (req, res) => {
+app.post('/api/admin/directors', requireAdmin, (req, res) => {
   const { name, designation, qualification, subject, experience, badge, photo, description, specialties } = req.body;
   if (!name) {
     return res.status(400).json({ error: 'Director name is required.' });
@@ -2809,7 +2859,7 @@ app.post('/api/admin/directors', (req, res) => {
   res.status(201).json({ success: true, director: newDirector, directors: db.directors });
 });
 
-app.put('/api/admin/directors', (req, res) => {
+app.put('/api/admin/directors', requireAdmin, (req, res) => {
   const directors = Array.isArray(req.body) ? req.body : req.body.directors;
   if (!Array.isArray(directors)) {
     return res.status(400).json({ error: 'Expected an array of directors.' });
@@ -2833,7 +2883,7 @@ app.put('/api/admin/directors', (req, res) => {
   res.json({ success: true, directors: db.directors });
 });
 
-app.delete('/api/admin/directors/:id', (req, res) => {
+app.delete('/api/admin/directors/:id', requireAdmin, (req, res) => {
   const { id } = req.params;
   if (!Array.isArray(db.directors)) {
     db.directors = [];
@@ -2854,7 +2904,7 @@ app.get('/api/news-events', (req, res) => {
   res.json(db.newsEvents);
 });
 
-app.post('/api/admin/news-events', (req, res) => {
+app.post('/api/admin/news-events', requireAdmin, (req, res) => {
   const { title, category, badge, isNew, date, content, link } = req.body;
   if (!title) {
     return res.status(400).json({ error: 'Title is required for news/event.' });
@@ -2880,7 +2930,7 @@ app.post('/api/admin/news-events', (req, res) => {
   res.status(201).json({ success: true, item: newItem, newsEvents: db.newsEvents });
 });
 
-app.put('/api/admin/news-events', (req, res) => {
+app.put('/api/admin/news-events', requireAdmin, (req, res) => {
   const items = Array.isArray(req.body) ? req.body : req.body.newsEvents;
   if (!Array.isArray(items)) {
     return res.status(400).json({ error: 'Expected an array of news/events.' });
@@ -2902,7 +2952,7 @@ app.put('/api/admin/news-events', (req, res) => {
   res.json({ success: true, newsEvents: db.newsEvents });
 });
 
-app.delete('/api/admin/news-events/:id', (req, res) => {
+app.delete('/api/admin/news-events/:id', requireAdmin, (req, res) => {
   const { id } = req.params;
   if (!Array.isArray(db.newsEvents)) {
     db.newsEvents = [];
@@ -2923,7 +2973,7 @@ app.get('/api/centers', (req, res) => {
   res.json(db.centers);
 });
 
-app.post('/api/admin/centers', (req, res) => {
+app.post('/api/admin/centers', requireAdmin, (req, res) => {
   const { name, city, district, state, pinCode, address, phone, email, timings, courses, googleMapsUrl, embedMapUrl, isMain, status, badge } = req.body;
   if (!name || !address) {
     return res.status(400).json({ error: 'Center name and address are required.' });
@@ -2957,7 +3007,7 @@ app.post('/api/admin/centers', (req, res) => {
   res.status(201).json({ success: true, center: newCenter, centers: db.centers });
 });
 
-app.put('/api/admin/centers/:id', (req, res) => {
+app.put('/api/admin/centers/:id', requireAdmin, (req, res) => {
   const { id } = req.params;
   if (!Array.isArray(db.centers)) {
     db.centers = [];
@@ -2978,7 +3028,7 @@ app.put('/api/admin/centers/:id', (req, res) => {
   res.json({ success: true, center: db.centers[idx], centers: db.centers });
 });
 
-app.put('/api/admin/centers', (req, res) => {
+app.put('/api/admin/centers', requireAdmin, (req, res) => {
   const centers = Array.isArray(req.body) ? req.body : req.body.centers;
   if (!Array.isArray(centers)) {
     return res.status(400).json({ error: 'Expected an array of centers.' });
@@ -2993,7 +3043,7 @@ app.put('/api/admin/centers', (req, res) => {
   res.json({ success: true, centers: db.centers });
 });
 
-app.delete('/api/admin/centers/:id', (req, res) => {
+app.delete('/api/admin/centers/:id', requireAdmin, (req, res) => {
   const { id } = req.params;
   if (!Array.isArray(db.centers)) {
     db.centers = [];

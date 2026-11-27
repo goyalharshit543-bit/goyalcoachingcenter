@@ -146,6 +146,7 @@ export default function App() {
     setCurrentUser(null);
     setCurrentRole(null);
     setStudentSession(null);
+    try { localStorage.removeItem('GCC_AUTH_TOKEN'); } catch {}
     setCurrentView('home');
   };
 
