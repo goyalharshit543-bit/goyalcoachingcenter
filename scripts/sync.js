@@ -17,19 +17,28 @@ const DEFAULT_GLOBAL_URL = 'https://goyalcoachingcenter-production.up.railway.ap
 function mergeDatasets(localDb, remoteDb) {
   const merged = { ...remoteDb, ...localDb };
 
+  // 0. Track and consolidate tombstones (deleted student IDs/rolls)
+  const deletedSet = new Set(
+    (localDb.deletedStudentRolls || [])
+      .concat(remoteDb.deletedStudentRolls || [])
+      .map(r => String(r || '').trim().toUpperCase())
+      .filter(Boolean)
+  );
+  merged.deletedStudentRolls = Array.from(deletedSet);
+
   // 1. Merge Students
   const studentMap = new Map();
 
-  // Load all local students
+  // Load all local students (excluding deleted ones)
   (localDb.students || []).forEach(s => {
     const key = (s.rollNo || s.id || '').toString().trim().toUpperCase();
-    if (key) studentMap.set(key, { ...s });
+    if (key && !deletedSet.has(key)) studentMap.set(key, { ...s });
   });
 
-  // Merge remote students
+  // Merge remote students (ONLY if not marked deleted locally)
   (remoteDb.students || []).forEach(r => {
     const key = (r.rollNo || r.id || '').toString().trim().toUpperCase();
-    if (!key) return;
+    if (!key || deletedSet.has(key)) return;
 
     if (studentMap.has(key)) {
       const local = studentMap.get(key);
@@ -197,6 +206,18 @@ async function pushToCloudServer(targetUrl, mergedData, remoteDb) {
       }
     } catch (e) {
       // Continue next
+    }
+  }
+
+  // Purge any deleted students from cloud server
+  if (Array.isArray(mergedData.deletedStudentRolls) && mergedData.deletedStudentRolls.length > 0) {
+    for (const delRoll of mergedData.deletedStudentRolls) {
+      try {
+        await fetch(`${cleanUrl}/api/students/${encodeURIComponent(delRoll)}`, {
+          method: 'DELETE',
+          headers: adminHeaders
+        });
+      } catch {}
     }
   }
 

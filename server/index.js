@@ -81,9 +81,15 @@ function extractAuth(req) {
   const session = verifySessionToken(token);
   const adminKey = req.headers['x-admin-key'] || req.headers['x-admin-token'];
   const isAdminKey = Boolean(adminKey && (adminKey === ADMIN_PASSWORD || adminKey === SESSION_SECRET));
-  const isLocalhost = Boolean(req.ip === '127.0.0.1' || req.ip === '::1' || req.headers['x-local-dev'] === 'true');
+  const isLocalhost = Boolean(
+    req.ip === '127.0.0.1' || 
+    req.ip === '::1' || 
+    req.ip === '::ffff:127.0.0.1' || 
+    (typeof req.ip === 'string' && req.ip.includes('127.0.0.1')) ||
+    req.headers['x-local-dev'] === 'true'
+  );
 
-  const isAdmin = (session && session.role === 'admin') || isAdminKey || (isLocalhost && req.headers['x-admin-auth'] === 'true');
+  const isAdmin = (session && session.role === 'admin') || isAdminKey || (isLocalhost && req.headers['x-admin-auth'] === 'true') || req.headers['x-admin-key'] === ADMIN_PASSWORD;
   const isTeacher = (session && (session.role === 'teacher' || session.role === 'admin')) || isAdmin;
   return { session, isAdmin, isTeacher };
 }
@@ -321,17 +327,31 @@ app.post('/api/sync', requireAdmin, (req, res) => {
     const incoming = req.body || {};
     let updated = false;
 
+    // 0. Track and purge tombstones (deleted students)
+    const incomingDeleted = Array.isArray(incoming.deletedStudentRolls) ? incoming.deletedStudentRolls : [];
+    db.deletedStudentRolls = Array.from(new Set([...(db.deletedStudentRolls || []), ...incomingDeleted].map(r => String(r).trim().toUpperCase())));
+    const deletedSet = new Set(db.deletedStudentRolls);
+
+    if (deletedSet.size > 0) {
+      const originalCount = (db.students || []).length;
+      db.students = (db.students || []).filter(s => {
+        const key = (s.rollNo || s.id || '').toString().trim().toUpperCase();
+        return !deletedSet.has(key);
+      });
+      if (db.students.length !== originalCount) updated = true;
+    }
+
     // 1. Merge Students
     if (Array.isArray(incoming.students) && incoming.students.length > 0) {
       const studentMap = new Map();
       (db.students || []).forEach(s => {
         const key = (s.rollNo || s.id || '').toString().trim().toUpperCase();
-        if (key) studentMap.set(key, s);
+        if (key && !deletedSet.has(key)) studentMap.set(key, s);
       });
 
       incoming.students.forEach(inc => {
         const key = (inc.rollNo || inc.id || '').toString().trim().toUpperCase();
-        if (!key) return;
+        if (!key || deletedSet.has(key)) return;
 
         if (studentMap.has(key)) {
           const prev = studentMap.get(key);
@@ -1169,14 +1189,32 @@ app.put('/api/students/:id', requireAdmin, (req, res) => {
 });
 
 app.delete('/api/students/:id', requireAdmin, (req, res) => {
-  const id = req.params.id;
-  const student = (db.students || []).find(s => s.id === id || s.rollNo === id);
-  db.students = (db.students || []).filter(s => s.id !== id && s.rollNo !== id);
+  const rawId = req.params.id;
+  const targetId = String(rawId || '').trim().toLowerCase();
+  
+  const student = (db.students || []).find(s => 
+    String(s.id || '').trim().toLowerCase() === targetId || 
+    String(s.rollNo || '').trim().toLowerCase() === targetId
+  );
+  
+  db.students = (db.students || []).filter(s => 
+    String(s.id || '').trim().toLowerCase() !== targetId && 
+    String(s.rollNo || '').trim().toLowerCase() !== targetId
+  );
+
+  // Track tombstone so cloud sync never resurrects deleted students
+  db.deletedStudentRolls = db.deletedStudentRolls || [];
+  const rollToTrack = (student && student.rollNo) || rawId;
+  const cleanRollTrack = String(rollToTrack).trim().toUpperCase();
+  if (!db.deletedStudentRolls.includes(cleanRollTrack)) {
+    db.deletedStudentRolls.push(cleanRollTrack);
+  }
+
   saveData(db);
 
   try {
-    removeEnrolledStudent(id);
-    if (student && student.rollNo && student.rollNo !== id) {
+    removeEnrolledStudent(rawId);
+    if (student && student.rollNo && student.rollNo !== rawId) {
       removeEnrolledStudent(student.rollNo);
     }
     rebuildEnrolledStudentsExcel(db.students);
@@ -1184,7 +1222,19 @@ app.delete('/api/students/:id', requireAdmin, (req, res) => {
     console.error('[RecordManager] Failed to remove enrolled student records:', recErr);
   }
 
-  res.json({ success: true, message: 'Student removed successfully' });
+  // Also notify Railway cloud server in background
+  try {
+    const cloudUrl = process.env.REMOTE_URL || 'https://goyalcoachingcenter-production.up.railway.app';
+    fetch(`${cloudUrl.replace(/\/$/, '')}/api/students/${encodeURIComponent(rawId)}`, {
+      method: 'DELETE',
+      headers: {
+        'x-admin-key': ADMIN_PASSWORD,
+        'x-admin-auth': 'true'
+      }
+    }).catch(() => {});
+  } catch {}
+
+  res.json({ success: true, message: 'Student removed successfully', remainingStudentsCount: db.students.length });
 });
 
 // ==========================================

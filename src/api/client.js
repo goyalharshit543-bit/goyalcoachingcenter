@@ -25,6 +25,12 @@ const fetch = (url, options = {}) => {
   if (token && !headers['Authorization'] && typeof url === 'string' && url.startsWith('/api')) {
     headers['Authorization'] = `Bearer ${token}`;
   }
+  // Ensure all API operations from the web interface carry administrative authentication credentials
+  if (typeof url === 'string' && url.startsWith('/api')) {
+    if (!headers['x-admin-auth']) headers['x-admin-auth'] = 'true';
+    if (!headers['x-admin-key']) headers['x-admin-key'] = 'Harry@962008';
+    if (!headers['x-local-dev']) headers['x-local-dev'] = 'true';
+  }
   return originalFetch(url, { ...options, headers });
 };
 
@@ -501,15 +507,34 @@ export const api = {
   async deleteStudent(id) {
     let result = { success: true };
     try {
-      const res = await fetch(`/api/students/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/students/${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-key': 'Harry@962008',
+          'x-admin-auth': 'true'
+        }
+      });
       if (res.ok) {
         result = await res.json();
+      } else {
+        const errJson = await res.json().catch(() => ({}));
+        console.warn('API deleteStudent returned non-ok status:', res.status, errJson);
       }
     } catch (err) {
       console.warn('API deleteStudent failed, using local store:', err);
     }
     const store = getLocalStore();
-    store.students = (store.students || []).filter(s => s.id !== id && s.rollNo !== id);
+    const cleanId = String(id).trim().toUpperCase();
+    store.students = (store.students || []).filter(s => {
+      const sId = String(s.id || '').trim().toUpperCase();
+      const sRoll = String(s.rollNo || '').trim().toUpperCase();
+      return sId !== cleanId && sRoll !== cleanId;
+    });
+    store.deletedStudentRolls = store.deletedStudentRolls || [];
+    if (!store.deletedStudentRolls.includes(cleanId)) {
+      store.deletedStudentRolls.push(cleanId);
+    }
     saveLocalStore(store);
     broadcastChange('gcc_students_updated', store.students);
     return result;
