@@ -144,6 +144,39 @@ export const initialData = {
   // Students Database with passwords for isolated personal logins
   students: [
   {
+    "name": "Krishnav",
+    "rollNo": "GCC-1",
+    "password": "25122015",
+    "grade": "Class 9",
+    "stream": "Science & Mathematics",
+    "batch": "Class 5",
+    "parentName": "Gitti Goyal",
+    "parentPhone": "9417915518",
+    "targetExam": "CBSE Class 10 Board 100/100",
+    "totalFees": "0",
+    "paidFees": "0",
+    "id": "GCC-1",
+    "fees": {
+      "total": 0,
+      "paid": 0,
+      "due": 0,
+      "status": "Fully Paid",
+      "lastReceipt": "REC-1024"
+    },
+    "batchRank": null,
+    "totalBatchStudents": 1,
+    "overallPercentage": 0,
+    "attendancePercentage": 100,
+    "totalClassesAttended": 1,
+    "totalClassesHeld": 1,
+    "teacherRemarks": "Star performer in Class 9 Math & Science.",
+    "photo": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=400&q=80",
+    "enrollmentDate": "2026-11-27",
+    "workingDays": 1,
+    "attendedDays": 1,
+    "totalTestsEvaluated": 0
+  },
+  {
     "name": "subham",
     "rollNo": "CGC505",
     "password": "subham123",
