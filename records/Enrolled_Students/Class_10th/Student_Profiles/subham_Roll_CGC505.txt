@@ -25,5 +25,5 @@ Receipt Reference      : REC-0868
 
 INSTITUTIONAL NOTES:
 ----------------------------------------------------------
-Teacher Remarks        : Newly admitted student. No assessments or attendance marked yet.
+Teacher Remarks        : Newly admitted student. Awaiting initial classes and assessments.
 ==========================================================

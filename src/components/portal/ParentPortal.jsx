@@ -51,6 +51,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { api } from '../../api/client';
+import { isSameClass } from '../../utils/classMatcher';
 
 export default function ParentPortal({ onBackToHome, initialSession = null, onLogout }) {
   const [session, setSession] = useState(initialSession);
@@ -783,7 +784,7 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
             <div className="p-3 border-t border-slate-100 bg-slate-50/50 text-[11px] text-slate-500 flex items-center justify-between">
               <span className="font-mono">Roll: {student?.rollNo || 'GCC-STU'}</span>
               <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-bold text-[10px]">
-                {student?.grade || 'Class 10'}
+                {student?.grade || 'Class Enrolled'}
               </span>
             </div>
           )}
@@ -863,7 +864,7 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
                     {studentDisplayName}
                   </div>
                   <div className="text-[10px] text-blue-100 leading-tight">
-                    {student?.grade || 'Class 10'}
+                    {student?.grade || 'Class Enrolled'}
                   </div>
                 </div>
               </div>
@@ -922,7 +923,7 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
                             No batch schedule for {dayName} (Self-Study Revision Day)
                           </p>
                           <p className="text-slate-400 text-xs mt-1 max-w-sm">
-                            Classes for your batch ({student?.grade || 'Class 10'}) run Monday through Sunday as per center roster.
+                            Classes for your batch ({student?.grade || 'Class Enrolled'}) run Monday through Sunday as per center roster.
                           </p>
                         </div>
                       );
@@ -931,7 +932,7 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
                     return (
                       <div className="p-4 sm:p-5 divide-y divide-slate-100">
                         <div className="pb-3 flex items-center justify-between text-xs text-slate-500 font-semibold">
-                          <span>Class Schedule for <strong className="text-slate-800">{dayName}</strong> ({student?.grade || 'Class 10'})</span>
+                          <span>Class Schedule for <strong className="text-slate-800">{dayName}</strong> ({student?.grade || 'Class Enrolled'})</span>
                           <span className="text-[11px] px-2 py-0.5 rounded bg-blue-50 text-[#1976d2] font-bold">
                             {classes.length} Sessions Scheduled
                           </span>
@@ -1006,7 +1007,7 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
                     <div>
                       <div className="text-xs text-slate-500 font-medium">Enrolled Batch</div>
                       <div className="text-base font-bold text-slate-800 truncate">
-                        {student?.grade || 'Class 10'}
+                        {student?.grade || 'Class Enrolled'}
                       </div>
                     </div>
                   </div>
@@ -1216,7 +1217,7 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
               <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
                 <h2 className="text-base font-bold text-slate-800 mb-2 flex items-center gap-2">
                   <CalendarDays className="w-5 h-5 text-[#1976d2]" />
-                  <span>Weekly Academic Timetable ({student?.grade || 'Class 10'})</span>
+                  <span>Weekly Academic Timetable ({student?.grade || 'Class Enrolled'})</span>
                 </h2>
                 <p className="text-xs text-slate-500 mb-5">
                   Classes conducted at Goyal Coaching Centre, Main Academic Center under mentorship of Er. Alok Goyal.
@@ -1319,18 +1320,15 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
 
                 {/* Assignments List */}
                 {(() => {
-                  const sGrade = (student?.grade || '').trim().toLowerCase();
-                  // Show matching grade or All Classes; fallback to all if empty
+                  const sGrade = (student?.grade || '').trim();
                   let displayList = (liveAssignments && liveAssignments.length > 0) ? liveAssignments : (session?.assignments || []);
                   
-                  // Filter to student's relevant grade if available
-                  const filtered = displayList.filter(a => {
+                  // Strictly filter to student's relevant grade or All Classes (NO fallback to other classes)
+                  const finalList = displayList.filter(a => {
                     if (!a.grade || a.grade === 'All Classes' || a.grade === 'All') return true;
                     if (!sGrade) return true;
-                    return a.grade.toLowerCase() === sGrade || sGrade.includes(a.grade.toLowerCase()) || a.grade.toLowerCase().includes(sGrade);
+                    return isSameClass(a.grade, sGrade);
                   });
-
-                  const finalList = filtered.length > 0 ? filtered : displayList;
 
                   if (finalList.length === 0) {
                     return (
@@ -1672,16 +1670,15 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
                 </div>
 
                 {(() => {
-                  const sGrade = (student?.grade || '').trim().toLowerCase();
+                  const sGrade = (student?.grade || '').trim();
                   let lectureList = (liveLectures && liveLectures.length > 0) ? liveLectures : (session?.lectures || []);
                   
-                  const filtered = lectureList.filter(l => {
+                  // Strictly filter to student's relevant grade or All Classes (NO fallback to other classes)
+                  const finalLectures = lectureList.filter(l => {
                     if (!l.grade || l.grade === 'All Classes' || l.grade === 'All') return true;
                     if (!sGrade) return true;
-                    return l.grade.toLowerCase() === sGrade || sGrade.includes(l.grade.toLowerCase()) || l.grade.toLowerCase().includes(sGrade);
+                    return isSameClass(l.grade, sGrade);
                   });
-
-                  const finalLectures = filtered.length > 0 ? filtered : lectureList;
 
                   if (finalLectures.length === 0) {
                     return (
@@ -1809,9 +1806,7 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
               const eligibleTests = liveOnlineTests.filter(t => {
                 if (!t.grade || t.grade === 'All Classes' || t.grade === 'All') return true;
                 if (!studentGrade) return true;
-                const gClean = String(studentGrade).toLowerCase().replace('class', '').trim();
-                const tClean = String(t.grade).toLowerCase().replace('class', '').trim();
-                return gClean === tClean || String(t.grade).toLowerCase().includes(gClean) || String(studentGrade).toLowerCase().includes(tClean);
+                return isSameClass(t.grade, studentGrade);
               });
 
               // Helper: Find official student attempt
@@ -2278,17 +2273,10 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
               const currentStudent = session?.student || {};
               const sourceTests = liveOfflineTests.length > 0 ? liveOfflineTests : (session?.tests || []);
 
-              const cleanG = (g) => {
-                if (!g) return '';
-                return String(g).toLowerCase().replace(/class/g, '').replace(/(th|st|nd|rd)/g, '').trim();
-              };
-
               const isMatchGrade = (testGrade, studentGrade) => {
                 if (!testGrade || testGrade === 'All' || testGrade === 'All Classes') return true;
                 if (!studentGrade) return true;
-                const tg = cleanG(testGrade);
-                const sg = cleanG(studentGrade);
-                return tg === sg || tg.includes(sg) || sg.includes(tg);
+                return isSameClass(testGrade, studentGrade);
               };
 
               const isStudentResultMatch = (r) => {
@@ -2656,7 +2644,7 @@ export default function ParentPortal({ onBackToHome, initialSession = null, onLo
                       <span>Official Academic Report Card</span>
                     </h2>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      Student: <strong className="text-slate-800">{studentDisplayName}</strong> • Roll No: {student?.rollNo} • Batch: {student?.grade || 'Class 10'}
+                      Student: <strong className="text-slate-800">{studentDisplayName}</strong> • Roll No: {student?.rollNo} • Batch: {student?.grade || 'Class Enrolled'}
                     </p>
                   </div>
                   <button

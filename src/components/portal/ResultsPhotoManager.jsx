@@ -129,12 +129,29 @@ export default function ResultsPhotoManager({ onDataSaved = null }) {
   };
 
   // Delete photo (can delete down to 0)
-  const handleDeletePhoto = (id) => {
-    setPhotoForm((prev) => ({
-      ...prev,
-      photos: prev.photos.filter((p) => p.id !== id)
-    }));
+  const handleDeletePhoto = async (id) => {
+    if (!window.confirm('Are you sure you want to remove this photo from the homepage slideshow?')) return;
+    const remainingPhotos = photoForm.photos.filter((p) => p.id !== id);
+    const updatedForm = {
+      ...photoForm,
+      photos: remainingPhotos,
+      imageUrl: remainingPhotos[0]?.url || ''
+    };
+    setPhotoForm(updatedForm);
     setPreviewIndex(0);
+
+    try {
+      setSaving(true);
+      await api.updateResultsPhoto(updatedForm);
+      setSuccessMsg('Photo removed and live homepage updated!');
+      setTimeout(() => setSuccessMsg(''), 4000);
+      if (onDataSaved) onDataSaved();
+    } catch (err) {
+      console.error('Failed to save photo deletion:', err);
+      alert(err.message || 'Error updating results photo.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   // Move photo up or down

@@ -25,6 +25,7 @@ import {
   UserCheck
 } from 'lucide-react';
 import { api } from '../../api/client';
+import { isSameClass } from '../../utils/classMatcher';
 
 export default function OfflineExamsManager({
   currentRole = 'admin',
@@ -113,22 +114,11 @@ export default function OfflineExamsManager({
     'Class 12'
   ];
 
-  // Helper: clean grade string
-  const cleanGrade = (g) => {
-    if (!g) return '';
-    return String(g).toLowerCase().replace(/class/g, '').replace(/(th|st|nd|rd)/g, '').trim();
-  };
-
   // Helper: check if a student belongs to target grade
   const matchesClass = (student, gradeStr) => {
     if (!student) return false;
     if (!gradeStr || gradeStr === 'All' || gradeStr === 'All Classes') return true;
-    const tGrade = cleanGrade(gradeStr);
-    if (!tGrade) return true;
-    const sGrade = cleanGrade(student.grade || student.class);
-    const sBatch = cleanGrade(student.batch);
-    const sStream = (student.stream || '').toLowerCase();
-    return sGrade === tGrade || sGrade.includes(tGrade) || sBatch.includes(tGrade) || sStream.includes(tGrade);
+    return isSameClass(student.grade || student.class || student.batch, gradeStr);
   };
 
   const safeTests = Array.isArray(tests) ? tests : [];
@@ -143,9 +133,7 @@ export default function OfflineExamsManager({
 
     let matchesGrade = true;
     if (gradeFilter !== 'All') {
-      const tg = cleanGrade(t.grade || t.batch);
-      const fg = cleanGrade(gradeFilter);
-      matchesGrade = tg === fg || tg.includes(fg) || fg.includes(tg);
+      matchesGrade = isSameClass(t.grade || t.batch, gradeFilter);
     }
     return matchesSearch && matchesGrade;
   });

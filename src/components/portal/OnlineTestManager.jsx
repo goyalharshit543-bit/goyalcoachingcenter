@@ -25,6 +25,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { api } from '../../api/client';
+import { isSameClass } from '../../utils/classMatcher';
 
 export default function OnlineTestManager({ 
   currentRole = 'admin', 
@@ -106,7 +107,7 @@ export default function OnlineTestManager({
     const matchesGrade = 
       gradeFilter === 'All' || 
       t.grade === 'All Classes' || 
-      t.grade === gradeFilter;
+      isSameClass(t.grade, gradeFilter);
 
     let matchesStatus = true;
     const now = new Date();

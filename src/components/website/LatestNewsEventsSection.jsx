@@ -24,7 +24,7 @@ export default function LatestNewsEventsSection({
 
   // Sync with prop
   useEffect(() => {
-    if (Array.isArray(items) && items.length > 0) {
+    if (Array.isArray(items)) {
       setLiveItems(items);
     }
   }, [items]);

@@ -396,14 +396,20 @@ export const api = {
   },
 
   async deleteTeacher(teacherId) {
+    let result = { success: true };
     try {
       const res = await fetch(`/api/admin/teachers/${teacherId}`, { method: 'DELETE' });
-      if (res.ok) return await res.json();
-    } catch {}
+      if (res.ok) {
+        result = await res.json();
+      }
+    } catch (err) {
+      console.warn('API deleteTeacher failed, using local store:', err);
+    }
     const store = getLocalStore();
     store.teachers = (store.teachers || []).filter(t => t.id !== teacherId && t.username !== teacherId);
     saveLocalStore(store);
-    return { success: true };
+    broadcastChange('gcc_teachers_updated', store.teachers);
+    return result;
   },
 
   // Add Student
@@ -414,13 +420,21 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(student)
       });
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const json = await res.json();
+        const store = getLocalStore();
+        store.students = [json.student || student, ...(store.students || [])];
+        saveLocalStore(store);
+        broadcastChange('gcc_students_updated', store.students);
+        return json;
+      }
     } catch {}
     const store = getLocalStore();
     student.id = student.id || student.rollNo;
     student.password = student.password || 'student123';
-    store.students.unshift(student);
+    store.students = [student, ...(store.students || [])];
     saveLocalStore(store);
+    broadcastChange('gcc_students_updated', store.students);
     return { success: true, student };
   },
 
@@ -432,13 +446,24 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates)
       });
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const json = await res.json();
+        const store = getLocalStore();
+        const sIdx = (store.students || []).findIndex(s => s.id === id || s.rollNo === id);
+        if (sIdx !== -1) {
+          store.students[sIdx] = { ...store.students[sIdx], ...(json.student || updates) };
+          saveLocalStore(store);
+          broadcastChange('gcc_students_updated', store.students);
+        }
+        return json;
+      }
     } catch {}
     const store = getLocalStore();
     const idx = store.students.findIndex(s => s.id === id || s.rollNo === id);
     if (idx !== -1) {
       store.students[idx] = { ...store.students[idx], ...updates };
       saveLocalStore(store);
+      broadcastChange('gcc_students_updated', store.students);
       return { success: true, student: store.students[idx] };
     }
     throw new Error('Student not found');
@@ -446,14 +471,20 @@ export const api = {
 
   // Delete Student
   async deleteStudent(id) {
+    let result = { success: true };
     try {
       const res = await fetch(`/api/students/${id}`, { method: 'DELETE' });
-      if (res.ok) return await res.json();
-    } catch {}
+      if (res.ok) {
+        result = await res.json();
+      }
+    } catch (err) {
+      console.warn('API deleteStudent failed, using local store:', err);
+    }
     const store = getLocalStore();
-    store.students = store.students.filter(s => s.id !== id && s.rollNo !== id);
+    store.students = (store.students || []).filter(s => s.id !== id && s.rollNo !== id);
     saveLocalStore(store);
-    return { success: true };
+    broadcastChange('gcc_students_updated', store.students);
+    return result;
   },
 
   // Record Attendance Batch
@@ -669,16 +700,20 @@ export const api = {
 
   // Delete Test
   async deleteTest(id) {
+    let result = { success: true };
     try {
       const res = await fetch(`/api/tests/${id}`, { method: 'DELETE' });
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        result = await res.json();
+      }
     } catch (err) {
       console.warn('Failed to delete test on API:', err);
     }
     const store = getLocalStore();
     store.tests = (store.tests || []).filter(t => t.id !== id);
     saveLocalStore(store);
-    return { success: true };
+    broadcastChange('gcc_tests_updated', store.tests);
+    return result;
   },
 
   // Add Notice
@@ -689,26 +724,39 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(notice)
       });
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const json = await res.json();
+        const store = getLocalStore();
+        store.notices = [json.notice || notice, ...(store.notices || [])];
+        saveLocalStore(store);
+        broadcastChange('gcc_notices_updated', store.notices);
+        return json;
+      }
     } catch {}
     const store = getLocalStore();
     notice.id = notice.id || `NTC-${Date.now().toString().slice(-4)}`;
-    store.notices = store.notices || [];
-    store.notices.unshift(notice);
+    store.notices = [notice, ...(store.notices || [])];
     saveLocalStore(store);
+    broadcastChange('gcc_notices_updated', store.notices);
     return { success: true, notice };
   },
 
   // Delete Notice
   async deleteNotice(id) {
+    let result = { success: true };
     try {
       const res = await fetch(`/api/notices/${id}`, { method: 'DELETE' });
-      if (res.ok) return await res.json();
-    } catch {}
+      if (res.ok) {
+        result = await res.json();
+      }
+    } catch (err) {
+      console.warn('API deleteNotice failed, using local store:', err);
+    }
     const store = getLocalStore();
     store.notices = (store.notices || []).filter(n => n.id !== id);
     saveLocalStore(store);
-    return { success: true };
+    broadcastChange('gcc_notices_updated', store.notices);
+    return result;
   },
 
   // Update Notice
@@ -719,13 +767,24 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedNotice)
       });
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const json = await res.json();
+        const store = getLocalStore();
+        const nIdx = (store.notices || []).findIndex(n => n.id === id);
+        if (nIdx !== -1) {
+          store.notices[nIdx] = { ...store.notices[nIdx], ...updatedNotice, id };
+          saveLocalStore(store);
+          broadcastChange('gcc_notices_updated', store.notices);
+        }
+        return json;
+      }
     } catch {}
     const store = getLocalStore();
     const idx = (store.notices || []).findIndex(n => n.id === id);
     if (idx !== -1) {
       store.notices[idx] = { ...store.notices[idx], ...updatedNotice, id };
       saveLocalStore(store);
+      broadcastChange('gcc_notices_updated', store.notices);
       return { success: true, notice: store.notices[idx] };
     }
     return { success: false, error: 'Notice not found' };
@@ -790,14 +849,20 @@ export const api = {
   },
 
   async deleteAssignment(id) {
+    let result = { success: true };
     try {
       const res = await fetch(`/api/assignments/${id}`, { method: 'DELETE' });
-      if (res.ok) return await res.json();
-    } catch {}
+      if (res.ok) {
+        result = await res.json();
+      }
+    } catch (err) {
+      console.warn('API deleteAssignment failed, using local store:', err);
+    }
     const store = getLocalStore();
     store.assignments = (store.assignments || []).filter(a => a.id !== id);
     saveLocalStore(store);
-    return { success: true };
+    broadcastChange('gcc_assignments_updated', store.assignments);
+    return result;
   },
 
   async deleteAssignmentPhoto(id, photoIndex) {
@@ -930,14 +995,20 @@ export const api = {
   },
 
   async deleteLecture(id) {
+    let result = { success: true };
     try {
       const res = await fetch(`/api/lectures/${id}`, { method: 'DELETE' });
-      if (res.ok) return await res.json();
-    } catch {}
+      if (res.ok) {
+        result = await res.json();
+      }
+    } catch (err) {
+      console.warn('API deleteLecture failed, using local store:', err);
+    }
     const store = getLocalStore();
     store.lectures = (store.lectures || []).filter(l => l.id !== id);
     saveLocalStore(store);
-    return { success: true };
+    broadcastChange('gcc_lectures_updated', store.lectures);
+    return result;
   },
 
   // Stream video upload for 5-10 GB video files with live progress callback
@@ -1047,14 +1118,20 @@ export const api = {
   },
 
   async deleteOnlineTest(id) {
+    let result = { success: true };
     try {
       const res = await fetch(`/api/online-tests/${id}`, { method: 'DELETE' });
-      if (res.ok) return await res.json();
-    } catch {}
+      if (res.ok) {
+        result = await res.json();
+      }
+    } catch (err) {
+      console.warn('API deleteOnlineTest failed, using local store:', err);
+    }
     const store = getLocalStore();
     store.onlineTests = (store.onlineTests || []).filter(t => t.id !== id);
     saveLocalStore(store);
-    return { success: true };
+    broadcastChange('gcc_online_tests_updated', store.onlineTests);
+    return result;
   },
 
   async submitOnlineTestAttempt(testId, attemptData) {
@@ -1342,7 +1419,7 @@ export const api = {
       if (res.ok) return await res.json();
     } catch {}
     const store = getLocalStore();
-    return store.shiningStars || initialData.shiningStars || [];
+    return Array.isArray(store.shiningStars) ? store.shiningStars : (initialData.shiningStars || []);
   },
 
   async addShiningStar(star) {
@@ -1457,7 +1534,7 @@ export const api = {
       if (res.ok) return await res.json();
     } catch {}
     const store = getLocalStore();
-    return store.features || initialData.features || [];
+    return Array.isArray(store.features) ? store.features : (initialData.features || []);
   },
 
   async addFeature(feature) {
@@ -1537,7 +1614,7 @@ export const api = {
       if (res.ok) return await res.json();
     } catch {}
     const store = getLocalStore();
-    return store.exploreCourses || initialData.exploreCourses || [];
+    return Array.isArray(store.exploreCourses) ? store.exploreCourses : (initialData.exploreCourses || []);
   },
 
   async addExploreCourse(course) {

@@ -3,7 +3,7 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { exec } from 'child_process';
+import { exec, spawn } from 'child_process';
 import XLSX from 'xlsx';
 import { initialData } from './initialData.js';
 import { 
@@ -12,12 +12,14 @@ import {
   recordAdmissionSubmission, 
   recordQuerySubmission, 
   recordEnrolledStudent,
+  removeEnrolledStudent,
   getRecordsOverview, 
   migrateExistingRecords,
   normalizeClass,
   PROJECT_ROOT_RECORDS,
   SERVER_RECORDS 
 } from './recordManager.js';
+import { freePortIfOccupied } from './freePort.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,6 +34,37 @@ if (!fs.existsSync(LECTURES_DIR)) {
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const ADMIN_USERNAME = (process.env.ADMIN_USERNAME || 'HARSHIT').trim().toUpperCase();
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Harry@962008';
+
+// In-memory IP rate limiter for brute-force protection
+const loginAttemptsMap = new Map();
+const MAX_FAILED_ATTEMPTS = 10;
+const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
+
+function checkRateLimit(ip) {
+  const record = loginAttemptsMap.get(ip);
+  if (!record) return { allowed: true };
+  if (record.lockoutUntil && Date.now() < record.lockoutUntil) {
+    const minutesLeft = Math.ceil((record.lockoutUntil - Date.now()) / 60000);
+    return { allowed: false, error: `Too many failed login attempts. Please wait ${minutesLeft} minute(s) before trying again.` };
+  }
+  return { allowed: true };
+}
+
+function recordFailedAttempt(ip) {
+  const record = loginAttemptsMap.get(ip) || { count: 0, lockoutUntil: 0 };
+  record.count += 1;
+  if (record.count >= MAX_FAILED_ATTEMPTS) {
+    record.lockoutUntil = Date.now() + LOCKOUT_DURATION_MS;
+    console.warn(`[Security Alert] IP ${ip} exceeded maximum failed login attempts. Locked out for 15 minutes.`);
+  }
+  loginAttemptsMap.set(ip, record);
+}
+
+function resetFailedAttempts(ip) {
+  loginAttemptsMap.delete(ip);
+}
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
@@ -54,145 +87,92 @@ function loadData() {
     if (fs.existsSync(DATA_FILE)) {
       const content = fs.readFileSync(DATA_FILE, 'utf-8');
       const parsed = JSON.parse(content);
+      let needsSave = false;
+
       if (!parsed.resultsPhoto) {
         parsed.resultsPhoto = initialData.resultsPhoto || { photos: [], imageUrl: '' };
-        saveData(parsed);
+        needsSave = true;
       } else if (!Array.isArray(parsed.resultsPhoto.photos)) {
         parsed.resultsPhoto.photos = [];
-        saveData(parsed);
+        needsSave = true;
       }
-      if (!parsed.shiningStars || !Array.isArray(parsed.shiningStars)) {
+      if (!Array.isArray(parsed.shiningStars)) {
         parsed.shiningStars = initialData.shiningStars || [];
-        saveData(parsed);
+        needsSave = true;
       }
       if (!parsed.impactStats) {
         parsed.impactStats = initialData.impactStats || { courses: 15, students: 7286, teachers: 25 };
-        saveData(parsed);
+        needsSave = true;
       }
-      if (!parsed.features || !Array.isArray(parsed.features)) {
+      if (!Array.isArray(parsed.features)) {
         parsed.features = initialData.features || [];
-        saveData(parsed);
+        needsSave = true;
       }
-      if (!parsed.exploreCourses || !Array.isArray(parsed.exploreCourses)) {
+      if (!Array.isArray(parsed.exploreCourses)) {
         parsed.exploreCourses = initialData.exploreCourses || [];
-        saveData(parsed);
+        needsSave = true;
       }
-      if (!parsed.directors || !Array.isArray(parsed.directors)) {
+      if (!Array.isArray(parsed.directors)) {
         parsed.directors = [];
-        saveData(parsed);
+        needsSave = true;
       }
-      if (!parsed.newsEvents || !Array.isArray(parsed.newsEvents)) {
-        parsed.newsEvents = [
-          {
-            id: 'news-1',
-            category: 'news',
-            title: '🎉 Goyal Coaching Center is Coming to Patiala! 🎉',
-            badge: 'new',
-            isNew: true,
-            date: 'November 2026',
-            content: 'We are thrilled to announce our upcoming state-of-the-art branch in Patiala! Bringing our proven Board & Commerce pedagogy, 1-on-1 doubt counters, and experienced faculty to aspiring students.',
-            link: ''
-          },
-          {
-            id: 'news-2',
-            category: 'news',
-            title: 'Admissions Open for Class 8th–10th (Sci & Maths) & 11th–12th (Commerce)',
-            badge: 'new',
-            isNew: true,
-            date: 'November 2026',
-            content: 'Limited seats available (maximum 30–35 students per batch) to ensure personalized attention and board exam excellence. Register today to reserve your seat.',
-            link: ''
-          },
-          {
-            id: 'news-3',
-            category: 'announcement',
-            title: 'PTQE 2026 STAGE I results Released',
-            badge: 'new',
-            isNew: true,
-            date: 'November 2026',
-            content: 'Results for the Talent & Quality Exam (PTQE) / Goyal Talent Search Stage I have been officially published. Check student scorecards and scholarship rankings online.',
-            link: ''
-          },
-          {
-            id: 'news-4',
-            category: 'announcement',
-            title: 'Class 10 & 12 Pre-Board 3-Hour Simulation Test Series Date Sheet',
-            badge: 'new',
-            isNew: true,
-            date: 'November 2026',
-            content: 'The date sheet for CBSE full syllabus mock board tests has been scheduled. Attendance is mandatory for all enrolled board champions.',
-            link: ''
-          }
-        ];
-        saveData(parsed);
+      if (!Array.isArray(parsed.newsEvents)) {
+        parsed.newsEvents = [];
+        needsSave = true;
       }
-      if (!parsed.doubts || !Array.isArray(parsed.doubts)) {
-        parsed.doubts = initialData.doubts || [];
-        saveData(parsed);
+      if (!Array.isArray(parsed.centers)) {
+        parsed.centers = initialData.centers || [];
+        needsSave = true;
       }
-      if (!parsed.enquiries || !Array.isArray(parsed.enquiries)) {
-        parsed.enquiries = initialData.enquiries || [];
-        saveData(parsed);
+      if (!Array.isArray(parsed.doubts)) {
+        parsed.doubts = [];
+        needsSave = true;
       }
-      if (!parsed.assignments || !Array.isArray(parsed.assignments)) {
-        parsed.assignments = initialData.assignments || [];
-        saveData(parsed);
+      if (!Array.isArray(parsed.enquiries)) {
+        parsed.enquiries = [];
+        needsSave = true;
       }
-      if (!parsed.lectures || !Array.isArray(parsed.lectures)) {
-        parsed.lectures = initialData.lectures || [];
-        saveData(parsed);
+      if (!Array.isArray(parsed.assignments)) {
+        parsed.assignments = [];
+        needsSave = true;
       }
-      if (!parsed.onlineTests || !Array.isArray(parsed.onlineTests)) {
-        parsed.onlineTests = initialData.onlineTests || [];
-        saveData(parsed);
+      if (!Array.isArray(parsed.lectures)) {
+        parsed.lectures = [];
+        needsSave = true;
       }
-      if (!parsed.students || !Array.isArray(parsed.students) || parsed.students.length === 0) {
+      if (!Array.isArray(parsed.onlineTests)) {
+        parsed.onlineTests = [];
+        needsSave = true;
+      }
+      if (!Array.isArray(parsed.students)) {
         parsed.students = initialData.students || [];
-        saveData(parsed);
-      } else if (Array.isArray(initialData.students)) {
-        let addedStudent = false;
-        initialData.students.forEach(initStudent => {
-          const exists = parsed.students.some(s => 
-            (s.rollNo && s.rollNo.toUpperCase() === (initStudent.rollNo || '').toUpperCase()) ||
-            (s.id && s.id.toUpperCase() === (initStudent.id || '').toUpperCase())
-          );
-          if (!exists) {
-            parsed.students.push(initStudent);
-            addedStudent = true;
-          }
-        });
-        if (addedStudent) saveData(parsed);
+        needsSave = true;
       }
-      if (!parsed.attendanceLogs || !Array.isArray(parsed.attendanceLogs) || parsed.attendanceLogs.length === 0) {
+      if (!Array.isArray(parsed.attendanceLogs)) {
         parsed.attendanceLogs = initialData.attendanceLogs || [];
-        saveData(parsed);
+        needsSave = true;
       }
-      if (!parsed.tests || !Array.isArray(parsed.tests) || parsed.tests.length === 0) {
+      if (!Array.isArray(parsed.tests)) {
         parsed.tests = initialData.tests || [];
-        saveData(parsed);
-      } else if (Array.isArray(initialData.tests)) {
-        let addedTest = false;
-        initialData.tests.forEach(initTest => {
-          const exists = parsed.tests.some(t => t.id === initTest.id);
-          if (!exists) {
-            parsed.tests.push(initTest);
-            addedTest = true;
-          }
-        });
-        if (addedTest) saveData(parsed);
+        needsSave = true;
+      }
+      if (!Array.isArray(parsed.notices)) {
+        parsed.notices = initialData.notices || [];
+        needsSave = true;
       }
       if (parsed.teachers && Array.isArray(parsed.teachers)) {
-        let changed = false;
         parsed.teachers.forEach(t => {
           if (typeof t.assignedBatches === 'string') {
             t.assignedBatches = t.assignedBatches.split(',').map(b => b.trim()).filter(Boolean);
-            changed = true;
+            needsSave = true;
           } else if (!Array.isArray(t.assignedBatches)) {
             t.assignedBatches = ['Class 10 Board Champions'];
-            changed = true;
+            needsSave = true;
           }
         });
-        if (changed) saveData(parsed);
+      }
+      if (needsSave) {
+        saveData(parsed);
       }
       return parsed;
     }
@@ -233,21 +213,246 @@ app.get('/api/status', (req, res) => {
   });
 });
 
-// Full state (for Admin / General)
+// Full state (Sanitized: strips sensitive teacher credentials from general access)
 app.get('/api/data', (req, res) => {
-  res.json(db);
+  const isAdmin = req.headers['x-admin-auth'] === 'true' || req.query.role === 'admin';
+
+  // Sanitize teacher and sensitive passwords unless specifically authorized administrator
+  const safeTeachers = (db.teachers || []).map(t => {
+    if (isAdmin) return t;
+    const { password: _, ...rest } = t;
+    return rest;
+  });
+
+  const safeData = {
+    ...db,
+    teachers: safeTeachers
+  };
+
+  res.json(safeData);
 });
 
-// Reset data to defaults
+// Reset data to defaults (Protected: Requires dev mode and strict admin authorization confirmation)
 app.post('/api/reset-data', (req, res) => {
+  const confirmHeader = req.headers['x-confirm-reset'];
+  if (confirmHeader !== 'CONFIRM_GOYAL_RESET_DATA_2026') {
+    return res.status(403).json({ 
+      error: 'Unauthorized: Data reset requires elevated administrative authorization and confirmation token.' 
+    });
+  }
+
   db = JSON.parse(JSON.stringify(initialData));
   saveData(db);
+  console.warn('[SECURITY] Platform database reset to seed data by authorized administrator.');
   res.json({ success: true, message: 'Data reset to default successfully', data: db });
+});
+
+// ==========================================
+// BIDIRECTIONAL SYNC ENDPOINT (CLOUD <-> LAPTOP)
+// ==========================================
+app.post('/api/sync', (req, res) => {
+  try {
+    const incoming = req.body || {};
+    let updated = false;
+
+    // 1. Merge Students
+    if (Array.isArray(incoming.students) && incoming.students.length > 0) {
+      const studentMap = new Map();
+      (db.students || []).forEach(s => {
+        const key = (s.rollNo || s.id || '').toString().trim().toUpperCase();
+        if (key) studentMap.set(key, s);
+      });
+
+      incoming.students.forEach(inc => {
+        const key = (inc.rollNo || inc.id || '').toString().trim().toUpperCase();
+        if (!key) return;
+
+        if (studentMap.has(key)) {
+          const prev = studentMap.get(key);
+          studentMap.set(key, {
+            ...prev,
+            ...inc,
+            name: inc.name || prev.name,
+            grade: inc.grade || prev.grade,
+            stream: inc.stream || prev.stream,
+            batch: inc.batch || prev.batch,
+            parentName: inc.parentName || prev.parentName,
+            parentPhone: inc.parentPhone || prev.parentPhone,
+            studentPhone: inc.studentPhone || prev.studentPhone,
+            password: inc.password || prev.password || 'student123',
+            photo: inc.photo || prev.photo,
+            enrollmentDate: prev.enrollmentDate || inc.enrollmentDate,
+            fees: {
+              ...(prev.fees || {}),
+              ...(inc.fees || {})
+            },
+            overallPercentage: Math.max(Number(prev.overallPercentage) || 0, Number(inc.overallPercentage) || 0),
+            attendancePercentage: inc.attendancePercentage !== undefined ? Number(inc.attendancePercentage) : (prev.attendancePercentage || 0),
+            workingDays: Math.max(Number(prev.workingDays) || 0, Number(inc.workingDays) || 0),
+            attendedDays: Math.max(Number(prev.attendedDays) || 0, Number(inc.attendedDays) || 0),
+            totalClassesAttended: Math.max(Number(prev.totalClassesAttended) || 0, Number(inc.totalClassesAttended) || 0),
+            totalClassesHeld: Math.max(Number(prev.totalClassesHeld) || 0, Number(inc.totalClassesHeld) || 0),
+            teacherRemarks: inc.teacherRemarks || prev.teacherRemarks
+          });
+        } else {
+          studentMap.set(key, inc);
+        }
+      });
+
+      db.students = Array.from(studentMap.values());
+      updated = true;
+    }
+
+    // 2. Merge Enquiries
+    if (Array.isArray(incoming.enquiries) && incoming.enquiries.length > 0) {
+      const enquiryMap = new Map();
+      (db.enquiries || []).forEach(e => enquiryMap.set(e.id || `${e.mobile || e.phone}_${e.timestamp}`, e));
+      incoming.enquiries.forEach(e => enquiryMap.set(e.id || `${e.mobile || e.phone}_${e.timestamp}`, e));
+      db.enquiries = Array.from(enquiryMap.values());
+      updated = true;
+    }
+
+    // 3. Merge GTSE Registrations
+    if (Array.isArray(incoming.gtseRegistrations) && incoming.gtseRegistrations.length > 0) {
+      const gtseMap = new Map();
+      (db.gtseRegistrations || []).forEach(g => gtseMap.set(g.id || `${g.studentNo}_${g.timestamp}`, g));
+      incoming.gtseRegistrations.forEach(g => gtseMap.set(g.id || `${g.studentNo}_${g.timestamp}`, g));
+      db.gtseRegistrations = Array.from(gtseMap.values());
+      updated = true;
+    }
+
+    // 4. Merge Attendance Logs
+    if (Array.isArray(incoming.attendanceLogs) && incoming.attendanceLogs.length > 0) {
+      const attMap = new Map();
+      (db.attendanceLogs || []).forEach(a => attMap.set(`${a.date}_${String(a.studentId).toUpperCase()}`, a));
+      incoming.attendanceLogs.forEach(a => attMap.set(`${a.date}_${String(a.studentId).toUpperCase()}`, a));
+      db.attendanceLogs = Array.from(attMap.values());
+      updated = true;
+    }
+
+    // 5. Merge Tests
+    if (Array.isArray(incoming.tests) && incoming.tests.length > 0) {
+      const testMap = new Map();
+      (db.tests || []).forEach(t => testMap.set(t.id || `${t.title}_${t.date}`, t));
+      incoming.tests.forEach(incT => {
+        const key = incT.id || `${incT.title}_${incT.date}`;
+        if (testMap.has(key)) {
+          const prevT = testMap.get(key);
+          const resMap = new Map();
+          (prevT.results || []).forEach(r => resMap.set(String(r.rollNo || r.studentId).toUpperCase(), r));
+          (incT.results || []).forEach(r => resMap.set(String(r.rollNo || r.studentId).toUpperCase(), r));
+          testMap.set(key, { ...prevT, ...incT, results: Array.from(resMap.values()) });
+        } else {
+          testMap.set(key, incT);
+        }
+      });
+      db.tests = Array.from(testMap.values());
+      updated = true;
+    }
+
+    // 6. Merge Notices
+    if (Array.isArray(incoming.notices) && incoming.notices.length > 0) {
+      const noticeMap = new Map();
+      (db.notices || []).forEach(n => noticeMap.set(n.id || `${n.title}_${n.date}`, n));
+      incoming.notices.forEach(n => noticeMap.set(n.id || `${n.title}_${n.date}`, n));
+      db.notices = Array.from(noticeMap.values());
+      updated = true;
+    }
+
+    // 7. Merge Assignments, Lectures, Online Tests, Doubts
+    ['assignments', 'lectures', 'onlineTests', 'doubts'].forEach(field => {
+      if (Array.isArray(incoming[field]) && incoming[field].length > 0) {
+        const itemMap = new Map();
+        (db[field] || []).forEach(item => itemMap.set(item.id || item.title || JSON.stringify(item), item));
+        incoming[field].forEach(item => itemMap.set(item.id || item.title || JSON.stringify(item), item));
+        db[field] = Array.from(itemMap.values());
+        updated = true;
+      }
+    });
+
+    // 8. Merge CMS items if provided
+    ['centers', 'directors', 'features', 'shiningStars', 'exploreCourses'].forEach(field => {
+      if (Array.isArray(incoming[field]) && incoming[field].length > 0) {
+        db[field] = incoming[field];
+        updated = true;
+      }
+    });
+    if (incoming.impactStats) {
+      db.impactStats = { ...(db.impactStats || {}), ...incoming.impactStats };
+      updated = true;
+    }
+    if (incoming.resultsPhoto) {
+      db.resultsPhoto = incoming.resultsPhoto;
+      updated = true;
+    }
+
+    if (updated) {
+      saveData(db);
+      try {
+        initRecordsDirectories();
+        migrateExistingRecords(db);
+      } catch (e) {
+        console.error('[Sync] Records migration notice:', e);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: 'Bidirectional sync completed successfully on server',
+      stats: {
+        totalStudents: (db.students || []).length,
+        totalEnquiries: (db.enquiries || []).length,
+        totalGTSE: (db.gtseRegistrations || []).length,
+        totalTests: (db.tests || []).length,
+        totalAttendance: (db.attendanceLogs || []).length
+      },
+      data: db
+    });
+  } catch (err) {
+    console.error('[Sync Error]', err);
+    res.status(500).json({ error: 'Sync failed: ' + err.message });
+  }
 });
 
 // ==========================================
 // IAM: UNIFIED AUTHENTICATION ENDPOINT
 // ==========================================
+
+// Normalizes and extracts standard class identifiers (e.g. '7', '8', '9', '10', '11', '12')
+function extractGradeNumber(str) {
+  if (!str) return '';
+  const s = String(str).toLowerCase().trim();
+  if (/\b12\b|twelve|xii/i.test(s)) return '12';
+  if (/\b11\b|eleven|xi/i.test(s)) return '11';
+  if (/\b10\b|ten|x\b/i.test(s)) return '10';
+  if (/\b9\b|nine|ix/i.test(s)) return '9';
+  if (/\b8\b|eight|viii/i.test(s)) return '8';
+  if (/\b7\b|seven|vii/i.test(s)) return '7';
+  if (/\b6\b|six|vi\b/i.test(s)) return '6';
+  const numMatch = s.match(/\d+/);
+  return numMatch ? numMatch[0] : '';
+}
+
+function isSameClass(classA, classB) {
+  if (!classA || !classB) return false;
+  const gradeA = extractGradeNumber(classA);
+  const gradeB = extractGradeNumber(classB);
+  if (!gradeA || !gradeB) return false;
+  if (gradeA !== gradeB) return false;
+
+  if (gradeA === '11' || gradeA === '12') {
+    const sA = String(classA).toLowerCase();
+    const sB = String(classB).toLowerCase();
+    const isCommA = sA.includes('comm');
+    const isCommB = sB.includes('comm');
+    const isSciA = sA.includes('sci');
+    const isSciB = sB.includes('sci');
+    if ((isCommA && isSciB) || (isSciA && isCommB)) {
+      return false;
+    }
+  }
+  return true;
+}
 
 // Helper to retrieve all offline tests (evaluated + upcoming/in-progress) for a student's grade
 function getStudentOfflineTests(student) {
@@ -257,13 +462,13 @@ function getStudentOfflineTests(student) {
   const sRoll = sClean(student.rollNo);
   const sName = sClean(student.name);
 
-  const cleanGrade = (g) => String(g || '').toLowerCase().replace(/class/g, '').replace(/(th|st|nd|rd)/g, '').trim();
-  const studentGradeClean = cleanGrade(student.grade);
+  const studentGradeNum = extractGradeNumber(student.grade);
 
   (db.tests || []).forEach(t => {
-    const testGradeClean = cleanGrade(t.grade || t.batch);
-    const isMyClass = !testGradeClean || testGradeClean === 'all' || testGradeClean === studentGradeClean || 
-                      testGradeClean.includes(studentGradeClean) || studentGradeClean.includes(testGradeClean);
+    const testGradeVal = t.grade || t.batch;
+    const testGradeNum = extractGradeNumber(testGradeVal);
+    const isAll = !testGradeVal || String(testGradeVal).toLowerCase().includes('all');
+    const isMyClass = isAll || (testGradeNum && studentGradeNum && isSameClass(student.grade, testGradeVal));
 
     const r = (t.results || []).find(res => {
       const rId = sClean(res.studentId);
@@ -317,6 +522,12 @@ function getStudentOfflineTests(student) {
 }
 
 app.post('/api/auth/login', (req, res) => {
+  const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
+  const rateLimitStatus = checkRateLimit(clientIp);
+  if (!rateLimitStatus.allowed) {
+    return res.status(429).json({ error: rateLimitStatus.error });
+  }
+
   const { role, username, rollNo, password, phone } = req.body;
 
   if (!role) {
@@ -325,15 +536,16 @@ app.post('/api/auth/login', (req, res) => {
 
   // 1. MAIN ADMIN LOGIN
   if (role === 'admin') {
-    const cleanUser = (username || '').trim();
+    const cleanUser = (username || '').trim().toUpperCase();
     const cleanPass = (password || '').trim();
 
-    if (cleanUser.toUpperCase() === 'HARSHIT' && cleanPass === 'Harry@962008') {
+    if (cleanUser === ADMIN_USERNAME && cleanPass === ADMIN_PASSWORD) {
+      resetFailedAttempts(clientIp);
       return res.json({
         success: true,
         role: 'admin',
         user: {
-          username: 'HARSHIT',
+          username: ADMIN_USERNAME,
           name: 'Harshit Goyal (Director & Main Administrator)',
           email: 'contact@goyalcoaching.edu.in',
           phone: '9876960163',
@@ -342,22 +554,24 @@ app.post('/api/auth/login', (req, res) => {
         }
       });
     }
+    recordFailedAttempt(clientIp);
     return res.status(401).json({ error: 'Invalid Administrator username or password.' });
   }
 
   // 2. TEACHER / FACULTY LOGIN
   if (role === 'teacher') {
-    const cleanUser = (username || '').trim();
+    const cleanUser = (username || '').trim().toUpperCase();
     const cleanPass = (password || '').trim();
 
     // SPECIAL MASTER ADMIN LOGIN VIA TEACHERS:
-    // When Harshit enters username HARSHIT and password Harry@962008, Main Admin Portal opens!
-    if (cleanUser.toUpperCase() === 'HARSHIT' && cleanPass === 'Harry@962008') {
+    // When Harshit enters username HARSHIT and password, Main Admin Portal opens!
+    if (cleanUser === ADMIN_USERNAME && cleanPass === ADMIN_PASSWORD) {
+      resetFailedAttempts(clientIp);
       return res.json({
         success: true,
         role: 'admin',
         user: {
-          username: 'HARSHIT',
+          username: ADMIN_USERNAME,
           name: 'Harshit Goyal (Director & Main Administrator)',
           email: 'contact@goyalcoaching.edu.in',
           phone: '9876960163',
@@ -845,7 +1059,12 @@ app.delete('/api/admin/teachers/:id', (req, res) => {
 // STUDENT MANAGEMENT
 // ==========================================
 app.get('/api/students', (req, res) => {
-  res.json(db.students);
+  const { grade } = req.query;
+  let list = db.students || [];
+  if (grade && grade !== 'All' && grade !== 'All Classes') {
+    list = list.filter(s => isSameClass(s.grade, grade));
+  }
+  res.json(list);
 });
 
 app.post('/api/students', (req, res) => {
@@ -904,8 +1123,19 @@ app.put('/api/students/:id', (req, res) => {
 
 app.delete('/api/students/:id', (req, res) => {
   const id = req.params.id;
-  db.students = db.students.filter(s => s.id !== id && s.rollNo !== id);
+  const student = (db.students || []).find(s => s.id === id || s.rollNo === id);
+  db.students = (db.students || []).filter(s => s.id !== id && s.rollNo !== id);
   saveData(db);
+
+  try {
+    removeEnrolledStudent(id);
+    if (student && student.rollNo && student.rollNo !== id) {
+      removeEnrolledStudent(student.rollNo);
+    }
+  } catch (recErr) {
+    console.error('[RecordManager] Failed to remove enrolled student records:', recErr);
+  }
+
   res.json({ success: true, message: 'Student removed successfully' });
 });
 
@@ -1073,11 +1303,11 @@ function recalculateAllStudentsTestStats() {
 app.get('/api/tests', (req, res) => {
   const { grade } = req.query;
   let list = db.tests || [];
-  if (grade && grade !== 'All') {
+  if (grade && grade !== 'All' && grade !== 'All Classes') {
     list = list.filter(t => {
-      const tg = String(t.grade || t.batch || '').toLowerCase();
-      const qg = String(grade).toLowerCase();
-      return tg.includes(qg) || qg.includes(tg);
+      const tg = t.grade || t.batch;
+      if (!tg) return true;
+      return isSameClass(tg, grade);
     });
   }
   res.json(list);
@@ -1266,7 +1496,7 @@ app.get('/api/assignments', (req, res) => {
   const { grade } = req.query;
   let list = db.assignments || [];
   if (grade && grade !== 'All' && grade !== 'All Classes') {
-    list = list.filter(a => !a.grade || a.grade === 'All Classes' || a.grade.toLowerCase() === grade.toLowerCase());
+    list = list.filter(a => !a.grade || a.grade === 'All Classes' || isSameClass(a.grade, grade));
   }
   res.json(list);
 });
@@ -1462,7 +1692,7 @@ app.get('/api/lectures', (req, res) => {
   const { grade } = req.query;
   let list = db.lectures || [];
   if (grade && grade !== 'All' && grade !== 'All Classes') {
-    list = list.filter(l => !l.grade || l.grade === 'All Classes' || l.grade.toLowerCase() === grade.toLowerCase());
+    list = list.filter(l => !l.grade || l.grade === 'All Classes' || isSameClass(l.grade, grade));
   }
   res.json(list);
 });
@@ -1677,7 +1907,7 @@ app.get('/api/online-tests', (req, res) => {
   const { grade } = req.query;
   let list = db.onlineTests || [];
   if (grade && grade !== 'All' && grade !== 'All Classes') {
-    list = list.filter(t => !t.grade || t.grade === 'All Classes' || t.grade.toLowerCase() === grade.toLowerCase());
+    list = list.filter(t => !t.grade || t.grade === 'All Classes' || isSameClass(t.grade, grade));
   }
   res.json(list);
 });
@@ -2270,30 +2500,35 @@ app.get('/api/records/download-file', (req, res) => {
   }
 });
 
-// Directly pop open the folder in Windows File Explorer
+// Directly pop open the folder in Windows File Explorer (Safe execution via spawn & path validation)
 app.post('/api/records/open-folder', (req, res) => {
   try {
     const { category, className } = req.body || {};
-    let targetDir = PROJECT_ROOT_RECORDS;
+    
+    // Whitelist sanitize inputs to avoid directory traversal and command injection
+    const cleanCategory = category ? String(category).replace(/[^a-zA-Z0-9_\-\s]/g, '').trim() : '';
+    const cleanClass = className ? String(className).replace(/[^a-zA-Z0-9_\-\s]/g, '').trim() : '';
 
-    if (category) {
-      targetDir = path.join(PROJECT_ROOT_RECORDS, category);
-      if (className) {
-        targetDir = path.join(targetDir, className);
+    let targetDir = PROJECT_ROOT_RECORDS;
+    if (cleanCategory) {
+      targetDir = path.resolve(PROJECT_ROOT_RECORDS, cleanCategory);
+      if (cleanClass) {
+        targetDir = path.resolve(targetDir, cleanClass);
       }
+    }
+
+    // Ensure path cannot escape PROJECT_ROOT_RECORDS
+    if (!targetDir.startsWith(PROJECT_ROOT_RECORDS)) {
+      return res.status(403).json({ error: 'Access denied: Path out of records directory' });
     }
 
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });
     }
 
-    // Windows explorer launcher
-    const cmd = `explorer.exe "${targetDir}"`;
-    exec(cmd, (err) => {
-      if (err) {
-        console.warn('[Records API] Explorer launch note:', err.message);
-      }
-    });
+    // Windows explorer launcher using spawn (no shell interpolation, safe from injection)
+    const explorer = spawn('explorer.exe', [targetDir], { detached: true, stdio: 'ignore' });
+    explorer.unref();
 
     res.json({
       success: true,
@@ -2791,6 +3026,24 @@ if (fs.existsSync(DIST_PATH)) {
   });
 }
 
-app.listen(PORT, () => {
-  console.log(`Goyal Coaching Center API Server is running on port ${PORT}`);
-});
+async function startServer() {
+  await freePortIfOccupied(PORT);
+
+  const server = app.listen(PORT, () => {
+    console.log(`Goyal Coaching Center API Server is running permanently on port ${PORT}`);
+    console.log(`- Backend API: http://localhost:${PORT}`);
+    console.log(`- Frontend App: http://localhost:5173`);
+  });
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`\n[FATAL] Port ${PORT} is occupied by another process.`);
+      console.error(`Attempting recovery... Please restart server.\n`);
+      process.exit(1);
+    } else {
+      console.error('[Server Error]', err);
+    }
+  });
+}
+
+startServer();

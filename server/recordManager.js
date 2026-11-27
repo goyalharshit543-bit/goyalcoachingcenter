@@ -84,6 +84,36 @@ export function initRecordsDirectories() {
 }
 
 /**
+ * Helper to remove a row from an Excel file safely by matching a column value
+ */
+function removeRowFromExcel(filePath, sheetName, colIndex, targetVal) {
+  if (!fs.existsSync(filePath)) return;
+  try {
+    const wb = XLSX.readFile(filePath);
+    const ws = wb.Sheets[sheetName];
+    if (!ws) return;
+    const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+    if (!Array.isArray(data) || data.length <= 1) return;
+    
+    const headers = data[0];
+    const filteredRows = [headers];
+    const targetClean = String(targetVal || '').trim().toLowerCase();
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      const val = String(row[colIndex] || '').trim().toLowerCase();
+      if (val !== targetClean) {
+        filteredRows.push(row);
+      }
+    }
+    const newWs = XLSX.utils.aoa_to_sheet(filteredRows);
+    wb.Sheets[sheetName] = newWs;
+    XLSX.writeFile(wb, filePath);
+  } catch (err) {
+    console.error(`[RecordManager] Error removing row from Excel ${filePath}:`, err.message);
+  }
+}
+
+/**
  * Helper to append a row to an Excel file safely
  */
 function appendRowToExcel(filePath, sheetName, headers, rowData) {
@@ -504,6 +534,64 @@ Teacher Remarks        : ${student.teacherRemarks || 'Enrolled in official GCC d
 
   console.log(`[RecordManager] Successfully categorized Enrolled Student ${student.name} (Roll: ${rollNo}) under ${className}`);
   return { studentId, rollNo, className };
+}
+
+/**
+ * Removes an enrolled student from disk files, class JSON, and Excel registers
+ */
+export function removeEnrolledStudent(identifier) {
+  if (!identifier) return;
+  const targetId = String(identifier).trim().toLowerCase();
+
+  for (const baseDir of TARGET_DIRS) {
+    const catDir = path.join(baseDir, CATEGORIES.ENROLLED);
+    if (!fs.existsSync(catDir)) continue;
+
+    for (const cls of STANDARD_CLASSES) {
+      const clsDir = path.join(catDir, cls);
+      const profDir = path.join(clsDir, 'Student_Profiles');
+
+      // 1. Delete matching text dossier card
+      if (fs.existsSync(profDir)) {
+        try {
+          const files = fs.readdirSync(profDir);
+          for (const file of files) {
+            const fLower = file.toLowerCase();
+            if (fLower.includes(`_roll_${targetId}.txt`) || fLower.includes(`_${targetId}.txt`)) {
+              fs.unlinkSync(path.join(profDir, file));
+            }
+          }
+        } catch (err) {
+          console.error(`[RecordManager] Error deleting profile for ${targetId}:`, err.message);
+        }
+      }
+
+      // 2. Remove from Class JSON
+      const classJsonPath = path.join(clsDir, `Enrolled_${cls}_Students.json`);
+      if (fs.existsSync(classJsonPath)) {
+        try {
+          const raw = fs.readFileSync(classJsonPath, 'utf8');
+          const list = JSON.parse(raw);
+          if (Array.isArray(list)) {
+            const filtered = list.filter(s => 
+              String(s.id || '').toLowerCase() !== targetId &&
+              String(s.rollNo || '').toLowerCase() !== targetId
+            );
+            fs.writeFileSync(classJsonPath, JSON.stringify(filtered, null, 2), 'utf8');
+          }
+        } catch {}
+      }
+
+      // 3. Remove from Class Excel (column 0 = Roll Number)
+      const classExcelPath = path.join(clsDir, `Enrolled_${cls}_Students.xlsx`);
+      removeRowFromExcel(classExcelPath, cls, 0, targetId);
+    }
+
+    // 4. Remove from Master Enrolled Excel (column 0 = Roll Number)
+    const masterExcelPath = path.join(catDir, 'All_Enrolled_Students_Master_Register.xlsx');
+    removeRowFromExcel(masterExcelPath, 'All_Enrolled_Students', 0, targetId);
+  }
+  console.log(`[RecordManager] Successfully purged records for Enrolled Student ID/Roll: ${identifier}`);
 }
 
 /**

@@ -19,6 +19,7 @@ import {
   Info
 } from 'lucide-react';
 import { api } from '../../api/client';
+import { isSameClass } from '../../utils/classMatcher';
 
 export const AVAILABLE_CLASSES = [
   { id: 'Class 7th', label: 'Class 7th', code: '7' },
@@ -43,35 +44,8 @@ export function matchesStudent(student, targetId) {
 
 export function matchesStudentClass(student, targetClass) {
   if (!student) return false;
-  if (!targetClass || targetClass === 'All') return true;
-  const grade = (student.grade || '').toLowerCase();
-  const batch = (student.batch || '').toLowerCase();
-  const stream = (student.stream || '').toLowerCase();
-  const combined = `${grade} ${batch} ${stream}`.toLowerCase();
-  const t = targetClass.toLowerCase();
-
-  if (t.includes('7')) return combined.includes('7');
-  if (t.includes('8')) return combined.includes('8');
-  if (t.includes('9')) return combined.includes('9');
-  if (t.includes('10')) return combined.includes('10');
-  
-  if (t.includes('11') && (t.includes('sci') || t.includes('science'))) {
-    return combined.includes('11') && (combined.includes('sci') || combined.includes('science'));
-  }
-  if (t.includes('11') && (t.includes('comm') || t.includes('commerce'))) {
-    return combined.includes('11') && (combined.includes('comm') || combined.includes('commerce'));
-  }
-  if (t.includes('11')) return combined.includes('11');
-
-  if (t.includes('12') && (t.includes('sci') || t.includes('science'))) {
-    return combined.includes('12') && (combined.includes('sci') || combined.includes('science'));
-  }
-  if (t.includes('12') && (t.includes('comm') || t.includes('commerce'))) {
-    return combined.includes('12') && (combined.includes('comm') || combined.includes('commerce'));
-  }
-  if (t.includes('12')) return combined.includes('12');
-
-  return combined.includes(t);
+  if (!targetClass || targetClass === 'All' || targetClass === 'All Classes') return true;
+  return isSameClass(student.grade || student.batch, targetClass);
 }
 
 export default function ClassAttendanceManager({ 

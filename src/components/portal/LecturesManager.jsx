@@ -23,6 +23,7 @@ import {
   Maximize2
 } from 'lucide-react';
 import { api } from '../../api/client';
+import { isSameClass } from '../../utils/classMatcher';
 
 export default function LecturesManager({ 
   currentRole = 'admin', 
@@ -92,7 +93,7 @@ export default function LecturesManager({
     const matchesGrade = 
       gradeFilter === 'All' || 
       lec.grade === 'All Classes' || 
-      lec.grade === gradeFilter;
+      isSameClass(lec.grade, gradeFilter);
 
     return matchesSearch && matchesGrade;
   });

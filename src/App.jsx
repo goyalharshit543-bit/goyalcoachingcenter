@@ -85,6 +85,14 @@ export default function App() {
         setSiteData(prev => prev ? { ...prev, directors: e.detail.data } : prev);
       } else if (e.detail?.type === 'gcc_news_events_updated') {
         setSiteData(prev => prev ? { ...prev, newsEvents: e.detail.data } : prev);
+      } else if (e.detail?.type === 'gcc_centers_updated') {
+        setSiteData(prev => prev ? { ...prev, centers: e.detail.data } : prev);
+      } else if (e.detail?.type === 'gcc_students_updated') {
+        setSiteData(prev => prev ? { ...prev, students: e.detail.data } : prev);
+      } else if (e.detail?.type === 'gcc_teachers_updated') {
+        setSiteData(prev => prev ? { ...prev, teachers: e.detail.data } : prev);
+      } else if (e.detail?.type === 'gcc_notices_updated') {
+        setSiteData(prev => prev ? { ...prev, notices: e.detail.data } : prev);
       } else {
         refreshSiteData();
       }

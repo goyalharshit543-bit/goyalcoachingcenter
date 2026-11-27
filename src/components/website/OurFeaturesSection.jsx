@@ -71,11 +71,11 @@ export default function OurFeaturesSection({
     { id: "feat-11", title: "Smart AC Classrooms", subtitle: "Ergonomic Seating, Digital Projection & Comfort", iconKey: "airvent", iconUrl: "/features/feat-11.png", badge: "Modern Campus" }
   ];
 
-  const [liveFeatures, setLiveFeatures] = useState(features && features.length > 0 ? features : defaultFeatures);
+  const [liveFeatures, setLiveFeatures] = useState(Array.isArray(features) ? features : defaultFeatures);
 
   // Sync with prop updates
   useEffect(() => {
-    if (features && features.length > 0) {
+    if (Array.isArray(features)) {
       setLiveFeatures(features);
     }
   }, [features]);
@@ -86,7 +86,7 @@ export default function OurFeaturesSection({
     const fetchLatest = async () => {
       try {
         const fresh = await api.getFeatures();
-        if (fresh && Array.isArray(fresh) && fresh.length > 0 && isMounted) {
+        if (Array.isArray(fresh) && isMounted) {
           setLiveFeatures(fresh);
         }
       } catch (err) {
@@ -97,7 +97,7 @@ export default function OurFeaturesSection({
     fetchLatest();
 
     const handleEvent = (e) => {
-      if (e.detail && Array.isArray(e.detail)) {
+      if (e?.detail && Array.isArray(e.detail)) {
         setLiveFeatures(e.detail);
       } else {
         fetchLatest();
@@ -111,7 +111,7 @@ export default function OurFeaturesSection({
     };
   }, []);
 
-  const activeFeatures = (liveFeatures && liveFeatures.length > 0) ? liveFeatures : defaultFeatures;
+  const activeFeatures = Array.isArray(liveFeatures) ? liveFeatures : defaultFeatures;
 
   // Ensure all 5 screen boxes always have cards even if fewer were added
   const effectiveFeatures = (() => {

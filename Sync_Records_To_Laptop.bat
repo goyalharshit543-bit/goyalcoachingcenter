@@ -1,9 +1,22 @@
 @echo off
-title Goyal Coaching Center - Cloud to Laptop Sync
-cd /d "e:\goyal coaching center"
-echo =======================================================
-echo Pulling latest student admissions & records from Global Cloud...
-echo =======================================================
+title Goyal Coaching Center - Cloud and Laptop Two-Way Synchronizer
+color 0b
+cd /d "%~dp0"
+
+echo ===============================================================================
+echo          GOYAL COACHING CENTER - TWO-WAY RECORD SYNCHRONIZER
+echo ===============================================================================
+echo.
+echo [1/3] Connecting to Cloud Website (https://goyalcoachingcenter-production.up.railway.app)...
+echo [2/3] Performing smart two-way merge (preserving all previous + new students)...
+echo [3/3] Uploading laptop edits to website and regenerating Class_Organized_Records...
+echo.
+
 node scripts/sync.js
+
+echo.
+echo ===============================================================================
+echo All students, registers, and online website databases are now in sync!
+echo ===============================================================================
 echo.
 pause

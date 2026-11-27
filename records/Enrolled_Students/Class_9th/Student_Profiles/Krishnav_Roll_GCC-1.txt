@@ -1,0 +1,29 @@
+==========================================================
+GOYAL COACHING CENTER - OFFICIAL ENROLLED STUDENT DOSSIER
+==========================================================
+Roll Number (Login ID) : GCC-1
+Student Full Name      : Krishnav
+Portal Login Password  : 25122015
+Enrollment Date        : 2026-11-27
+Enrolled Grade         : Class 9
+Academic Stream        : Science & Mathematics
+Assigned Batch         : Class 5
+
+PARENT & CONTACT DETAILS:
+----------------------------------------------------------
+Parent / Guardian Name : Gitti Goyal
+Parent Phone Number    : 9417915518
+Alternate Phone        : N/A
+
+FEE ACCOUNT STATUS:
+----------------------------------------------------------
+Total Fee Assigned     : Rs. 0
+Amount Deposited       : Rs. 0
+Balance Due            : Rs. 0
+Account Clearance      : Fully Paid
+Receipt Reference      : REC-1024
+
+INSTITUTIONAL NOTES:
+----------------------------------------------------------
+Teacher Remarks        : Star performer in Class 9 Math & Science.
+==========================================================

@@ -24,6 +24,7 @@ import {
   Send
 } from 'lucide-react';
 import { api } from '../../api/client';
+import { isSameClass } from '../../utils/classMatcher';
 
 export default function AssignmentsManager({ 
   currentRole = 'admin', 
@@ -94,7 +95,7 @@ export default function AssignmentsManager({
     const matchesGrade = 
       gradeFilter === 'All' || 
       asg.grade === 'All Classes' || 
-      asg.grade === gradeFilter;
+      isSameClass(asg.grade, gradeFilter);
 
     return matchesSearch && matchesGrade;
   });

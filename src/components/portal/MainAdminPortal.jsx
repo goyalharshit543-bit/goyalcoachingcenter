@@ -40,9 +40,11 @@ import {
   FileText,
   Video,
   Film,
-  HelpCircle
+  HelpCircle,
+  Filter
 } from 'lucide-react';
 import { api } from '../../api/client';
+import { isSameClass, getCanonicalClassName } from '../../utils/classMatcher';
 import TiltCard from '../3d/TiltCard';
 import ResultsPhotoManager from './ResultsPhotoManager';
 import ShiningStarsManager from './ShiningStarsManager';
@@ -120,6 +122,7 @@ export default function MainAdminPortal({ adminUser, onLogout, onBackToHome, isD
   });
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedClassFilter, setSelectedClassFilter] = useState('All');
   const [showTeacherPassMap, setShowTeacherPassMap] = useState({});
   const [showStudentPassMap, setShowStudentPassMap] = useState({});
   const [selectedStudent, setSelectedStudent] = useState(null);
@@ -818,7 +821,40 @@ export default function MainAdminPortal({ adminUser, onLogout, onBackToHome, isD
       )}
 
       {/* ================= TAB 2: MASTER STUDENT ROSTER ================= */}
-      {activeTab === 'students' && (
+      {activeTab === 'students' && (() => {
+        const CLASS_FILTER_TABS = [
+          { id: 'All', label: 'All Classes' },
+          { id: 'Class 7', label: 'Class 7th (Foundation)' },
+          { id: 'Class 8', label: 'Class 8th (Junior)' },
+          { id: 'Class 9', label: 'Class 9th (Science & Maths)' },
+          { id: 'Class 10', label: 'Class 10th (Board Champions)' },
+          { id: 'Class 11 Commerce', label: 'Class 11th (Commerce)' },
+          { id: 'Class 12 Commerce', label: 'Class 12th (Commerce)' }
+        ];
+
+        const filteredStudents = (students || [])
+          .filter(s => {
+            if (selectedClassFilter !== 'All' && !isSameClass(s.grade || s.batch, selectedClassFilter)) {
+              return false;
+            }
+            if (!searchQuery) return true;
+            const q = searchQuery.toLowerCase();
+            return (s.name || '').toLowerCase().includes(q) ||
+                   (s.rollNo || '').toLowerCase().includes(q) ||
+                   (s.parentPhone || '').includes(q) ||
+                   (s.studentPhone || '').includes(q);
+          })
+          .sort((a, b) => {
+            // Sort by canonical class then rollNo/name
+            const classA = a.grade || a.batch || '';
+            const classB = b.grade || b.batch || '';
+            if (classA !== classB) {
+              return classA.localeCompare(classB, undefined, { numeric: true });
+            }
+            return (a.rollNo || '').localeCompare(b.rollNo || '', undefined, { numeric: true });
+          });
+
+        return (
         <div className="space-y-4">
           <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="relative flex-1 max-w-md">
@@ -840,6 +876,35 @@ export default function MainAdminPortal({ adminUser, onLogout, onBackToHome, isD
             </button>
           </div>
 
+          {/* Class Navigation Pills */}
+          <div className="flex flex-wrap items-center gap-2 bg-slate-50 dark:bg-slate-900/60 p-2 rounded-2xl border border-slate-200 dark:border-slate-800">
+            {CLASS_FILTER_TABS.map(tab => {
+              const isSelected = selectedClassFilter === tab.id;
+              const count = tab.id === 'All'
+                ? (students || []).length
+                : (students || []).filter(s => isSameClass(s.grade || s.batch, tab.id)).length;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setSelectedClassFilter(tab.id)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    isSelected
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25 scale-[1.02]'
+                      : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
+                    isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-400'
+                  }`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
           <div className="bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
@@ -856,9 +921,14 @@ export default function MainAdminPortal({ adminUser, onLogout, onBackToHome, isD
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                  {students
-                    .filter(s => (s.name || '').toLowerCase().includes(searchQuery.toLowerCase()) || (s.rollNo || '').toLowerCase().includes(searchQuery.toLowerCase()))
-                    .map((s) => {
+                  {filteredStudents.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="p-8 text-center text-slate-400 text-xs italic">
+                        No students enrolled in {selectedClassFilter === 'All' ? 'any class' : selectedClassFilter} match your search.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredStudents.map((s) => {
                       const isVisible = showStudentPassMap[s.id];
                       return (
                         <tr key={s.id} className="hover:bg-blue-50/40 dark:hover:bg-slate-800/40 transition-colors">
@@ -943,13 +1013,15 @@ export default function MainAdminPortal({ adminUser, onLogout, onBackToHome, isD
                           </td>
                         </tr>
                       );
-                    })}
+                    })
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
         </div>
-      )}
+        );
+      })()}
 
       {/* ================= TAB: CLASS-WISE ATTENDANCE ================= */}
       {activeTab === 'attendance' && (

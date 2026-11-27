@@ -1,0 +1,35 @@
+=====================================================================
+GOYAL COACHING CENTER - COMPLETE STUDENT RECORD CARD
+=====================================================================
+STUDENT INFORMATION:
+- Student Name        : Sneha Patel
+- Roll Number (ID)    : 705
+- Enrolled Class      : Class 7th
+- Academic Stream     : Junior Foundation
+- Batch Assignment    : Class 7 Junior Prodigy
+- Enrollment Date     : 2026-11-20
+- Login Password      : sneha123
+
+GUARDIAN & CONTACT DETAILS:
+- Father/Mother Name  : Kiran Patel
+- Parent Phone Number : 9876543214
+- Student Phone Number: 9876543214
+
+FINANCIAL & FEE STATUS:
+- Total Course Fee    : Rs. 25000
+- Amount Paid to Date : Rs. 25000
+- Current Outstanding : Rs. 0
+- Fee Status Badge    : Fully Paid
+- Last Receipt Number : REC-7015
+
+ACADEMIC & ATTENDANCE PERFORMANCE:
+- Overall Score %     : 74%
+- Total Attendance %  : 0%
+- Total Classes       : 0 Attended out of 1 Working Days
+- Faculty Remarks     : Newly admitted student. Diligent and punctual.
+
+DETAILED TEST & EXAMINATION RESULTS:
+  1. [2026-11-16] Class 7 Mathematics Sunday Center Test - Fractions, Decimals & Integers (Mathematics): Scored 37 / 50 (74%)
+=====================================================================
+Exported Automatically by Goyal Coaching Center Organizer
+=====================================================================

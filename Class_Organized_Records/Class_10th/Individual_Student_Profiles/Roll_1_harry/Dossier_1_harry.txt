@@ -1,0 +1,36 @@
+=====================================================================
+GOYAL COACHING CENTER - COMPLETE STUDENT RECORD CARD
+=====================================================================
+STUDENT INFORMATION:
+- Student Name        : harry
+- Roll Number (ID)    : 1
+- Enrolled Class      : Class 10th
+- Academic Stream     : Science & Mathematics
+- Batch Assignment    : Class 10 Board Champions
+- Enrollment Date     : 2026-11-20
+- Login Password      : harry123
+
+GUARDIAN & CONTACT DETAILS:
+- Father/Mother Name  : Subhash
+- Parent Phone Number : 98769
+- Student Phone Number: 98769
+
+FINANCIAL & FEE STATUS:
+- Total Course Fee    : Rs. 38000
+- Amount Paid to Date : Rs. 38000
+- Current Outstanding : Rs. 0
+- Fee Status Badge    : Fully Paid
+- Last Receipt Number : REC-3877
+
+ACADEMIC & ATTENDANCE PERFORMANCE:
+- Overall Score %     : 92.2%
+- Total Attendance %  : 100%
+- Total Classes       : 1 Attended out of 1 Working Days
+- Faculty Remarks     : Newly admitted student. Awaiting initial classes and assessments.
+
+DETAILED TEST & EXAMINATION RESULTS:
+  1. [2026-11-15] Class 10 CBSE Board Pattern Mock Exam #1 - Mathematics (Real Numbers & Trigonometry) (Mathematics): Scored 47 / 50 (94%)
+  2. [2026-11-08] Class 10 Science Sunday Classroom Unit Test - Light: Reflection & Refraction (Science): Scored 36 / 40 (90%)
+=====================================================================
+Exported Automatically by Goyal Coaching Center Organizer
+=====================================================================

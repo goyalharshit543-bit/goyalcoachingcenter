@@ -38,6 +38,7 @@ import ResultsPhotoManager from './ResultsPhotoManager';
 import ShiningStarsManager from './ShiningStarsManager';
 import FeaturesManager from './FeaturesManager';
 import ClassAttendanceManager, { matchesStudentClass } from './ClassAttendanceManager';
+import { isSameClass } from '../../utils/classMatcher';
 import CoursesManager from './CoursesManager';
 import DirectorsManager from './DirectorsManager';
 import NewsEventsManager from './NewsEventsManager';
@@ -149,10 +150,10 @@ export default function AdminPortal({ onBackToHome, teacherUser = null, onLogout
 
   // Filter students
   const filteredStudents = (data?.students || []).filter(s => {
-    const matchesSearch = s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          s.rollNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          s.parentPhone.includes(searchTerm);
-    const matchesBatch = batchFilter === 'All' || s.batch.includes(batchFilter) || s.grade.includes(batchFilter);
+    const matchesSearch = (s.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (s.rollNo || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (s.parentPhone || '').includes(searchTerm);
+    const matchesBatch = batchFilter === 'All' || isSameClass(s.grade || s.batch, batchFilter);
     return matchesSearch && matchesBatch;
   });
 
@@ -687,11 +688,12 @@ export default function AdminPortal({ onBackToHome, teacherUser = null, onLogout
                 className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none"
               >
                 <option value="All">All Batches & Grades</option>
-                <option value="Class 10">Class 10 (Science & Maths)</option>
-                <option value="Class 12">Class 12 (Commerce)</option>
+                <option value="Class 7">Class 7 (Foundation Prodigy)</option>
+                <option value="Class 8">Class 8 (Junior Science & Maths)</option>
                 <option value="Class 9">Class 9 (Science & Maths)</option>
-                <option value="Class 11">Class 11 (Commerce)</option>
-                <option value="Class 8">Class 8 (Science & Maths)</option>
+                <option value="Class 10">Class 10 (Board Champions)</option>
+                <option value="Class 11 Commerce">Class 11 (Commerce Pioneers)</option>
+                <option value="Class 12 Commerce">Class 12 (Commerce Super League)</option>
               </select>
             </div>
 

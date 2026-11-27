@@ -83,11 +83,11 @@ export default function ExploreCoursesSection({
     }
   ];
 
-  const [liveCourses, setLiveCourses] = useState(courses && courses.length > 0 ? courses : defaultCourses);
+  const [liveCourses, setLiveCourses] = useState(Array.isArray(courses) ? courses : defaultCourses);
 
   // Sync with prop changes
   useEffect(() => {
-    if (courses && courses.length > 0) {
+    if (Array.isArray(courses)) {
       setLiveCourses(courses);
     }
   }, [courses]);
@@ -98,7 +98,7 @@ export default function ExploreCoursesSection({
     const fetchLatest = async () => {
       try {
         const fresh = await api.getExploreCourses();
-        if (fresh && Array.isArray(fresh) && fresh.length > 0 && isMounted) {
+        if (Array.isArray(fresh) && isMounted) {
           setLiveCourses(fresh);
         }
       } catch (err) {
@@ -109,7 +109,7 @@ export default function ExploreCoursesSection({
     fetchLatest();
 
     const handleEvent = (e) => {
-      if (e.detail && Array.isArray(e.detail)) {
+      if (e?.detail && Array.isArray(e.detail)) {
         setLiveCourses(e.detail);
       } else {
         fetchLatest();

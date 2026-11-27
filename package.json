@@ -4,15 +4,15 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"node server/index.js\" \"vite\"",
+    "dev": "concurrently -k \"npm run server\" \"npm run client\"",
     "start": "node server/index.js",
     "server": "node server/index.js",
-    "client": "vite",
+    "client": "vite --port 5173 --strictPort",
     "build": "vite build",
     "sync": "node scripts/sync.js",
     "deploy:firebase": "npm run build && npx firebase-tools deploy --only hosting",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview --port 5173 --strictPort"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.5",

@@ -88,6 +88,39 @@
   ],
   "students": [
     {
+      "name": "Krishnav",
+      "rollNo": "GCC-1",
+      "password": "25122015",
+      "grade": "Class 9",
+      "stream": "Science & Mathematics",
+      "batch": "Class 5",
+      "parentName": "Gitti Goyal",
+      "parentPhone": "9417915518",
+      "targetExam": "CBSE Class 10 Board 100/100",
+      "totalFees": "0",
+      "paidFees": "0",
+      "id": "GCC-1",
+      "fees": {
+        "total": 0,
+        "paid": 0,
+        "due": 0,
+        "status": "Fully Paid",
+        "lastReceipt": "REC-1024"
+      },
+      "batchRank": null,
+      "totalBatchStudents": 1,
+      "overallPercentage": 0,
+      "attendancePercentage": 100,
+      "totalClassesAttended": 1,
+      "totalClassesHeld": 1,
+      "teacherRemarks": "Star performer in Class 9 Math & Science.",
+      "photo": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=400&q=80",
+      "enrollmentDate": "2026-11-27",
+      "workingDays": 1,
+      "attendedDays": 1,
+      "totalTestsEvaluated": 0
+    },
+    {
       "name": "subham",
       "rollNo": "CGC505",
       "password": "subham123",
@@ -106,15 +139,15 @@
         "status": "Fully Paid",
         "lastReceipt": "REC-0868"
       },
-      "batchRank": null,
-      "totalBatchStudents": 2,
       "overallPercentage": 88,
       "attendancePercentage": 100,
       "totalClassesAttended": 1,
       "totalClassesHeld": 1,
-      "teacherRemarks": "Newly admitted student. No assessments or attendance marked yet.",
       "photo": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=400&q=80",
       "enrollmentDate": "2026-11-20",
+      "batchRank": null,
+      "teacherRemarks": "Newly admitted student. Awaiting initial classes and assessments.",
+      "totalBatchStudents": 2,
       "workingDays": 1,
       "attendedDays": 1,
       "totalTestsEvaluated": 1
@@ -313,6 +346,16 @@
     }
   ],
   "attendanceLogs": [
+    {
+      "date": "2026-11-27",
+      "studentId": "GCC-1",
+      "status": "Present",
+      "timeIn": "04:00 PM",
+      "remarks": "Present on time",
+      "className": "Class 9th",
+      "createdAt": "2026-11-27T08:01:12.683Z",
+      "updatedAt": "2026-11-27T08:03:17.979Z"
+    },
     {
       "date": "2026-11-20",
       "studentId": "CGC505",
@@ -770,30 +813,7 @@
       "quote": "The Sunday test series, real-time parent portal updates, and continuous feedback from teachers kept me disciplined and on track throughout Class 12."
     }
   ],
-  "shiningStars": [
-    {
-      "name": "PRACHI",
-      "score": "700/700",
-      "exam": "BOARD",
-      "secondaryScore": "99.99",
-      "secondaryExam": "",
-      "college": "SVM",
-      "photo": "/uploads/star-prachi.png",
-      "year": "2026",
-      "id": "star-1795095459114"
-    },
-    {
-      "name": "CHATANAYA",
-      "score": "670/700",
-      "exam": "BOARD",
-      "secondaryScore": "99.8",
-      "secondaryExam": "",
-      "college": "SARVHITKARI VIDYA MANDIR",
-      "photo": "/uploads/star-chatanaya.jpg",
-      "year": "2026",
-      "id": "star-1795095262318"
-    }
-  ],
+  "shiningStars": [],
   "impactStats": {
     "courses": 5,
     "students": 14,
@@ -1252,399 +1272,274 @@
   ],
   "onlineTests": [
     {
-      "id": "MCQ-101",
-      "title": "Class 10 Science Olympiad (NSO Level 1) Full Mock Test",
-      "subject": "Science",
-      "grade": "Class 10",
-      "batch": "Class 10 Board Champions",
-      "durationMinutes": 20,
-      "status": "active",
-      "startTime": "2026-11-20T00:00:00.000Z",
-      "endTime": "2026-11-25T23:59:59.000Z",
-      "positiveMarks": 4,
-      "negativeMarks": 1,
-      "totalMarks": 16,
-      "instructions": "Each correct answer carries +4 marks. Incorrect answers carry -1 mark deduction. Live countdown timer will auto-submit answers upon expiration.",
-      "createdBy": "Er. Alok Goyal",
-      "createdAt": "2026-11-20T08:00:00.000Z",
-      "questions": [
-        {
-          "id": "Q1",
-          "text": "An object is placed 12 cm in front of a concave mirror of focal length 8 cm. What is the position and magnification of the image formed?",
-          "image": "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=600&q=80",
-          "options": [
-            {
-              "id": "A",
-              "text": "v = -16 cm, m = +1.5"
-            },
-            {
-              "id": "B",
-              "text": "v = -24 cm, m = -2"
-            },
-            {
-              "id": "C",
-              "text": "v = +24 cm, m = +2"
-            },
-            {
-              "id": "D",
-              "text": "v = -12 cm, m = -1"
-            }
-          ],
-          "correctOption": "B",
-          "explanation": "Using mirror formula 1/f = 1/v + 1/u: 1/(-8) = 1/v + 1/(-12) => 1/v = -1/8 + 1/12 = -1/24. Thus v = -24 cm. Magnification m = -v/u = -(-24)/(-12) = -2 (Real and inverted)."
-        },
-        {
-          "id": "Q2",
-          "text": "Which of the following processes represents an exothermic displacement reaction?",
-          "image": "",
-          "options": [
-            {
-              "id": "A",
-              "text": "Electrolysis of acidified water"
-            },
-            {
-              "id": "B",
-              "text": "Reaction of quicklime with water: CaO + H2O → Ca(OH)2"
-            },
-            {
-              "id": "C",
-              "text": "Thermite process: Fe2O3 + 2Al → Al2O3 + 2Fe + Heat"
-            },
-            {
-              "id": "D",
-              "text": "Heating of ferrous sulphate crystals"
-            }
-          ],
-          "correctOption": "C",
-          "explanation": "In the Thermite reaction, Aluminium displaces Iron from Fe2O3. It is both a displacement reaction and highly exothermic (molten iron is formed)."
-        },
-        {
-          "id": "Q3",
-          "text": "Three resistors of 2 Ω, 3 Ω, and 6 Ω are connected in parallel across a 12V battery. What is the total current drawn from the battery?",
-          "image": "",
-          "options": [
-            {
-              "id": "A",
-              "text": "12 A"
-            },
-            {
-              "id": "B",
-              "text": "1 A"
-            },
-            {
-              "id": "C",
-              "text": "6 A"
-            },
-            {
-              "id": "D",
-              "text": "2.4 A"
-            }
-          ],
-          "correctOption": "A",
-          "explanation": "Equivalent resistance 1/Rp = 1/2 + 1/3 + 1/6 = 6/6 = 1 Ω. Total current I = V / Rp = 12V / 1Ω = 12 A."
-        },
-        {
-          "id": "Q4",
-          "text": "In human males, the testes lie outside the abdominal cavity in scrotum because it helps in:",
-          "image": "",
-          "options": [
-            {
-              "id": "A",
-              "text": "Easy release of sperms"
-            },
-            {
-              "id": "B",
-              "text": "Maintaining temperature 2 to 2.5°C lower than normal body temperature"
-            },
-            {
-              "id": "C",
-              "text": "Escaping urinary bladder pressure"
-            },
-            {
-              "id": "D",
-              "text": "Storing more testosterone hormone"
-            }
-          ],
-          "correctOption": "B",
-          "explanation": "Spermatogenesis requires a temperature of 2-2.5°C lower than the core body temperature of 37°C, which is provided by the scrotum outside the abdominal cavity."
-        }
-      ],
-      "attempts": [
-        {
-          "id": "ATT-2162",
-          "testId": "MCQ-101",
-          "studentId": "1",
-          "studentName": "harry",
-          "rollNo": "1",
-          "grade": "Class 10",
-          "score": 6,
-          "maxScore": 16,
-          "correctCount": 2,
-          "incorrectCount": 2,
-          "unattemptedCount": 0,
-          "totalQuestions": 4,
-          "accuracy": 50,
-          "answers": {
-            "Q1": "B",
-            "Q2": "B",
-            "Q3": "A",
-            "Q4": "C"
-          },
-          "detailedBreakdown": [
-            {
-              "questionId": "Q1",
-              "text": "An object is placed 12 cm in front of a concave mirror of focal length 8 cm. What is the position and magnification of the image formed?",
-              "image": "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=600&q=80",
-              "chosenOption": "B",
-              "correctOption": "B",
-              "isCorrect": true,
-              "isUnattempted": false,
-              "explanation": "Using mirror formula 1/f = 1/v + 1/u: 1/(-8) = 1/v + 1/(-12) => 1/v = -1/8 + 1/12 = -1/24. Thus v = -24 cm. Magnification m = -v/u = -(-24)/(-12) = -2 (Real and inverted)."
-            },
-            {
-              "questionId": "Q2",
-              "text": "Which of the following processes represents an exothermic displacement reaction?",
-              "image": "",
-              "chosenOption": "B",
-              "correctOption": "C",
-              "isCorrect": false,
-              "isUnattempted": false,
-              "explanation": "In the Thermite reaction, Aluminium displaces Iron from Fe2O3. It is both a displacement reaction and highly exothermic (molten iron is formed)."
-            },
-            {
-              "questionId": "Q3",
-              "text": "Three resistors of 2 Ω, 3 Ω, and 6 Ω are connected in parallel across a 12V battery. What is the total current drawn from the battery?",
-              "image": "",
-              "chosenOption": "A",
-              "correctOption": "A",
-              "isCorrect": true,
-              "isUnattempted": false,
-              "explanation": "Equivalent resistance 1/Rp = 1/2 + 1/3 + 1/6 = 6/6 = 1 Ω. Total current I = V / Rp = 12V / 1Ω = 12 A."
-            },
-            {
-              "questionId": "Q4",
-              "text": "In human males, the testes lie outside the abdominal cavity in scrotum because it helps in:",
-              "image": "",
-              "chosenOption": "C",
-              "correctOption": "B",
-              "isCorrect": false,
-              "isUnattempted": false,
-              "explanation": "Spermatogenesis requires a temperature of 2-2.5°C lower than the core body temperature of 37°C, which is provided by the scrotum outside the abdominal cavity."
-            }
-          ],
-          "timeTakenSeconds": 15,
-          "submittedAt": "2026-11-21T06:24:12.162Z",
-          "isPractice": false
-        }
-      ]
-    },
-    {
-      "id": "MCQ-102",
-      "title": "Class 10 Mathematics Olympiad (IMO) Stage 2 Mock Test",
-      "subject": "Mathematics",
-      "grade": "Class 10",
-      "batch": "Class 10 Board Champions",
-      "durationMinutes": 45,
-      "status": "upcoming",
-      "startTime": "2026-11-22T10:00:00.000Z",
-      "endTime": "2026-11-23T20:00:00.000Z",
-      "positiveMarks": 4,
-      "negativeMarks": 1,
-      "totalMarks": 20,
-      "instructions": "Scheduled live Olympiad test. Questions will automatically unlock on Sunday 10:00 AM.",
-      "createdBy": "Er. Alok Goyal",
-      "createdAt": "2026-11-20T09:00:00.000Z",
-      "questions": [
-        {
-          "id": "Q1",
-          "text": "If the roots of the quadratic equation px^2 + qx + r = 0 are in the ratio 2:3, then which of the following relations holds true?",
-          "image": "",
-          "options": [
-            {
-              "id": "A",
-              "text": "6q^2 = 25pr"
-            },
-            {
-              "id": "B",
-              "text": "25q^2 = 6pr"
-            },
-            {
-              "id": "C",
-              "text": "5q^2 = 6pr"
-            },
-            {
-              "id": "D",
-              "text": "pr = 6q^2"
-            }
-          ],
-          "correctOption": "A",
-          "explanation": "Let roots be 2k and 3k. Sum = 5k = -q/p => k = -q/(5p). Product = 6k^2 = r/p => 6(-q/(5p))^2 = r/p => 6q^2 / (25p^2) = r/p => 6q^2 = 25pr."
-        }
-      ],
-      "attempts": []
-    },
-    {
-      "id": "MCQ-103",
-      "title": "Class 10 Foundation Physics Diagnostic Test (Electricity & Magnetism)",
+      "id": "MCQ-7729",
+      "title": "Class 10",
       "subject": "Physics",
       "grade": "Class 10",
       "batch": "Class 10 Board Champions",
-      "durationMinutes": 15,
-      "status": "closed",
-      "startTime": "2026-11-15T10:00:00.000Z",
-      "endTime": "2026-11-18T20:00:00.000Z",
+      "durationMinutes": 60,
+      "status": "active",
+      "startTime": "2026-11-22T05:30",
+      "endTime": "2026-11-26T07:00",
       "positiveMarks": 4,
-      "negativeMarks": 0,
-      "totalMarks": 8,
-      "instructions": "The live window has concluded. Available in Practice Mode for self-learning and Olympiad preparation.",
-      "createdBy": "Er. Alok Goyal",
-      "createdAt": "2026-11-15T08:00:00.000Z",
+      "negativeMarks": 1,
+      "totalMarks": 40,
+      "instructions": "Each correct answer carries +4 marks, -1 for incorrect. Timer will auto-submit when duration finishes.",
       "questions": [
         {
           "id": "Q1",
-          "text": "A commercial unit of electrical energy is 1 Kilowatt-hour (kWh). Express 1 kWh in Joules:",
+          "text": "A ray of light falls normally on a plane mirror. The angle of reflection is:",
           "image": "",
           "options": [
             {
               "id": "A",
-              "text": "3.6 × 10^5 Joules"
+              "text": "90°"
             },
             {
               "id": "B",
-              "text": "3.6 × 10^6 Joules"
+              "text": "45°"
             },
             {
               "id": "C",
-              "text": "3600 Joules"
+              "text": ". 0°"
             },
             {
               "id": "D",
-              "text": "1.6 × 10^-19 Joules"
-            }
-          ],
-          "correctOption": "B",
-          "explanation": "1 kWh = 1000 W × 3600 s = 3.6 × 10^6 Joules."
-        },
-        {
-          "id": "Q2",
-          "text": "According to Fleming's Left-Hand Rule, the forefinger represents the direction of:",
-          "image": "",
-          "options": [
-            {
-              "id": "A",
-              "text": "Motion / Force on conductor"
-            },
-            {
-              "id": "B",
-              "text": "Induced electric current"
-            },
-            {
-              "id": "C",
-              "text": "Magnetic Field (North to South)"
-            },
-            {
-              "id": "D",
-              "text": "Electric potential difference"
+              "text": "180°"
             }
           ],
           "correctOption": "C",
-          "explanation": "In Fleming's Left-Hand Rule: Thumb = Motion/Force, Forefinger = Magnetic Field, Center finger = Current (F-B-I)."
-        }
-      ],
-      "attempts": []
-    },
-    {
-      "id": "MCQ-104",
-      "title": "Class 10 Chemistry Olympiad: Chemical Reactions & Equations Rapid Fire",
-      "subject": "Chemistry",
-      "grade": "Class 10",
-      "batch": "Class 10 Board Champions",
-      "durationMinutes": 15,
-      "status": "active",
-      "startTime": "2026-11-19T08:00:00.000Z",
-      "endTime": "2026-11-25T23:59:59.000Z",
-      "positiveMarks": 4,
-      "negativeMarks": 1,
-      "totalMarks": 8,
-      "instructions": "Completed Olympiad mock quiz.",
-      "createdBy": "Er. Alok Goyal",
-      "createdAt": "2026-11-19T08:00:00.000Z",
-      "questions": [
-        {
-          "id": "Q1",
-          "text": "Which of the following gases is flushed into bags of potato chips to prevent rancidity?",
-          "image": "",
-          "options": [
-            {
-              "id": "A",
-              "text": "Oxygen"
-            },
-            {
-              "id": "B",
-              "text": "Nitrogen"
-            },
-            {
-              "id": "C",
-              "text": "Carbon Dioxide"
-            },
-            {
-              "id": "D",
-              "text": "Hydrogen"
-            }
-          ],
-          "correctOption": "B",
-          "explanation": "Nitrogen is an inert gas that creates an unreactive atmosphere, preventing oxidation of oils and fats (rancidity)."
+          "explanation": "When a ray falls normally, it travels along the normal.  Therefore, the angle of incidence is 0°.  According to the law of reflection:  ∠ i = ∠ r ∠i=∠r"
         },
         {
           "id": "Q2",
-          "text": "When lead nitrate powder is heated in a dry boiling tube, brown fumes of which gas are evolved?",
+          "text": "An object is placed 12 cm in front of a plane mirror. The distance between the object and its image is:",
           "image": "",
           "options": [
             {
               "id": "A",
-              "text": "Nitric Oxide (NO)"
+              "text": "12 cm"
             },
             {
               "id": "B",
-              "text": "Nitrogen Dioxide (NO2)"
+              "text": "24 cm"
             },
             {
               "id": "C",
-              "text": "Nitrous Oxide (N2O)"
+              "text": "6 cm"
             },
             {
               "id": "D",
-              "text": "Nitrogen Pentoxide (N2O5)"
+              "text": "36 cm"
+            }
+          ],
+          "correctOption": "A",
+          "explanation": "In a plane mirror:  Image distance = Object distance.  Object distance = 12 cm.  Image distance = 12 cm.  Therefore,  12 + 12 = 24  cm 12+12=24 cm"
+        },
+        {
+          "id": "Q3",
+          "text": ". Which phenomenon proves that light travels in a straight line?",
+          "image": "",
+          "options": [
+            {
+              "id": "A",
+              "text": "Reflection"
+            },
+            {
+              "id": "B",
+              "text": "Refraction"
+            },
+            {
+              "id": "C",
+              "text": "Formation of shadows"
+            },
+            {
+              "id": "D",
+              "text": "Dispersion"
+            }
+          ],
+          "correctOption": "C",
+          "explanation": "When an opaque object blocks light, a shadow is formed behind it.  This happens because light travels in straight lines in a uniform medium.  This property is called rectilinear propagation of light."
+        },
+        {
+          "id": "Q4",
+          "text": "A concave mirror is used by dentists because it can produce:",
+          "image": "",
+          "options": [
+            {
+              "id": "A",
+              "text": "A diminished image"
+            },
+            {
+              "id": "B",
+              "text": "An enlarged, erect image"
+            },
+            {
+              "id": "C",
+              "text": "Only inverted images"
+            },
+            {
+              "id": "D",
+              "text": "A virtual diminished image"
             }
           ],
           "correctOption": "B",
-          "explanation": "2Pb(NO3)2(s) → 2PbO(s) + 4NO2(g) (brown fumes) + O2(g)."
+          "explanation": ""
+        },
+        {
+          "id": "Q5",
+          "text": "If the angle between the incident ray and the reflected ray is 80°, the angle of incidence is:",
+          "image": "",
+          "options": [
+            {
+              "id": "A",
+              "text": "20°"
+            },
+            {
+              "id": "B",
+              "text": "40°"
+            },
+            {
+              "id": "C",
+              "text": "80°"
+            },
+            {
+              "id": "D",
+              "text": "160°"
+            }
+          ],
+          "correctOption": "B",
+          "explanation": "According to the law of reflection:  i = r i=r The angle between the incident and reflected rays is:  i + r = 80 ∘ i+r=80  ∘   2 i = 80 ∘ 2i=80  ∘   i = 40 ∘ i=40  ∘   ​"
+        },
+        {
+          "id": "Q6",
+          "text": "Which mirror always forms a virtual, erect and diminished image?",
+          "image": "",
+          "options": [
+            {
+              "id": "A",
+              "text": "Plane mirror"
+            },
+            {
+              "id": "B",
+              "text": "Concave mirror"
+            },
+            {
+              "id": "C",
+              "text": "Convex mirror"
+            },
+            {
+              "id": "D",
+              "text": "None"
+            }
+          ],
+          "correctOption": "A",
+          "explanation": "A convex mirror always forms an image that is:  Virtual  Erect  Diminished  It is commonly used as a rear-view mirror in vehicles because it provides a wider field of view."
+        },
+        {
+          "id": "Q7",
+          "text": "The focal length of a spherical mirror is:",
+          "image": "",
+          "options": [
+            {
+              "id": "A",
+              "text": "Equal to its radius of curvature"
+            },
+            {
+              "id": "B",
+              "text": "Half its radius of curvature"
+            },
+            {
+              "id": "C",
+              "text": "Twice its radius of curvature"
+            },
+            {
+              "id": "D",
+              "text": "Four times its radius of curvature"
+            }
+          ],
+          "correctOption": "B",
+          "explanation": "The relationship between focal length and radius of curvature is:  f = R 2 f=  2 R ​   ​   Where:  f f = focal length  R R = radius of curvature  For example, if R = 20 cm:  f = 20 2 = 10  cm f=  2 20 ​  =10 cm"
+        },
+        {
+          "id": "Q8",
+          "text": "A ray of light passing through the centre of curvature of a spherical mirror:",
+          "image": "",
+          "options": [
+            {
+              "id": "A",
+              "text": "Reflects parallel to the principal axis"
+            },
+            {
+              "id": "B",
+              "text": "Retraces its path"
+            },
+            {
+              "id": "C",
+              "text": "Passes through the focus"
+            },
+            {
+              "id": "D",
+              "text": "Bends towards the principal axis"
+            }
+          ],
+          "correctOption": "B",
+          "explanation": "A ray passing through the centre of curvature strikes the mirror normally because it travels along the normal.  Therefore, it is reflected back along the same path."
+        },
+        {
+          "id": "Q9",
+          "text": "Which of the following can produce a real image?",
+          "image": "",
+          "options": [
+            {
+              "id": "A",
+              "text": "Plane mirror"
+            },
+            {
+              "id": "B",
+              "text": "Convex mirror"
+            },
+            {
+              "id": "C",
+              "text": "Concave mirror"
+            },
+            {
+              "id": "D",
+              "text": "All of these"
+            }
+          ],
+          "correctOption": "C",
+          "explanation": "Explanation:  Plane mirror: Always forms a virtual image.  Convex mirror: Always forms a virtual image.  Concave mirror: Can form both real and virtual images depending on the object's position.  Therefore, the correct answer is concave mirror."
+        },
+        {
+          "id": "Q10",
+          "text": "The image formed by a plane mirror is:",
+          "image": "",
+          "options": [
+            {
+              "id": "A",
+              "text": "Laterally inverted"
+            },
+            {
+              "id": "B",
+              "text": "Vertically inverted"
+            },
+            {
+              "id": "C",
+              "text": "Always diminished"
+            },
+            {
+              "id": "D",
+              "text": "Always real"
+            }
+          ],
+          "correctOption": "A",
+          "explanation": "Lateral inversion means:  Left appears right.  Right appears left.  The image is also virtual, erect and equal in size to the object."
         }
       ],
-      "attempts": [
-        {
-          "id": "ATT-104-1",
-          "testId": "MCQ-104",
-          "studentId": "1",
-          "studentName": "harry",
-          "rollNo": "1",
-          "grade": "Class 10",
-          "score": 8,
-          "maxScore": 8,
-          "correctCount": 2,
-          "incorrectCount": 0,
-          "unattemptedCount": 0,
-          "totalQuestions": 2,
-          "accuracy": 100,
-          "answers": {
-            "Q1": "B",
-            "Q2": "B"
-          },
-          "timeTakenSeconds": 145,
-          "submittedAt": "2026-11-19T11:20:00.000Z",
-          "isPractice": false
-        }
-      ]
+      "createdBy": "Harshit Goyal (Director)",
+      "createdAt": "2026-11-22T04:24:07.729Z",
+      "attempts": []
     }
   ]
 }
