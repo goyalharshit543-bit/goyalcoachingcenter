@@ -240,8 +240,8 @@ async function pushToCloudServer(targetUrl, mergedData, remoteDb) {
   return { success: true, method: 'granular' };
 }
 
-async function syncData() {
-  const targetUrl = process.argv[2] || process.env.REMOTE_URL || DEFAULT_GLOBAL_URL;
+export async function syncData(customUrl = null) {
+  const targetUrl = customUrl || process.argv[2] || process.env.REMOTE_URL || DEFAULT_GLOBAL_URL;
   console.log(`=====================================================================`);
   console.log(`[GOYAL COACHING CENTER] TWO-WAY SYNC (CLOUD RAILWAY <-> LAPTOP)`);
   console.log(`Connecting to: ${targetUrl}...`);
@@ -299,6 +299,13 @@ async function syncData() {
     console.log(`- Laptop Folders Updated: Class_Organized_Records & records/`);
     console.log(`- Cloud Railway Website: Completely Synchronized!`);
     console.log(`=====================================================================\n`);
+
+    return {
+      success: true,
+      studentsCount: mergedData.students.length,
+      enquiriesCount: mergedData.enquiries.length,
+      gtseCount: mergedData.gtseRegistrations.length
+    };
   } catch (err) {
     console.error(`\n[SYNC ERROR] Could not reach cloud server at ${targetUrl}: ${err.message}`);
     console.log(`Operating in offline mode. Exporting local records to Excel...`);
@@ -310,7 +317,16 @@ async function syncData() {
     } catch (e2) {
       console.error('Local export error:', e2.message);
     }
+    return {
+      success: false,
+      error: err.message,
+      offline: true,
+      studentsCount: (localDb.students || []).length
+    };
   }
 }
 
-syncData();
+// Auto-run when called directly from CLI
+if (process.argv[1] && (process.argv[1].endsWith('sync.js') || process.argv[1].includes('sync'))) {
+  syncData();
+}

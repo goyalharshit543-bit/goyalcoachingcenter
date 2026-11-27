@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import XLSX from 'xlsx';
+import { exportClassHierarchies } from '../scripts/exportClassHierarchies.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -114,17 +115,25 @@ function removeRowFromExcel(filePath, sheetName, colIndex, targetVal) {
 }
 
 /**
- * Helper to append a row to an Excel file safely
+ * Helper to safely upsert (update if exists, append if new) a row in an Excel file by matching a key column
  */
-function appendRowToExcel(filePath, sheetName, headers, rowData) {
+export function upsertRowInExcel(filePath, sheetName, headers, rowData, keyColIndex = 0) {
   try {
     const dir = path.dirname(filePath);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
     let wb;
+    let existingRows = [];
     if (fs.existsSync(filePath)) {
       try {
         wb = XLSX.readFile(filePath);
+        const ws = wb.Sheets[sheetName];
+        if (ws) {
+          const raw = XLSX.utils.sheet_to_json(ws, { header: 1 });
+          if (Array.isArray(raw) && raw.length > 0) {
+            existingRows = raw;
+          }
+        }
       } catch {
         wb = XLSX.utils.book_new();
       }
@@ -132,18 +141,42 @@ function appendRowToExcel(filePath, sheetName, headers, rowData) {
       wb = XLSX.utils.book_new();
     }
 
-    let ws = wb.Sheets[sheetName];
-    if (!ws) {
-      ws = XLSX.utils.aoa_to_sheet([headers, rowData]);
-      XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    if (!existingRows || existingRows.length === 0) {
+      existingRows = [headers, rowData];
     } else {
-      XLSX.utils.sheet_add_aoa(ws, [rowData], { origin: -1 });
+      const targetVal = String(rowData[keyColIndex] || '').trim().toLowerCase();
+      let matchIdx = -1;
+      for (let i = 1; i < existingRows.length; i++) {
+        const val = String(existingRows[i][keyColIndex] || '').trim().toLowerCase();
+        if (val === targetVal) {
+          matchIdx = i;
+          break;
+        }
+      }
+      if (matchIdx !== -1) {
+        existingRows[matchIdx] = rowData;
+      } else {
+        existingRows.push(rowData);
+      }
+    }
+
+    const newWs = XLSX.utils.aoa_to_sheet(existingRows);
+    wb.Sheets[sheetName] = newWs;
+    if (!wb.SheetNames.includes(sheetName)) {
+      wb.SheetNames.push(sheetName);
     }
 
     XLSX.writeFile(wb, filePath);
   } catch (err) {
     console.error(`[RecordManager] Error writing Excel to ${filePath}:`, err.message);
   }
+}
+
+/**
+ * Helper to append/upsert a row to an Excel file safely without creating duplicate rows
+ */
+export function appendRowToExcel(filePath, sheetName, headers, rowData, keyColIndex = 0) {
+  return upsertRowInExcel(filePath, sheetName, headers, rowData, keyColIndex);
 }
 
 /**
@@ -533,7 +566,140 @@ Teacher Remarks        : ${student.teacherRemarks || 'Enrolled in official GCC d
   }
 
   console.log(`[RecordManager] Successfully categorized Enrolled Student ${student.name} (Roll: ${rollNo}) under ${className}`);
+  
+  // Rebuild clean Excel registers and regenerate Class_Organized_Records
+  try {
+    exportClassHierarchies();
+  } catch (err) {
+    console.error('[RecordManager] exportClassHierarchies error:', err.message);
+  }
+
   return { studentId, rollNo, className };
+}
+
+/**
+ * Completely rebuilds enrolled student Excel registers and JSON files cleanly from db.students
+ * ensuring zero duplicated rows and full synchronization with Class_Organized_Records.
+ */
+export function rebuildEnrolledStudentsExcel(studentsList = null) {
+  initRecordsDirectories();
+  let students = studentsList;
+  if (!students) {
+    try {
+      const dataFilePath = path.resolve(__dirname, 'data.json');
+      if (fs.existsSync(dataFilePath)) {
+        const raw = fs.readFileSync(dataFilePath, 'utf-8');
+        const db = JSON.parse(raw);
+        students = db.students || [];
+      }
+    } catch {
+      students = [];
+    }
+  }
+
+  const headers = [
+    'Roll Number (Login ID)',
+    'Student Name',
+    'Login Password',
+    'Class / Grade',
+    'Academic Stream',
+    'Batch Assigned',
+    'Parent Name',
+    'Parent Phone',
+    'Total Fees (Rs)',
+    'Paid Fees (Rs)',
+    'Fee Status',
+    'Enrollment Date',
+    'Teacher Remarks'
+  ];
+
+  const studentRows = (students || []).map(s => {
+    const className = normalizeClass(s.grade || s.batch);
+    const rollNo = s.rollNo || s.id;
+    const timestamp = s.enrollmentDate || '2026-11-20';
+    return [
+      rollNo,
+      s.name || '',
+      s.password || 'student123',
+      s.grade || className,
+      s.stream || '',
+      s.batch || '',
+      s.parentName || '',
+      s.parentPhone || '',
+      s.fees?.total || s.totalFees || 0,
+      s.fees?.paid || s.paidFees || 0,
+      s.fees?.status || (s.fees?.due === 0 ? 'Fully Paid' : 'Pending'),
+      timestamp,
+      s.teacherRemarks || ''
+    ];
+  });
+
+  for (const baseDir of TARGET_DIRS) {
+    const catDir = path.join(baseDir, CATEGORIES.ENROLLED);
+    if (!fs.existsSync(catDir)) fs.mkdirSync(catDir, { recursive: true });
+
+    // 1. Clean Master Enrolled Students Excel
+    const masterExcelPath = path.join(catDir, 'All_Enrolled_Students_Master_Register.xlsx');
+    const masterWb = XLSX.utils.book_new();
+    const masterWs = XLSX.utils.aoa_to_sheet([headers, ...studentRows]);
+    XLSX.utils.book_append_sheet(masterWb, masterWs, 'All_Enrolled_Students');
+    try {
+      XLSX.writeFile(masterWb, masterExcelPath);
+    } catch (err) {
+      console.error(`[RecordManager] Error writing master excel ${masterExcelPath}:`, err.message);
+    }
+
+    // 2. Clean Class-specific Excels & JSONs
+    for (const cls of STANDARD_CLASSES) {
+      const clsDir = path.join(catDir, cls);
+      if (!fs.existsSync(clsDir)) fs.mkdirSync(clsDir, { recursive: true });
+
+      const classStudents = (students || []).filter(s => normalizeClass(s.grade || s.batch) === cls);
+      const classRows = classStudents.map(s => {
+        const rollNo = s.rollNo || s.id;
+        const timestamp = s.enrollmentDate || '2026-11-20';
+        return [
+          rollNo,
+          s.name || '',
+          s.password || 'student123',
+          s.grade || cls,
+          s.stream || '',
+          s.batch || '',
+          s.parentName || '',
+          s.parentPhone || '',
+          s.fees?.total || s.totalFees || 0,
+          s.fees?.paid || s.paidFees || 0,
+          s.fees?.status || (s.fees?.due === 0 ? 'Fully Paid' : 'Pending'),
+          timestamp,
+          s.teacherRemarks || ''
+        ];
+      });
+
+      const classExcelPath = path.join(clsDir, `Enrolled_${cls}_Students.xlsx`);
+      const classWb = XLSX.utils.book_new();
+      const classWs = XLSX.utils.aoa_to_sheet([headers, ...classRows]);
+      XLSX.utils.book_append_sheet(classWb, classWs, cls);
+      try {
+        XLSX.writeFile(classWb, classExcelPath);
+      } catch (err) {
+        console.error(`[RecordManager] Error writing class excel ${classExcelPath}:`, err.message);
+      }
+
+      const classJsonPath = path.join(clsDir, `Enrolled_${cls}_Students.json`);
+      try {
+        fs.writeFileSync(classJsonPath, JSON.stringify(classStudents, null, 2), 'utf-8');
+      } catch (err) {
+        console.error(`[RecordManager] Error writing class json ${classJsonPath}:`, err.message);
+      }
+    }
+  }
+
+  // Also regenerate Class_Organized_Records
+  try {
+    exportClassHierarchies();
+  } catch (err) {
+    console.error('[RecordManager] exportClassHierarchies error:', err.message);
+  }
 }
 
 /**
@@ -592,6 +758,13 @@ export function removeEnrolledStudent(identifier) {
     removeRowFromExcel(masterExcelPath, 'All_Enrolled_Students', 0, targetId);
   }
   console.log(`[RecordManager] Successfully purged records for Enrolled Student ID/Roll: ${identifier}`);
+
+  // Re-export Class_Organized_Records
+  try {
+    exportClassHierarchies();
+  } catch (err) {
+    console.error('[RecordManager] exportClassHierarchies error:', err.message);
+  }
 }
 
 /**
@@ -691,11 +864,9 @@ export function migrateExistingRecords(db) {
       }
     }
 
-    // 3. Enrolled Students
+    // 3. Enrolled Students (clean rebuild without duplicate rows)
     if (Array.isArray(db.students) && db.students.length > 0) {
-      for (const student of db.students) {
-        recordEnrolledStudent(student);
-      }
+      rebuildEnrolledStudentsExcel(db.students);
     }
   } catch (err) {
     console.error('[RecordManager] Migration error:', err.message);

@@ -14,12 +14,14 @@ import {
   recordQuerySubmission, 
   recordEnrolledStudent,
   removeEnrolledStudent,
+  rebuildEnrolledStudentsExcel,
   getRecordsOverview, 
   migrateExistingRecords,
   normalizeClass,
   PROJECT_ROOT_RECORDS,
   SERVER_RECORDS 
 } from './recordManager.js';
+import { syncData } from '../scripts/sync.js';
 import { freePortIfOccupied } from './freePort.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -1138,6 +1140,7 @@ app.post('/api/students', requireAdmin, (req, res) => {
 
   try {
     recordEnrolledStudent(newStudent);
+    rebuildEnrolledStudentsExcel(db.students);
   } catch (recErr) {
     console.error('[RecordManager] Failed to record enrolled student:', recErr);
   }
@@ -1157,6 +1160,7 @@ app.put('/api/students/:id', requireAdmin, (req, res) => {
 
   try {
     recordEnrolledStudent(db.students[index]);
+    rebuildEnrolledStudentsExcel(db.students);
   } catch (recErr) {
     console.error('[RecordManager] Failed to update enrolled student:', recErr);
   }
@@ -1175,6 +1179,7 @@ app.delete('/api/students/:id', requireAdmin, (req, res) => {
     if (student && student.rollNo && student.rollNo !== id) {
       removeEnrolledStudent(student.rollNo);
     }
+    rebuildEnrolledStudentsExcel(db.students);
   } catch (recErr) {
     console.error('[RecordManager] Failed to remove enrolled student records:', recErr);
   }
@@ -2406,24 +2411,53 @@ function appendToExcelSheet(reg) {
     ];
 
     let wb;
+    let existingRows = [];
     if (fs.existsSync(EXCEL_FILE)) {
-      wb = XLSX.readFile(EXCEL_FILE);
+      try {
+        wb = XLSX.readFile(EXCEL_FILE);
+        const ws = wb.Sheets['GTSE_Registrations'];
+        if (ws) {
+          const raw = XLSX.utils.sheet_to_json(ws, { header: 1 });
+          if (Array.isArray(raw) && raw.length > 0) {
+            existingRows = raw;
+          }
+        }
+      } catch {
+        wb = XLSX.utils.book_new();
+      }
     } else {
       wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet([headers]);
-      XLSX.utils.book_append_sheet(wb, ws, 'GTSE_Registrations');
     }
 
-    let ws = wb.Sheets['GTSE_Registrations'];
-    if (!ws) {
-      ws = XLSX.utils.aoa_to_sheet([headers, newRow]);
-      XLSX.utils.book_append_sheet(wb, ws, 'GTSE_Registrations');
+    if (!existingRows || existingRows.length === 0) {
+      existingRows = [headers, newRow];
     } else {
-      XLSX.utils.sheet_add_aoa(ws, [newRow], { origin: -1 });
+      const regId = String(reg.id || '').trim().toLowerCase();
+      const studentNo = String(reg.studentNo || '').trim();
+      let matchIdx = -1;
+      for (let i = 1; i < existingRows.length; i++) {
+        const rowId = String(existingRows[i][0] || '').trim().toLowerCase();
+        const rowPhone = String(existingRows[i][10] || '').trim();
+        if ((regId && rowId === regId) || (studentNo && rowPhone === studentNo)) {
+          matchIdx = i;
+          break;
+        }
+      }
+      if (matchIdx !== -1) {
+        existingRows[matchIdx] = newRow;
+      } else {
+        existingRows.push(newRow);
+      }
+    }
+
+    const newWs = XLSX.utils.aoa_to_sheet(existingRows);
+    wb.Sheets['GTSE_Registrations'] = newWs;
+    if (!wb.SheetNames.includes('GTSE_Registrations')) {
+      wb.SheetNames.push('GTSE_Registrations');
     }
 
     XLSX.writeFile(wb, EXCEL_FILE);
-    console.log(`[EXCEL SUCCESS] Appended registration ${reg.id} to ${EXCEL_FILE}`);
+    console.log(`[EXCEL SUCCESS] Saved registration ${reg.id} to ${EXCEL_FILE}`);
     return true;
   } catch (err) {
     console.error('[EXCEL ERROR] Failed to save registration to Excel:', err);
@@ -2588,6 +2622,22 @@ app.post('/api/records/open-folder', (req, res) => {
   } catch (err) {
     console.error('[Records API] Open folder error:', err);
     res.status(500).json({ error: 'Failed to open directory' });
+  }
+});
+
+// Synchronize local records and Excel registers with Cloud Railway website
+app.post('/api/records/sync-cloud', async (req, res) => {
+  try {
+    const result = await syncData();
+    db = loadData();
+    res.json({
+      success: true,
+      message: 'Successfully synchronized website records with local Excel sheets & dossiers!',
+      details: result
+    });
+  } catch (err) {
+    console.error('[Records API] Sync error:', err);
+    res.status(500).json({ error: err.message || 'Synchronization failed' });
   }
 });
 

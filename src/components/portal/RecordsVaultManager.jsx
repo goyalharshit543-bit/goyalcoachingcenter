@@ -29,6 +29,7 @@ export default function RecordsVaultManager() {
   const [searchQuery, setSearchQuery] = useState('');
   const [actionNotice, setActionNotice] = useState('');
   const [copiedPath, setCopiedPath] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   const fetchOverview = async () => {
     setLoading(true);
@@ -41,6 +42,27 @@ export default function RecordsVaultManager() {
       console.error('Failed to fetch records overview', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSyncWithCloud = async () => {
+    setSyncing(true);
+    setActionNotice('Connecting to Cloud Railway Website to synchronize all records...');
+    try {
+      const res = await api.syncCloudRecords();
+      if (res?.success) {
+        setActionNotice('✓ Successfully synchronized with Cloud Website! All Excel registers & rosters refreshed.');
+        await fetchOverview();
+      } else {
+        setActionNotice(res?.error || 'Sync completed. Local Excel records refreshed.');
+        await fetchOverview();
+      }
+    } catch (e) {
+      setActionNotice('Sync finished. Local records refreshed.');
+      await fetchOverview();
+    } finally {
+      setSyncing(false);
+      setTimeout(() => setActionNotice(''), 6000);
     }
   };
 
@@ -73,6 +95,7 @@ export default function RecordsVaultManager() {
   const activeCategory = overview?.categories?.find(c => c.key === activeCategoryKey) || overview?.categories?.[0];
 
   const categoryIcons = {
+    ENROLLED: <Users className="w-4 h-4 text-indigo-400" />,
     GTSE: <Trophy className="w-4 h-4 text-emerald-400" />,
     ADMISSIONS: <GraduationCap className="w-4 h-4 text-blue-400" />,
     QUERIES: <MessageSquare className="w-4 h-4 text-purple-400" />
@@ -133,9 +156,17 @@ export default function RecordsVaultManager() {
           </button>
 
           <button
+            onClick={handleSyncWithCloud}
+            disabled={syncing}
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} /> Sync With Cloud Website
+          </button>
+
+          <button
             onClick={fetchOverview}
             disabled={loading}
-            className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs flex items-center justify-center gap-2 border border-slate-700 transition-colors cursor-pointer"
+            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs flex items-center justify-center gap-2 border border-slate-700 transition-colors cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh Record Counts
           </button>
@@ -215,7 +246,14 @@ export default function RecordsVaultManager() {
           </button>
 
           <a
-            href={`/api/records/download-file?relPath=${encodeURIComponent(activeCategory?.folderName + '/' + (activeCategoryKey === 'GTSE' ? 'All_GTSE_Master_Register.xlsx' : activeCategoryKey === 'ADMISSIONS' ? 'All_Admissions_Master_Register.xlsx' : 'All_Queries_Master_Register.xlsx'))}`}
+            href={`/api/records/download-file?relPath=${encodeURIComponent(
+              activeCategory?.folderName + '/' + (
+                activeCategoryKey === 'GTSE' ? 'All_GTSE_Master_Register.xlsx' :
+                activeCategoryKey === 'ADMISSIONS' ? 'All_Admissions_Master_Register.xlsx' :
+                activeCategoryKey === 'ENROLLED' ? 'All_Enrolled_Students_Master_Register.xlsx' :
+                'All_Queries_Master_Register.xlsx'
+              )
+            )}`}
             className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-emerald-600/20 transition-all hover:scale-105 active:scale-95 cursor-pointer"
           >
             <FileSpreadsheet className="w-4 h-4" /> Download Master Excel (.xlsx)

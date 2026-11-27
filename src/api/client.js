@@ -1405,6 +1405,19 @@ export const api = {
     return `/api/records/download-file?relPath=${encodeURIComponent(relPath)}`;
   },
 
+  async syncCloudRecords() {
+    try {
+      const res = await fetch('/api/records/sync-cloud', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.warn('Sync cloud records failed', e);
+    }
+    return { success: false, error: 'Could not connect to sync service.' };
+  },
+
   // Results Group Photo API
   async getResultsPhoto() {
     try {
