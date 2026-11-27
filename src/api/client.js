@@ -1,6 +1,6 @@
 import { initialData } from '../data/initialData';
 
-const LOCAL_STORAGE_KEY = 'GCC_DATA_STORE_V2';
+const LOCAL_STORAGE_KEY = 'GCC_DATA_STORE_V3';
 const AUTH_TOKEN_KEY = 'GCC_AUTH_TOKEN';
 
 export function getAuthToken() {
@@ -70,6 +70,9 @@ function sanitizeData(data) {
   }
   if (!data.lectures || !Array.isArray(data.lectures)) {
     data.lectures = initialData.lectures || [];
+  }
+  if (!data.tests || !Array.isArray(data.tests)) {
+    data.tests = initialData.tests || [];
   }
   if (!data.onlineTests || !Array.isArray(data.onlineTests)) {
     data.onlineTests = initialData.onlineTests || [];
@@ -766,6 +769,34 @@ export const api = {
     store.tests = (store.tests || []).filter(t => t.id !== id);
     saveLocalStore(store);
     broadcastChange('gcc_tests_updated', store.tests);
+    return result;
+  },
+
+  // Clear all tests and examination reports
+  async clearAllTestsAndReports() {
+    let result = { success: true };
+    try {
+      await Promise.allSettled([
+        fetch('/api/tests/all', { method: 'DELETE' }),
+        fetch('/api/online-tests/all', { method: 'DELETE' })
+      ]);
+    } catch (err) {
+      console.warn('Failed to clear tests on API:', err);
+    }
+    const store = getLocalStore();
+    store.tests = [];
+    store.onlineTests = [];
+    if (Array.isArray(store.students)) {
+      store.students.forEach(s => {
+        s.totalTestsEvaluated = 0;
+        s.overallPercentage = 0;
+        s.teacherRemarks = 'Enrolled student. Awaiting upcoming tests and assessments.';
+      });
+    }
+    saveLocalStore(store);
+    broadcastChange('gcc_tests_updated', []);
+    broadcastChange('gcc_online_tests_updated', []);
+    broadcastChange('gcc_students_updated', store.students);
     return result;
   },
 

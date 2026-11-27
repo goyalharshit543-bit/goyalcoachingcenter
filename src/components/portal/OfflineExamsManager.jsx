@@ -450,6 +450,22 @@ export default function OfflineExamsManager({
     }
   };
 
+  // Clear all offline exams
+  const handleClearAllExams = async () => {
+    const confirmed = window.confirm('⚠️ Are you sure you want to delete ALL offline center exams and uploaded answer sheets?');
+    if (!confirmed) return;
+
+    try {
+      await api.clearAllTestsAndReports();
+      setStatusMsg('All offline exams and marks deleted successfully.');
+      setTimeout(() => setStatusMsg(''), 4000);
+      await loadOfflineTests();
+      if (onDataChanged) onDataChanged();
+    } catch (err) {
+      alert(err.message || 'Failed to delete offline exams.');
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Top Banner / Actions */}
@@ -488,6 +504,17 @@ export default function OfflineExamsManager({
               <Plus className="w-4 h-4" />
               <span>Conduct New Offline Exam</span>
             </button>
+
+            {safeTests.length > 0 && (
+              <button
+                onClick={handleClearAllExams}
+                title="Delete all offline exams and marks"
+                className="px-4 py-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/50 font-bold text-xs flex items-center gap-1.5 cursor-pointer border border-rose-200 dark:border-rose-900/50 transition-all"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Delete All Exams</span>
+              </button>
+            )}
           </div>
         </div>
 

@@ -20,7 +20,8 @@ import {
   BarChart2, 
   X,
   ExternalLink,
-  BookOpen
+  BookOpen,
+  Trash2
 } from 'lucide-react';
 
 // Helper to normalize and match class names
@@ -430,6 +431,34 @@ export default function AllStudentMarksManager({
     document.body.removeChild(link);
   };
 
+  // Clear all tests and examination reports
+  const handleClearAllData = async () => {
+    if (!window.confirm('⚠️ ARE YOU SURE?\n\nThis will permanently delete all offline tests, Sunday mock scores, Olympiad test attempts, and student examination report cards in the Admin Panel.\n\nDo you want to proceed?')) {
+      return;
+    }
+    setIsSaving(true);
+    try {
+      await api.clearAllTestsAndReports();
+      setOfflineTests([]);
+      setOnlineTests([]);
+      setSelectedTestId('');
+      setAllStudents(prev => prev.map(s => ({
+        ...s,
+        totalTestsEvaluated: 0,
+        overallPercentage: 0,
+        teacherRemarks: 'Enrolled student. Awaiting upcoming tests and assessments.'
+      })));
+      setSaveStatusMsg('All tests and examination report data have been deleted successfully.');
+      onDataSaved();
+    } catch (err) {
+      console.error('Error clearing tests and reports:', err);
+      alert('Failed to clear test data: ' + err.message);
+    } finally {
+      setIsSaving(false);
+      setTimeout(() => setSaveStatusMsg(''), 5000);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* ================= 1. EXECUTIVE TITLE & OVERVIEW BANNER ================= */}
@@ -466,6 +495,14 @@ export default function AllStudentMarksManager({
               className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center gap-2 cursor-pointer backdrop-blur-sm border border-white/20 transition-colors"
             >
               <Printer className="w-4 h-4" /> Print Ledger
+            </button>
+            <button
+              onClick={handleClearAllData}
+              disabled={isSaving}
+              title="Delete all tests, marks, and examination reports"
+              className="px-4 py-2.5 rounded-xl bg-rose-600/90 hover:bg-rose-500 text-white font-bold text-xs flex items-center gap-2 cursor-pointer shadow-lg shadow-rose-600/25 transition-all hover:scale-105 active:scale-95 border border-rose-400/30"
+            >
+              <Trash2 className="w-4 h-4" /> Clear All Test Records
             </button>
           </div>
         </div>
@@ -870,37 +907,53 @@ export default function AllStudentMarksManager({
       {/* ================= 4. VIEW MODE B: TEST-WISE MARKS MATRIX ================= */}
       {viewMode === 'testWise' && (
         <div className="space-y-4">
-          {/* Test Selector */}
-          <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex-1">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                Select Offline or Olympiad Test:
-              </label>
-              <select
-                value={selectedTestId}
-                onChange={(e) => setSelectedTestId(e.target.value)}
-                className="w-full sm:max-w-xl px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          {offlineTests.length === 0 ? (
+            <div className="p-12 text-center bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
+              <Award className="w-12 h-12 mx-auto mb-3 text-slate-300 dark:text-slate-700" />
+              <h3 className="font-bold text-slate-700 dark:text-slate-300 text-sm">No Offline Tests Available</h3>
+              <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+                All test records are currently cleared. Click "Enter / Update Marks" or conduct a new offline test to record scores.
+              </p>
+              <button
+                onClick={() => handleOpenMarksModal()}
+                className="mt-4 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs inline-flex items-center gap-2 cursor-pointer shadow-md shadow-blue-500/20"
               >
-                {offlineTests.map(t => (
-                  <option key={t.id} value={t.id}>
-                    📄 [Offline Test] {t.title} ({t.grade || t.batch} • Max: {t.maxMarks})
-                  </option>
-                ))}
-              </select>
+                <Plus className="w-4 h-4" /> Enter New Test Marks
+              </button>
             </div>
+          ) : (
+            <>
+              {/* Test Selector */}
+              <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex-1">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                    Select Offline or Olympiad Test:
+                  </label>
+                  <select
+                    value={selectedTestId}
+                    onChange={(e) => setSelectedTestId(e.target.value)}
+                    className="w-full sm:max-w-xl px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {offlineTests.map(t => (
+                      <option key={t.id} value={t.id}>
+                        📄 [Offline Test] {t.title} ({t.grade || t.batch} • Max: {t.maxMarks})
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-            <button
-              onClick={() => handleOpenMarksModal(null, offlineTests.find(t => t.id === selectedTestId))}
-              className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-2 cursor-pointer shadow-md shadow-blue-500/20 shrink-0 self-start sm:self-auto"
-            >
-              <Plus className="w-4 h-4" /> Enter Marks for this Test
-            </button>
-          </div>
+                <button
+                  onClick={() => handleOpenMarksModal(null, offlineTests.find(t => t.id === selectedTestId))}
+                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-2 cursor-pointer shadow-md shadow-blue-500/20 shrink-0 self-start sm:self-auto"
+                >
+                  <Plus className="w-4 h-4" /> Enter Marks for this Test
+                </button>
+              </div>
 
-          {/* Test Overview Card */}
-          {(() => {
-            const currentTest = offlineTests.find(t => t.id === selectedTestId);
-            if (!currentTest) return null;
+              {/* Test Overview Card */}
+              {(() => {
+                const currentTest = offlineTests.find(t => t.id === selectedTestId);
+                if (!currentTest) return null;
             const results = Array.isArray(currentTest.results) ? currentTest.results : [];
             const matchingStudents = allStudents.filter(s => isSameClass(s.grade || s.batch, currentTest.grade || currentTest.batch));
 
@@ -1033,6 +1086,8 @@ export default function AllStudentMarksManager({
               </div>
             );
           })()}
+            </>
+          )}
         </div>
       )}
 

@@ -393,6 +393,11 @@ export function exportClassHierarchies() {
               totalExcelReportsCreated++;
             }
           }
+        } else {
+          const testExcelPath = path.join(subjectDir, `${subject.replace(/\s+/g, '_')}_Marks_Register.xlsx`);
+          if (fs.existsSync(testExcelPath)) {
+            try { fs.unlinkSync(testExcelPath); } catch {}
+          }
         }
       }
 

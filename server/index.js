@@ -1564,9 +1564,29 @@ app.put('/api/tests/:id', requireTeacherOrAdmin, (req, res) => {
   res.json({ success: true, test: merged });
 });
 
-// 4. Delete an offline exam
+// 4. Delete all offline exams and marks
+app.delete('/api/tests/all', (req, res) => {
+  db.tests = [];
+  recalculateAllStudentsTestStats();
+  saveData(db);
+  try {
+    rebuildMasterMarksAndTestsExcel(db);
+    exportClassHierarchies();
+  } catch (e) {
+    console.error('[Error rebuilding records after tests delete all]:', e.message);
+  }
+  res.json({ success: true, message: 'All offline tests and marks deleted successfully' });
+});
+
+// 4b. Delete a single offline exam
 app.delete('/api/tests/:id', requireTeacherOrAdmin, (req, res) => {
   const { id } = req.params;
+  if (id === 'all') {
+    db.tests = [];
+    recalculateAllStudentsTestStats();
+    saveData(db);
+    return res.json({ success: true, message: 'All offline tests deleted successfully' });
+  }
   db.tests = (db.tests || []).filter(t => t.id !== id);
   recalculateAllStudentsTestStats();
   saveData(db);
@@ -2133,9 +2153,27 @@ app.put('/api/online-tests/:id', (req, res) => {
   res.json({ success: true, test: db.onlineTests[idx], message: 'Test updated successfully' });
 });
 
-// 4. Delete test
+// 4. Delete all online tests
+app.delete('/api/online-tests/all', (req, res) => {
+  db.onlineTests = [];
+  saveData(db);
+  try {
+    rebuildMasterMarksAndTestsExcel(db);
+    exportClassHierarchies();
+  } catch (e) {
+    console.error('[Error rebuilding records after online tests delete all]:', e.message);
+  }
+  res.json({ success: true, message: 'All online tests deleted successfully' });
+});
+
+// 4b. Delete single online test
 app.delete('/api/online-tests/:id', (req, res) => {
   const id = req.params.id;
+  if (id === 'all') {
+    db.onlineTests = [];
+    saveData(db);
+    return res.json({ success: true, message: 'All online tests deleted successfully' });
+  }
   db.onlineTests = (db.onlineTests || []).filter(t => t.id !== id);
   saveData(db);
   res.json({ success: true, message: 'Test deleted successfully' });

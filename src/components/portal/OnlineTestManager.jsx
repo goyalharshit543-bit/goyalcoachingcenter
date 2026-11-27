@@ -344,6 +344,20 @@ export default function OnlineTestManager({
     }
   };
 
+  // Clear all online tests
+  const handleClearAllOnlineTests = async () => {
+    if (!window.confirm('⚠️ Are you sure you want to delete ALL Olympiad MCQ tests and student attempt results?')) {
+      return;
+    }
+    try {
+      await api.clearAllTestsAndReports();
+      await loadTests();
+      if (onDataChanged) onDataChanged();
+    } catch (err) {
+      alert(err.message || 'Failed to clear online tests');
+    }
+  };
+
   // Toggle Test Status quickly (Active / Upcoming / Closed)
   const handleQuickStatusToggle = async (t, newStatus) => {
     try {
@@ -390,6 +404,17 @@ export default function OnlineTestManager({
             <Plus className="w-4 h-4" />
             <span>Create Olympiad MCQ Test</span>
           </button>
+
+          {tests.length > 0 && (
+            <button
+              onClick={handleClearAllOnlineTests}
+              title="Delete all online tests and attempts"
+              className="px-3.5 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/50 font-bold text-xs flex items-center gap-1.5 cursor-pointer border border-rose-200 dark:border-rose-900/50 transition-all"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>Delete All Tests</span>
+            </button>
+          )}
         </div>
       </div>
 

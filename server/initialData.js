@@ -102,56 +102,10 @@ export const initialData = {
 
   attendanceLogs: [],
 
-  tests: [
-    {
-      id: "TST-101",
-      title: "Class 10 CBSE Board Pattern Mock Exam #1 - Mathematics (Real Numbers & Trigonometry)",
-      subject: "Mathematics",
-      grade: "Class 10",
-      batch: "Class 10th",
-      date: "2026-11-15",
-      maxMarks: 50,
-      passingMarks: 20,
-      highestMarks: 49,
-      avgMarks: 42.5,
-      type: "Offline Classroom Test",
-      createdBy: "Er. Alok Goyal",
-      createdAt: "2026-11-15T12:00:00.000Z",
-      results: []
-    },
-    {
-      id: "TST-102",
-      title: "Class 10 Science Sunday Classroom Unit Test - Light: Reflection & Refraction",
-      subject: "Science",
-      grade: "Class 10",
-      batch: "Class 10th",
-      date: "2026-11-08",
-      maxMarks: 40,
-      passingMarks: 16,
-      highestMarks: 38,
-      avgMarks: 33.0,
-      type: "Offline Classroom Test",
-      createdBy: "Er. Alok Goyal",
-      createdAt: "2026-11-08T12:00:00.000Z",
-      results: []
-    },
-    {
-      id: "TST-701",
-      title: "Class 7 Mathematics Sunday Center Test - Fractions, Decimals & Integers",
-      subject: "Mathematics",
-      grade: "Class 7",
-      batch: "Class 7th",
-      date: "2026-11-16",
-      maxMarks: 50,
-      passingMarks: 20,
-      highestMarks: 48,
-      avgMarks: 41.6,
-      type: "Offline Classroom Test",
-      createdBy: "Er. Alok Goyal",
-      createdAt: "2026-11-16T12:00:00.000Z",
-      results: []
-    }
-  ],
+  tests: [],
+
+  onlineTests: [],
+
   notices: [
     {
       id: "NTC-01",

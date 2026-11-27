@@ -23,14 +23,13 @@ FINANCIAL & FEE STATUS:
 - Last Receipt Number : REC-3661
 
 ACADEMIC & ATTENDANCE PERFORMANCE:
-- Overall Score %     : 84.5%
+- Overall Score %     : 0%
 - Total Attendance %  : 0%
 - Total Classes       : 0 Attended out of 1 Working Days
-- Faculty Remarks     : Diligent student. Good concept clarity and active classroom participation.
+- Faculty Remarks     : Enrolled student. Awaiting upcoming tests and assessments.
 
 DETAILED TEST & EXAMINATION RESULTS:
-  1. [2026-11-17] Class 9 Mathematics & Science Sunday Mock - Polynomials & Laws of Motion (Mathematics & Science): Scored 42 / 50 (84%)
-  2. [2026-11-10] Class 9 Science Unit Test - Atoms & Molecules and Structure of Atom (Science): Scored 34 / 40 (85%)
+  - No offline examinations recorded yet.
 =====================================================================
 Exported Automatically by Goyal Coaching Center Organizer
 =====================================================================
