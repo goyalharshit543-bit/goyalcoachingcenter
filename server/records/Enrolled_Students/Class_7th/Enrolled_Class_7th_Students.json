@@ -2,7 +2,6 @@
   {
     "name": "Sneha Patel",
     "rollNo": "705",
-    "password": "sneha123",
     "grade": "Class 7",
     "stream": "Junior Foundation",
     "batch": "Class 7 Junior Prodigy",
@@ -30,12 +29,12 @@
     "photo": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80",
     "enrollmentDate": "2026-11-20",
     "totalTestsEvaluated": 1,
+    "password": "sneha123",
     "normalizedClass": "Class_7th"
   },
   {
     "name": "Mehak Goyal",
     "rollNo": "704",
-    "password": "mehak123",
     "grade": "Class 7",
     "stream": "Junior Foundation",
     "batch": "Class 7 Junior Prodigy",
@@ -63,12 +62,12 @@
     "photo": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
     "enrollmentDate": "2026-11-20",
     "totalTestsEvaluated": 1,
+    "password": "mehak123",
     "normalizedClass": "Class_7th"
   },
   {
     "name": "Raghav Verma",
     "rollNo": "703",
-    "password": "raghav123",
     "grade": "Class 7",
     "stream": "Junior Foundation",
     "batch": "Class 7 Junior Prodigy",
@@ -96,12 +95,12 @@
     "photo": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
     "enrollmentDate": "2026-11-20",
     "totalTestsEvaluated": 1,
+    "password": "raghav123",
     "normalizedClass": "Class_7th"
   },
   {
     "name": "Ananya Gupta",
     "rollNo": "702",
-    "password": "ananya123",
     "grade": "Class 7",
     "stream": "Junior Foundation",
     "batch": "Class 7 Junior Prodigy",
@@ -129,12 +128,12 @@
     "photo": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80",
     "enrollmentDate": "2026-11-20",
     "totalTestsEvaluated": 1,
+    "password": "ananya123",
     "normalizedClass": "Class_7th"
   },
   {
     "name": "Aarav Sharma",
     "rollNo": "701",
-    "password": "aarav123",
     "grade": "Class 7",
     "stream": "Junior Foundation",
     "batch": "Class 7 Junior Prodigy",
@@ -162,6 +161,7 @@
     "photo": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=400&q=80",
     "enrollmentDate": "2026-11-20",
     "totalTestsEvaluated": 1,
+    "password": "aarav123",
     "normalizedClass": "Class_7th"
   }
 ]

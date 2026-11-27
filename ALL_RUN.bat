@@ -39,8 +39,13 @@ echo [STEP 5/5] Launching Goyal Coaching Center Application (Permanent Ports)...
 echo          - Main Website / Student Portal: http://localhost:5173
 echo          - Backend API & Records Server: http://localhost:5000
 echo          - Organized Records Folder: %~dp0Class_Organized_Records
+echo.
+echo Opening Google Chrome automatically in 3 seconds...
 echo ===============================================================================
 echo.
+
+:: Automatically open Google Chrome (or default browser) in 3 seconds
+start "" cmd /c "timeout /t 3 /nobreak >nul && (if exist ""%ProgramFiles%\Google\Chrome\Application\chrome.exe"" (start """" ""%ProgramFiles%\Google\Chrome\Application\chrome.exe"" http://localhost:5173) else if exist ""%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe"" (start """" ""%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe"" http://localhost:5173) else (start http://localhost:5173))"
 
 npm run dev
 pause

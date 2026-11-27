@@ -12,6 +12,7 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     host: '0.0.0.0',
+    open: true,
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
@@ -22,6 +23,7 @@ export default defineConfig({
   preview: {
     port: 5173,
     strictPort: true,
-    host: '0.0.0.0'
+    host: '0.0.0.0',
+    open: true
   }
 })

@@ -2,7 +2,6 @@
   {
     "name": "subham",
     "rollNo": "CGC505",
-    "password": "subham123",
     "grade": "Class 10",
     "stream": "Science & Mathematics",
     "batch": "Class 10 Board Champions",
@@ -30,6 +29,7 @@
     "workingDays": 1,
     "attendedDays": 1,
     "totalTestsEvaluated": 1,
+    "password": "subham123",
     "normalizedClass": "Class_10th"
   },
   {
@@ -61,7 +61,6 @@
   {
     "name": "harry",
     "rollNo": "1",
-    "password": "harry123",
     "grade": "Class 10",
     "stream": "Science & Mathematics",
     "batch": "Class 10 Board Champions",
@@ -89,6 +88,7 @@
     "workingDays": 1,
     "attendedDays": 1,
     "totalTestsEvaluated": 2,
+    "password": "harry123",
     "normalizedClass": "Class_10th"
   }
 ]

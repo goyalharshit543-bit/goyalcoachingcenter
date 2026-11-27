@@ -111,14 +111,17 @@ export default function OurFeaturesSection({
     };
   }, []);
 
-  const activeFeatures = Array.isArray(liveFeatures) ? liveFeatures : defaultFeatures;
+  const activeFeatures = Array.isArray(liveFeatures) && liveFeatures.length > 0 ? liveFeatures : defaultFeatures;
 
-  // Ensure all 5 screen boxes always have cards even if fewer were added
+  // Ensure all 5 screen boxes always have cards even if fewer were added (with safety counter to prevent freezing)
   const effectiveFeatures = (() => {
+    if (!activeFeatures || activeFeatures.length === 0) return [];
     if (activeFeatures.length >= 5) return activeFeatures;
     let list = [...activeFeatures];
-    while (list.length < 5) {
+    let safetyCounter = 0;
+    while (list.length < 5 && safetyCounter < 10) {
       list = [...list, ...activeFeatures];
+      safetyCounter++;
     }
     return list;
   })();

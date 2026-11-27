@@ -2,7 +2,6 @@
   {
     "name": "Krishnav",
     "rollNo": "GCC-1",
-    "password": "25122015",
     "grade": "Class 9",
     "stream": "Science & Mathematics",
     "batch": "Class 5",
@@ -31,6 +30,7 @@
     "workingDays": 1,
     "attendedDays": 1,
     "totalTestsEvaluated": 0,
+    "password": "25122015",
     "normalizedClass": "Class_9th"
   }
 ]

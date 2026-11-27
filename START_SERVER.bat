@@ -22,13 +22,17 @@ for /f "tokens=5" %%a in ('netstat -aon ^| findstr :5173 ^| findstr LISTENING') 
 
 echo [2/3] Verified ports 5000 and 5173 are clean and ready.
 echo.
-echo [3/3] Starting Goyal Coaching Center on permanent ports:
+echo [3/3] Starting Goyal Coaching Center:
 echo       - Main Website / Student Portal: http://localhost:5173
 echo       - Backend API & Records Server: http://localhost:5000
 echo.
+echo Opening Google Chrome automatically in 3 seconds...
 echo Please leave this window open while using the coaching center.
 echo =====================================================================
 echo.
+
+:: Automatically open Google Chrome (or default browser) in 3 seconds
+start "" cmd /c "timeout /t 3 /nobreak >nul && (if exist ""%ProgramFiles%\Google\Chrome\Application\chrome.exe"" (start """" ""%ProgramFiles%\Google\Chrome\Application\chrome.exe"" http://localhost:5173) else if exist ""%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe"" (start """" ""%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe"" http://localhost:5173) else (start http://localhost:5173))"
 
 cd /d "%~dp0"
 npm run dev

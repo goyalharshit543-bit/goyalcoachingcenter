@@ -90,7 +90,6 @@
     {
       "name": "Krishnav",
       "rollNo": "GCC-1",
-      "password": "25122015",
       "grade": "Class 9",
       "stream": "Science & Mathematics",
       "batch": "Class 5",
@@ -118,12 +117,12 @@
       "enrollmentDate": "2026-11-27",
       "workingDays": 1,
       "attendedDays": 1,
-      "totalTestsEvaluated": 0
+      "totalTestsEvaluated": 0,
+      "password": "25122015"
     },
     {
       "name": "subham",
       "rollNo": "CGC505",
-      "password": "subham123",
       "grade": "Class 10",
       "stream": "Science & Mathematics",
       "batch": "Class 10 Board Champions",
@@ -150,12 +149,12 @@
       "totalBatchStudents": 2,
       "workingDays": 1,
       "attendedDays": 1,
-      "totalTestsEvaluated": 1
+      "totalTestsEvaluated": 1,
+      "password": "subham123"
     },
     {
       "name": "harry",
       "rollNo": "1",
-      "password": "harry123",
       "grade": "Class 10",
       "stream": "Science & Mathematics",
       "batch": "Class 10 Board Champions",
@@ -182,12 +181,12 @@
       "totalClassesHeld": 1,
       "workingDays": 1,
       "attendedDays": 1,
-      "totalTestsEvaluated": 2
+      "totalTestsEvaluated": 2,
+      "password": "harry123"
     },
     {
       "name": "Aarav Sharma",
       "rollNo": "701",
-      "password": "aarav123",
       "grade": "Class 7",
       "stream": "Junior Foundation",
       "batch": "Class 7 Junior Prodigy",
@@ -214,12 +213,12 @@
       "teacherRemarks": "Newly admitted student. Regular and attentive.",
       "photo": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=400&q=80",
       "enrollmentDate": "2026-11-20",
-      "totalTestsEvaluated": 1
+      "totalTestsEvaluated": 1,
+      "password": "aarav123"
     },
     {
       "name": "Ananya Gupta",
       "rollNo": "702",
-      "password": "ananya123",
       "grade": "Class 7",
       "stream": "Junior Foundation",
       "batch": "Class 7 Junior Prodigy",
@@ -246,12 +245,12 @@
       "teacherRemarks": "Newly admitted student. Enthusiastic participant.",
       "photo": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80",
       "enrollmentDate": "2026-11-20",
-      "totalTestsEvaluated": 1
+      "totalTestsEvaluated": 1,
+      "password": "ananya123"
     },
     {
       "name": "Raghav Verma",
       "rollNo": "703",
-      "password": "raghav123",
       "grade": "Class 7",
       "stream": "Junior Foundation",
       "batch": "Class 7 Junior Prodigy",
@@ -278,12 +277,12 @@
       "teacherRemarks": "Newly admitted student. Good curiosity in science.",
       "photo": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
       "enrollmentDate": "2026-11-20",
-      "totalTestsEvaluated": 1
+      "totalTestsEvaluated": 1,
+      "password": "raghav123"
     },
     {
       "name": "Mehak Goyal",
       "rollNo": "704",
-      "password": "mehak123",
       "grade": "Class 7",
       "stream": "Junior Foundation",
       "batch": "Class 7 Junior Prodigy",
@@ -310,12 +309,12 @@
       "teacherRemarks": "Newly admitted student. Sharp mathematical aptitude.",
       "photo": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
       "enrollmentDate": "2026-11-20",
-      "totalTestsEvaluated": 1
+      "totalTestsEvaluated": 1,
+      "password": "mehak123"
     },
     {
       "name": "Sneha Patel",
       "rollNo": "705",
-      "password": "sneha123",
       "grade": "Class 7",
       "stream": "Junior Foundation",
       "batch": "Class 7 Junior Prodigy",
@@ -342,7 +341,8 @@
       "teacherRemarks": "Newly admitted student. Diligent and punctual.",
       "photo": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80",
       "enrollmentDate": "2026-11-20",
-      "totalTestsEvaluated": 1
+      "totalTestsEvaluated": 1,
+      "password": "sneha123"
     }
   ],
   "attendanceLogs": [

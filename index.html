@@ -104,7 +104,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   </head>
   <body class="bg-slate-950 text-slate-100 antialiased selection:bg-amber-500 selection:text-slate-950">
-    <div id="root"></div>
+    <div id="root">
+      <script>
+        if (window.location.protocol === 'file:') {
+          document.write(
+            '<div style="font-family:system-ui,-apple-system,sans-serif;min-height:100vh;background:#090d16;color:#f8fafc;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;">' +
+              '<div style="max-width:540px;background:#131c2e;border:1px solid #1e293b;border-radius:16px;padding:32px;box-shadow:0 20px 40px rgba(0,0,0,0.5);">' +
+                '<div style="font-size:42px;margin-bottom:12px;">🏛️</div>' +
+                '<h2 style="font-size:22px;font-weight:700;color:#f59e0b;margin:0 0 10px 0;">Goyal Coaching Center</h2>' +
+                '<p style="color:#94a3b8;font-size:14px;line-height:1.6;margin:0 0 20px 0;">You opened this file directly from File Explorer (<code>file://</code>). Modern React & Vite applications require the local server to run properly in Google Chrome.</p>' +
+                '<div style="background:#0b1120;border:1px solid #334155;border-radius:12px;padding:16px;text-align:left;margin-bottom:20px;">' +
+                  '<p style="font-size:13px;font-weight:600;color:#38bdf8;margin:0 0 8px 0;">How to open in Chrome (Easy 2 steps):</p>' +
+                  '<ol style="margin:0;padding-left:18px;color:#cbd5e1;font-size:13px;line-height:1.7;">' +
+                    '<li>Go to the project folder: <b>E:\\goyal coaching center</b></li>' +
+                    '<li>Double-click <b>RUN_IN_CHROME.bat</b> or <b>START_SERVER.bat</b></li>' +
+                  '</ol>' +
+                '</div>' +
+                '<p style="font-size:12px;color:#64748b;margin:0;">The server will start and Google Chrome will open automatically at <b style="color:#f59e0b;">http://localhost:5173</b></p>' +
+              '</div>' +
+            '</div>'
+          );
+        }
+      </script>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

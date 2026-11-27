@@ -58,13 +58,15 @@ export default function ShiningStarsSection({
   // Fallback student photo if any photo fails to load
   const defaultFallbackPhoto = 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80';
 
-  // Ensure all 5 screen boxes always have cards with photos even if fewer students were added
+  // Ensure all 5 screen boxes always have cards with photos even if fewer students were added (with safety counter)
   const effectiveStars = (() => {
     if (!liveStars || liveStars.length === 0) return [];
     if (liveStars.length >= 5) return liveStars;
     let list = [...liveStars];
-    while (list.length < 5) {
+    let safetyCounter = 0;
+    while (list.length < 5 && safetyCounter < 10) {
       list = [...list, ...liveStars];
+      safetyCounter++;
     }
     return list;
   })();
